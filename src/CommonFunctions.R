@@ -15,6 +15,9 @@ logLossEval <- function(pred.probs, true.class) {
     y <- do.call(rbind,ll)
     colnames(y) <- paste0("Class_",1:9)
     
-    return(-sum(log(pred.probs)*y))
+    # get row totals
+    row.totals <- apply(pred.probs,1,sum)
+    
+    return(-sum(log(pred.probs/row.totals)*y)/nrow(pred.probs))
     
 }
