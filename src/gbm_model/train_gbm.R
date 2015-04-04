@@ -24,5 +24,16 @@ train <- train.raw[idx,]
 # eliminate near zero Variance
 train <- train[,setdiff(names(train),c(nz.vars,"id"))]
 
+tr.ctrl <- trainControl(## 10-fold CV
+    method = "repeatedcv",
+    number = 10)
 
+set.seed(825)
+gbmFit1 <- train(target ~ ., data = train,
+                 method = "gbm",
+                 trControl = tr.ctrl,
+                 ## This last option is actually one
+                 ## for gbm() that passes through
+                 verbose = FALSE)
+gbmFit1
 
