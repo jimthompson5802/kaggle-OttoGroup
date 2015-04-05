@@ -20,8 +20,8 @@ logLossEval <- function(pred.probs, true.class) {
     
     ans <- -sum(log(pred.probs/row.totals)*y)/nrow(pred.probs)
     
-    if is.na(ans) {
-        stop("Return NA from LogLoss Function.")
+    if (is.na(ans)) {
+        stop("Returning NA from LogLoss Function.")
     } else {
         return(ans) 
     }
