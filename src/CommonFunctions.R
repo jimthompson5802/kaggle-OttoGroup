@@ -21,3 +21,10 @@ logLossEval <- function(pred.probs, true.class) {
     return(-sum(log(pred.probs/row.totals)*y)/nrow(pred.probs))
     
 }
+
+# caret custom model performance function for log-loss
+caretLogLossSummary <- function(data,lev,model) {
+    out <- logLossEval(data[,3:ncol(data)],data[,"obs"])
+    names(out) <- "LogLoss"
+    out
+}
