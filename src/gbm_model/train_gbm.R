@@ -20,7 +20,7 @@ registerDoMC(cores = 5)
 
 # extract subset for inital training
 set.seed(29)
-idx <- sample(nrow(train.raw),0.1*nrow(train.raw))
+idx <- sample(nrow(train.raw),0.3*nrow(train.raw))
 train <- train.raw[idx,]
 
 # eliminate near zero Variance
@@ -29,7 +29,8 @@ train$target <- factor(train$target)
 
 tr.ctrl <- trainControl(## 10-fold CV
     method = "repeatedcv",
-    number = 3,
+    number = 10,
+    repeats=3,
     classProbs=TRUE,
     summaryFunction=caretLogLossSummary)
 
@@ -56,3 +57,9 @@ test <- test.raw[,setdiff(names(test.raw),c(nz.vars,"id"))]
 pred.probs <- predict(gbmFit1,newdata = test[,1:(ncol(test)-1)],type = "prob")
 
 logLossEval(pred.probs,test$target)
+
+# save generated model
+save(gbmFit1,file="./src/gbm_model/gbmFit1.RData")
+
+gbmFit1$bestTune
+
