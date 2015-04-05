@@ -18,7 +18,14 @@ logLossEval <- function(pred.probs, true.class) {
     # get row totals
     row.totals <- apply(pred.probs,1,sum)
     
-    return(-sum(log(pred.probs/row.totals)*y)/nrow(pred.probs))
+    ans <- -sum(log(pred.probs/row.totals)*y)/nrow(pred.probs)
+    
+    if is.na(ans) {
+        stop("Return NA from LogLoss Function.")
+    } else {
+        return(ans) 
+    }
+    
     
 }
 
