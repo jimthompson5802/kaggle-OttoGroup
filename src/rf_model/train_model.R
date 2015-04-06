@@ -1,5 +1,5 @@
 ###
-# training gbm model
+# training randomForest model
 ###
 
 library(caret)
@@ -20,7 +20,7 @@ registerDoMC(cores = 5)
 
 # extract subset for inital training
 set.seed(29)
-idx <- sample(nrow(train.raw),0.4*nrow(train.raw))
+idx <- sample(nrow(train.raw),0.1*nrow(train.raw))
 train.df <- train.raw[idx,]
 
 # eliminate near zero Variance
@@ -35,9 +35,7 @@ tr.ctrl <- trainControl(
     classProbs=TRUE,
     summaryFunction=caretLogLossSummary)
 
-# tune.grid <-  expand.grid(interaction.depth = 3, #c(1, 3, 5),
-#                         n.trees = (1:10)*50,
-#                         shrinkage = 0.1)
+tune.grid <-  expand.grid(mtry=seq(2,81,5))
 
 set.seed(825)
 system.time(rfFit1 <- train(train.df[,1:(ncol(train.df)-1)],
@@ -50,7 +48,7 @@ system.time(rfFit1 <- train(train.df[,1:(ncol(train.df)-1)],
                  
                  ## remaining train options
                  trControl = tr.ctrl,
-#                  tuneGrid=tune.grid,
+                 tuneGrid=tune.grid,
                  maximize=FALSE,
                  metric="LogLoss"))
 rfFit1
@@ -64,7 +62,7 @@ pred.probs <- predict(rfFit1,newdata = test[,1:(ncol(test)-1)],type = "prob")
 logLossEval(pred.probs,test$target)
 
 #save generated model
-save(rfFit1,file=paste0(WORK.DIR,"/rfFit1.RData"))
+# save(rfFit1,file=paste0(WORK.DIR,"/rfFit1.RData"))
 
 
 
