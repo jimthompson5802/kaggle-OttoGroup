@@ -20,7 +20,7 @@ registerDoMC(cores = 5)
 
 # extract subset for inital training
 set.seed(29)
-idx <- sample(nrow(train.raw),0.1*nrow(train.raw))
+idx <- sample(nrow(train.raw),0.4*nrow(train.raw))
 train.df <- train.raw[idx,]
 
 # eliminate near zero Variance
@@ -62,7 +62,7 @@ pred.probs <- predict(rfFit1,newdata = test[,1:(ncol(test)-1)],type = "prob")
 logLossEval(pred.probs,test$target)
 
 #save generated model
-# save(rfFit1,file=paste0(WORK.DIR,"/rfFit1.RData"))
+save(rfFit1,file=paste0(WORK.DIR,"/rfFit1_2.RData"))
 
 
 
