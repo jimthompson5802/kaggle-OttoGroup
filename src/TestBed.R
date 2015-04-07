@@ -17,4 +17,4 @@ source("./src/CommonFunctions.R")
 # logLossEval(test.probs,test.raw$target)
 
 df <- createModelPerfDF(n.trees=integer(0), shrinkage=numeric(0),interaction.depth=integer(0))
-df <- recordModelPerf(df,"gbm",time.data,score,gbmFit1$bestTune)
+df <- recordModelPerf(df,"gbm",time.data,train.df,score,gbmFit1$bestTune)

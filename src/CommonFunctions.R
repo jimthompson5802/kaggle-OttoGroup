@@ -50,22 +50,26 @@ createModelPerfDF <- function(...) {
                 user.cpu.time=numeric(0),
                 sys.cpu.time=numeric(0),
                 elapsed.time=numeric(0),
+                num.train.obs=numeric(0),
                 score=numeric(0),
                 ...,
+                features=character(0),
                 stringsAsFactors=FALSE)
     return(df)
 }
 
 # function to record model performance
-recordModelPerf <- function(df,model,time.data,score,bestTune) {
+recordModelPerf <- function(df,model,time.data,train.df,score,bestTune) {
     
     new.row <- data.frame(date.time=as.character(Sys.time()),
                    model=model,
                    user.cpu.time=summary(time.data)["user"],
                    sys.cpu.time=summary(time.data)["system"],
                    elapsed.time=summary(time.data)["elapsed"],
+                   training.size=nrow(train.df),
                    score=score,
                    bestTune,
+                   features=paste(names(train.df),collapse=","),
                    stringsAsFactors=FALSE)
     
     return(rbind(df,new.row))
