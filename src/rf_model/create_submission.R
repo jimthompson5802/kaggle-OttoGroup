@@ -1,14 +1,13 @@
 ###
-# generate submission for rf model
+# generate submission for gbm model
 ###
 
 library(caret)
-library(randomForest)
 
 
 # import global variabels and common functions
 source("./src/CommonFunctions.R")
-WORK.DIR <- "./src/rf_model"
+WORK.DIR <- "./src/gbm_model"
 
 # get near zero Vars to eliminate
 load(paste0(DATA.DIR,"/near_zero_vars.RData"))
@@ -23,13 +22,13 @@ id <- new.df$id
 new.df <- new.df[,setdiff(names(new.df),c(nz.vars,"id"))]
 
 # retrive gbm model
-load(paste0(WORK.DIR,"/rfFit1.RData"))
+load(paste0(WORK.DIR,"/gbmFit1.RData"))
 
 # predict class probabilities
-pred.probs <- predict(rfFit1,newdata = new.df,type = "prob")
+pred.probs <- predict(gbmFit1,newdata = new.df,type = "prob")
 
 #create kaggle submission file
-write.csv(data.frame(id,pred.probs),file=paste0(WORK.DIR,"/rf_submission.csv"),
+write.csv(data.frame(id,pred.probs),file=paste0(WORK.DIR,"/submission.csv"),
           row.names=FALSE)
 
 
