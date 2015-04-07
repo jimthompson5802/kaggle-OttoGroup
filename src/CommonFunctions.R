@@ -41,3 +41,32 @@ caretLogLossSummary <- function(data,lev,model) {
     names(out) <- "LogLoss"
     out
 }
+
+# function to initialize data frame to collect model performance
+createModelPerfDF <- function(...) {
+    df <- 
+    data.frame(date.time=character(0),
+                model=character(0),
+                user.cpu.time=numeric(0),
+                sys.cpu.time=numeric(0),
+                elapsed.time=numeric(0),
+                score=numeric(0),
+                ...,
+                stringsAsFactors=FALSE)
+    return(df)
+}
+
+# function to record model performance
+recordModelPerf <- function(df,model,time.data,score,bestTune) {
+    
+    new.row <- data.frame(date.time=as.character(Sys.time()),
+                   model=model,
+                   user.cpu.time=summary(time.data)["user"],
+                   sys.cpu.time=summary(time.data)["system"],
+                   elapsed.time=summary(time.data)["elapsed"],
+                   score=score,
+                   bestTune,
+                   stringsAsFactors=FALSE)
+    
+    return(rbind(df,new.row))
+}
