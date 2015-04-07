@@ -45,28 +45,32 @@ caretLogLossSummary <- function(data,lev,model) {
 # function to initialize data frame to collect model performance
 createModelPerfDF <- function(...) {
     df <- 
-    data.frame(date.time=character(0),
-                model=character(0),
-                user.cpu.time=numeric(0),
-                sys.cpu.time=numeric(0),
-                elapsed.time=numeric(0),
-                num.train.obs=numeric(0),
-                score=numeric(0),
-                ...,
-                features=character(0),
+    data.frame(date.time=character(0),  #date/time of model training run
+                model=character(0),     # model type
+                user.cpu.time=numeric(0), # user cpu seconds
+                sys.cpu.time=numeric(0),  # system cput seconds
+                elapsed.time=numeric(0),  # total elapsed time
+                num.observations=numeric(0), # number of observations used in training
+                num.features=numeric(0),  # number of featurs used in training
+                score=numeric(0),  # performance score using hold-out test set
+                ...,  # model specific hyper-paramters
+                features=character(0),  # features used in training
                 stringsAsFactors=FALSE)
     return(df)
 }
 
 # function to record model performance
 recordModelPerf <- function(df,model,time.data,train.df,score,bestTune) {
+    # time.data is a proc_time object from system.time() function call
+    # bestTune is data frame for optimal model hyper-paramters
     
     new.row <- data.frame(date.time=as.character(Sys.time()),
                    model=model,
                    user.cpu.time=summary(time.data)["user"],
                    sys.cpu.time=summary(time.data)["system"],
                    elapsed.time=summary(time.data)["elapsed"],
-                   training.size=nrow(train.df),
+                   num.observations=nrow(train.df),
+                   num.features=ncol(train.df),
                    score=score,
                    bestTune,
                    features=paste(names(train.df),collapse=","),
