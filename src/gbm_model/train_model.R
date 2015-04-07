@@ -8,6 +8,7 @@ library(gbm)
 # Common Functions and Global variables
 source("./src/CommonFunctions.R")
 WORK.DIR <- "./src/gbm_model"
+MODEL.METHOD <- "gbm"
 
 # get training data
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
@@ -43,7 +44,7 @@ Sys.time()
 set.seed(825)
 time.data <- system.time(gbmFit1 <- train(train.df[,1:(ncol(train.df)-1)],
                  train.df[,ncol(train.df)],
-                 method = "gbm",
+                 method = MODEL.METHOD,
 
                  ## This last option is actually one
                  ## for gbm() that passes through
@@ -68,9 +69,14 @@ score
 
 # record Model performance
 load(paste0(WORK.DIR,"/modPerf.RData"))
-modPerf.df <- recordModelPerf(modPerf.df,"gbm",time.data,train.df[,1:(ncol(train.df)-1)],
+modPerf.df <- recordModelPerf(modPerf.df,MODEL.METHOD,time.data,
+                              train.df[,1:(ncol(train.df)-1)],
                               score,gbmFit1$bestTune)
 save(modPerf.df,file=paste0(WORK.DIR,"/modPerf.RData"))
+
+#display model performance record for this run
+modPerf.df[nrow(modPerf.df),1:(ncol(modPerf.df)-1)]
+
 
 # save generated model
 # save(gbmFit1,file=paste0(WORK.DIR,"/gbmFit1.RData"))
