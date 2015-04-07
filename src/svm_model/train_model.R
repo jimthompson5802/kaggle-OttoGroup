@@ -3,7 +3,7 @@
 ###
 
 library(caret)
-library(e1072)
+library(kernlab)
 
 # Common Functions and Global variables
 source("./src/CommonFunctions.R")
@@ -20,7 +20,7 @@ registerDoMC(cores = 5)
 
 # extract subset for inital training
 set.seed(29)
-idx <- sample(nrow(train.raw),0.05*nrow(train.raw))
+idx <- sample(nrow(train.raw),0.1*nrow(train.raw))
 train.df <- train.raw[idx,]
 
 # eliminate near zero Variance
@@ -43,7 +43,7 @@ Sys.time()
 set.seed(825)
 time.data <- system.time(svmFit1 <- train(train.df[,1:(ncol(train.df)-1)],
                  train.df[,ncol(train.df)],
-                 method = "svm",
+                 method = "svmRadial",
 
                  ## This last option is actually one
                  ## for gbm() that passes through
