@@ -29,19 +29,19 @@ train.df$target <- factor(train.df$target)
 
 tr.ctrl <- trainControl(
     method = "repeatedcv",
-    number = 5,
-    repeats=2,
+    number = 10,
+    repeats=1,
     verboseIter = TRUE,
     classProbs=TRUE,
     summaryFunction=caretLogLossSummary)
 
-tune.grid <-  expand.grid(interaction.depth = c(3,5,7,9), #c(1, 3, 5),
+tune.grid <-  expand.grid(interaction.depth = c(1, 3, 5),
                         n.trees = (1:10)*50,
                         shrinkage = 0.1)
 
 Sys.time()
 set.seed(825)
-system.time(gbmFit1 <- train(train.df[,1:(ncol(train.df)-1)],
+time.data <- system.time(gbmFit1 <- train(train.df[,1:(ncol(train.df)-1)],
                  train.df[,ncol(train.df)],
                  method = "gbm",
 
@@ -54,6 +54,7 @@ system.time(gbmFit1 <- train(train.df[,1:(ncol(train.df)-1)],
                  maximize=FALSE,
                  tuneGrid=tune.grid,
                  metric="LogLoss"))
+time.data
 gbmFit1
 
 
@@ -62,7 +63,14 @@ test <- test.raw[,setdiff(names(test.raw),c(nz.vars,"id"))]
 
 pred.probs <- predict(gbmFit1,newdata = test[,1:(ncol(test)-1)],type = "prob")
 
-logLossEval(pred.probs,test$target)
+score <- logLossEval(pred.probs,test$target)
+score
+
+# record Model performance
+load(paste0(WORK.DIR,"/modPerf.RData"))
+modPerf.df <- recordModelPerf(modPerf.df,"gbm",time.data,train.df[,1:(ncol(train.df)-1)],
+                              score,gbmFit1$bestTune)
+save(modPerf.df,file=paste0(WORK.DIR,"/modPerf.RData"))
 
 # save generated model
 # save(gbmFit1,file=paste0(WORK.DIR,"/gbmFit1.RData"))
