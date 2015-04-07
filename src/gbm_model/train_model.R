@@ -10,6 +10,9 @@ source("./src/CommonFunctions.R")
 WORK.DIR <- "./src/gbm_model"
 MODEL.METHOD <- "gbm"
 
+# load model performance data
+load(paste0(WORK.DIR,"/modPerf.RData"))
+
 # get training data
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
      
@@ -21,7 +24,7 @@ registerDoMC(cores = 5)
 
 # extract subset for inital training
 set.seed(29)
-idx <- sample(nrow(train.raw),0.1*nrow(train.raw))
+idx <- sample(nrow(train.raw),0.01*nrow(train.raw))
 train.df <- train.raw[idx,]
 
 # eliminate near zero Variance
@@ -68,7 +71,6 @@ score <- logLossEval(pred.probs,test$target)
 score
 
 # record Model performance
-load(paste0(WORK.DIR,"/modPerf.RData"))
 modPerf.df <- recordModelPerf(modPerf.df,MODEL.METHOD,time.data,
                               train.df[,1:(ncol(train.df)-1)],
                               score,gbmFit1$bestTune)
@@ -77,9 +79,19 @@ save(modPerf.df,file=paste0(WORK.DIR,"/modPerf.RData"))
 #display model performance record for this run
 modPerf.df[nrow(modPerf.df),1:(ncol(modPerf.df)-1)]
 
+# if last score recorded is better than previous ones save model object
+last.idx <- length(modPerf.df$score)
+if (last.idx == 1 ||
+        modPerf.df$score[last.idx] < min(modPerf.df$score[1:(last.idx-1)])) {
+    
+    #yes we have improvement or first score, save generated model
+    file.name <- paste0("/gbmFit1_",modPerf.df$date.time[last.idx],".RData")
+    file.name <- gsub(" ","_",file.name)
+    file.name <- gsub(":","_",file.name)
+    
+    save(gbmFit1,file=paste0(WORK.DIR,file.name))
+}
 
-# save generated model
-# save(gbmFit1,file=paste0(WORK.DIR,"/gbmFit1.RData"))
 
 
 
