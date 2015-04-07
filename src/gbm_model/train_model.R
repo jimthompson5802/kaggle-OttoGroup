@@ -7,7 +7,7 @@ library(gbm)
 
 # Common Functions and Global variables
 source("./src/CommonFunctions.R")
-
+WORK.DIR <- "./src/gbm_model"
 
 # get training data
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
@@ -20,31 +20,37 @@ registerDoMC(cores = 5)
 
 # extract subset for inital training
 set.seed(29)
-idx <- sample(nrow(train.raw),0.3*nrow(train.raw))
-train <- train.raw[idx,]
+idx <- sample(nrow(train.raw),0.1*nrow(train.raw))
+train.df <- train.raw[idx,]
 
 # eliminate near zero Variance
-train <- train[,setdiff(names(train),c(nz.vars,"id"))]
-train$target <- factor(train$target)
+train.df <- train.df[,setdiff(names(train.df),c(nz.vars,"id"))]
+train.df$target <- factor(train.df$target)
 
-tr.ctrl <- trainControl(## 10-fold CV
+tr.ctrl <- trainControl(
     method = "repeatedcv",
-    number = 10,
-    repeats=3,
+    number = 5,
+    repeats=2,
+    verboseIter = TRUE,
     classProbs=TRUE,
     summaryFunction=caretLogLossSummary)
 
-tune.grid <-  expand.grid(interaction.depth = c(1, 3, 5),
+tune.grid <-  expand.grid(interaction.depth = c(3,5,7,9), #c(1, 3, 5),
                         n.trees = (1:10)*50,
                         shrinkage = 0.1)
 
+Sys.time()
 set.seed(825)
-system.time(gbmFit1 <- train(target ~ ., data = train,
+system.time(gbmFit1 <- train(train.df[,1:(ncol(train.df)-1)],
+                 train.df[,ncol(train.df)],
                  method = "gbm",
-                 trControl = tr.ctrl,
+
                  ## This last option is actually one
                  ## for gbm() that passes through
                  verbose = FALSE,
+                 
+                 ## remaining train options
+                 trControl = tr.ctrl,
                  maximize=FALSE,
                  tuneGrid=tune.grid,
                  metric="LogLoss"))
@@ -59,7 +65,7 @@ pred.probs <- predict(gbmFit1,newdata = test[,1:(ncol(test)-1)],type = "prob")
 logLossEval(pred.probs,test$target)
 
 # save generated model
-save(gbmFit1,file="./src/gbm_model/gbmFit1.RData")
+# save(gbmFit1,file=paste0(WORK.DIR,"/gbmFit1.RData"))
 
-gbmFit1$bestTune
+
 
