@@ -24,7 +24,7 @@ registerDoMC(cores = 5)
 
 # extract subset for inital training
 set.seed(29)
-idx <- sample(nrow(train.raw),0.01*nrow(train.raw))
+idx <- sample(nrow(train.raw),0.3*nrow(train.raw))
 train.df <- train.raw[idx,]
 
 # eliminate near zero Variance
@@ -34,7 +34,7 @@ train.df$target <- factor(train.df$target)
 tr.ctrl <- trainControl(
     method = "repeatedcv",
     number = 10,
-    repeats=1,
+    repeats=3,
     verboseIter = TRUE,
     classProbs=TRUE,
     summaryFunction=caretLogLossSummary)
