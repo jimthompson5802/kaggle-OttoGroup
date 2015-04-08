@@ -33,15 +33,15 @@ train.df$target <- factor(train.df$target)
 
 tr.ctrl <- trainControl(
     method = "repeatedcv",
-    number = 10,
-    repeats=3,
+    number = 5,
+    repeats=1,
     verboseIter = TRUE,
     classProbs=TRUE,
     summaryFunction=caretLogLossSummary)
 
-tune.grid <-  expand.grid(interaction.depth = c(1, 3, 5),
-                        n.trees = (1:10)*50,
-                        shrinkage = 0.1)
+tune.grid <-  expand.grid(interaction.depth = c(3, 5, 7, 9),
+                        n.trees = c(1000, 2000, 3000),
+                        shrinkage = 0.01)  # avoid numerical issue in gbm
 
 Sys.time()
 set.seed(825)
@@ -83,13 +83,17 @@ modPerf.df[nrow(modPerf.df),1:(ncol(modPerf.df)-1)]
 last.idx <- length(modPerf.df$score)
 if (last.idx == 1 ||
         modPerf.df$score[last.idx] < min(modPerf.df$score[1:(last.idx-1)])) {
-    
+    cat("found improved model, saving...\n")
+    flush.console()
     #yes we have improvement or first score, save generated model
     file.name <- paste0("/gbmFit1_",modPerf.df$date.time[last.idx],".RData")
     file.name <- gsub(" ","_",file.name)
     file.name <- gsub(":","_",file.name)
     
     save(gbmFit1,file=paste0(WORK.DIR,file.name))
+} else {
+    cat("no improvement!!!\n")
+    flush.console()
 }
 
 
