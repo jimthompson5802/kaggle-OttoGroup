@@ -22,7 +22,7 @@ id <- new.df$id
 new.df <- new.df[,setdiff(names(new.df),c(nz.vars,"id"))]
 
 # retrive gbm model
-load(paste0(WORK.DIR,"/gbmFit1.RData"))
+load(paste0(WORK.DIR,"/gbmFit1_2015-04-07_21_12_42.RData"))
 
 # predict class probabilities
 pred.probs <- predict(gbmFit1,newdata = new.df,type = "prob")
