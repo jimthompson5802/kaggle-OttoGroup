@@ -60,21 +60,44 @@ createModelPerfDF <- function(...) {
 }
 
 # function to record model performance
-recordModelPerf <- function(df,model,time.data,train.df,score,bestTune) {
+recordModelPerf <- function(df,model,time.data,train.df,score,bestTune,...) {
     # time.data is a proc_time object from system.time() function call
     # bestTune is data frame for optimal model hyper-paramters
+    # ... optional other model data to capture
     
-    new.row <- data.frame(date.time=as.character(Sys.time()),
-                   model=model,
-                   user.cpu.time=summary(time.data)["user"],
-                   sys.cpu.time=summary(time.data)["system"],
-                   elapsed.time=summary(time.data)["elapsed"],
-                   num.observations=nrow(train.df),
-                   num.features=ncol(train.df),
-                   score=score,
-                   bestTune,
-                   features=paste(names(train.df),collapse=","),
-                   stringsAsFactors=FALSE)
+    # determine if we have any optional data to capture
+    dots <- list(...)
+    if (length(dots) > 0) {
+        # package other data to record
+        dots <- list(...)
+        other.data <- data.frame(do.call(cbind,dots), stringsAsFactors=FALSE)
+        new.row <- data.frame(date.time=as.character(Sys.time()),
+                              model=model,
+                              user.cpu.time=summary(time.data)["user"],
+                              sys.cpu.time=summary(time.data)["system"],
+                              elapsed.time=summary(time.data)["elapsed"],
+                              num.observations=nrow(train.df),
+                              num.features=ncol(train.df),
+                              score=score,
+                              bestTune,
+                              other.data,
+                              features=paste(names(train.df),collapse=","),
+                              stringsAsFactors=FALSE) 
+    } else {
+        # no optional data to capture
+        new.row <- data.frame(date.time=as.character(Sys.time()),
+                              model=model,
+                              user.cpu.time=summary(time.data)["user"],
+                              sys.cpu.time=summary(time.data)["system"],
+                              elapsed.time=summary(time.data)["elapsed"],
+                              num.observations=nrow(train.df),
+                              num.features=ncol(train.df),
+                              score=score,
+                              bestTune,
+                              features=paste(names(train.df),collapse=","),
+                              stringsAsFactors=FALSE) 
+    }
+    
     
     return(rbind(df,new.row))
 }
