@@ -9,6 +9,10 @@ library(randomForest)
 source("./src/CommonFunctions.R")
 WORK.DIR <- "./src/rf_model"
 MODEL.METHOD <- "rf"
+RF.NTREE <- 500   #custom parameter for randomForest
+
+# load model performance data
+load(paste0(WORK.DIR,"/modPerf.RData"))
 
 # get training data
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
@@ -21,7 +25,7 @@ registerDoMC(cores = 5)
 
 # extract subset for inital training
 set.seed(29)
-idx <- sample(nrow(train.raw),0.1*nrow(train.raw))
+idx <- sample(nrow(train.raw),0.05*nrow(train.raw))
 train.df <- train.raw[idx,]
 
 # eliminate near zero Variance
@@ -30,7 +34,7 @@ train.df$target <- factor(train.df$target)
 
 tr.ctrl <- trainControl(
     method = "repeatedcv",
-    number = 10,
+    number = 5,
     repeats=1,
     verboseIter = TRUE,
     classProbs=TRUE,
@@ -46,9 +50,8 @@ time.data <- system.time(rfFit1 <- train(train.df[,1:(ncol(train.df)-1)],
                  train.df[,ncol(train.df)],
                  method = MODEL.METHOD,
 
-                 ## This last option is actually one
-                 ## for gbm() that passes through
-                 verbose = FALSE,
+                 ## model specific parameters, if any
+                 ntree=RF.NTREE,
                  
                  ## remaining train options
                  trControl = tr.ctrl,
@@ -68,18 +71,31 @@ score <- logLossEval(pred.probs,test$target)
 score
 
 # record Model performance
-load(paste0(WORK.DIR,"/modPerf.RData"))
 modPerf.df <- recordModelPerf(modPerf.df,MODEL.METHOD,time.data,
                               train.df[,1:(ncol(train.df)-1)],
-                              score,rfFit1$bestTune)
+                              score,rfFit1$bestTune,
+                              ntree=RF.NTREE)
 save(modPerf.df,file=paste0(WORK.DIR,"/modPerf.RData"))
 
 #display model performance record for this run
 modPerf.df[nrow(modPerf.df),1:(ncol(modPerf.df)-1)]
 
-
-# save generated model
-# save(rfFit1,file=paste0(WORK.DIR,"/rfFit1.RData"))
+# if last score recorded is better than previous ones save model object
+last.idx <- length(modPerf.df$score)
+if (last.idx == 1 ||
+        modPerf.df$score[last.idx] < min(modPerf.df$score[1:(last.idx-1)])) {
+    cat("found improved model, saving...\n")
+    flush.console()
+    #yes we have improvement or first score, save generated model
+    file.name <- paste0("/rfFit1_",modPerf.df$date.time[last.idx],".RData")
+    file.name <- gsub(" ","_",file.name)
+    file.name <- gsub(":","_",file.name)
+    
+    save(rfFit1,file=paste0(WORK.DIR,file.name))
+} else {
+    cat("no improvement!!!\n")
+    flush.console()
+}
 
 
 

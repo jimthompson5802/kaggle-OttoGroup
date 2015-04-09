@@ -6,6 +6,7 @@ source("./src/CommonFunctions.R")
 WORK.DIR <- "./src/rf_model"  # change to appropriate directory
 
 # set up for gbm model, sequence of model specific parameters to match bestTune data
-modPerf.df <- createModelPerfDF(mtry=integer(0))
+modPerf.df <- createModelPerfDF(mtry=integer(0),   #bestTune
+                                ntree=integer(0))   # optional data
 
 save(modPerf.df,file=paste0(WORK.DIR,"/modPerf.RData"))
