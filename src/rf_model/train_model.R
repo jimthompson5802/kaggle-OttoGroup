@@ -9,7 +9,7 @@ library(randomForest)
 source("./src/CommonFunctions.R")
 WORK.DIR <- "./src/rf_model"
 MODEL.METHOD <- "rf"
-RF.NTREE <- 500   #custom parameter for randomForest
+RF.NTREE <- 1000   #custom parameter for randomForest
 
 # load model performance data
 load(paste0(WORK.DIR,"/modPerf.RData"))
@@ -28,8 +28,10 @@ set.seed(29)
 idx <- sample(nrow(train.raw),0.05*nrow(train.raw))
 train.df <- train.raw[idx,]
 
-# eliminate near zero Variance
-train.df <- train.df[,setdiff(names(train.df),c(nz.vars,"id"))]
+# eliminate identifier
+train.df <- train.df[,setdiff(names(train.df),c("id"))]
+
+#set target as factor to build classifcation 
 train.df$target <- factor(train.df$target)
 
 tr.ctrl <- trainControl(
@@ -63,7 +65,7 @@ rfFit1
 
 
 # evaluate on test ste
-test <- test.raw[,setdiff(names(test.raw),c(nz.vars,"id"))]
+test <- test.raw[,setdiff(names(test.raw),c("id"))]
 
 pred.probs <- predict(rfFit1,newdata = test[,1:(ncol(test)-1)],type = "prob")
 
