@@ -25,7 +25,7 @@ registerDoMC(cores = 5)
 
 # extract subset for inital training
 set.seed(29)
-idx <- sample(nrow(train.raw),0.8*nrow(train.raw))
+idx <- sample(nrow(train.raw),1.0*nrow(train.raw))
 train.df <- train.raw[idx,]
 
 # eliminate identifier
