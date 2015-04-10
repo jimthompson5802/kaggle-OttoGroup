@@ -9,7 +9,7 @@ library(randomForest)
 source("./src/CommonFunctions.R")
 WORK.DIR <- "./src/rf_model"
 MODEL.METHOD <- "rf"
-RF.NTREE <- 1000   #custom parameter for randomForest
+RF.NTREE <- 2000   #custom parameter for randomForest
 
 # load model performance data
 load(paste0(WORK.DIR,"/modPerf.RData"))
@@ -25,7 +25,7 @@ registerDoMC(cores = 5)
 
 # extract subset for inital training
 set.seed(29)
-idx <- sample(nrow(train.raw),0.05*nrow(train.raw))
+idx <- sample(nrow(train.raw),0.8*nrow(train.raw))
 train.df <- train.raw[idx,]
 
 # eliminate identifier
@@ -35,16 +35,15 @@ train.df <- train.df[,setdiff(names(train.df),c("id"))]
 train.df$target <- factor(train.df$target)
 
 tr.ctrl <- trainControl(
-    method = "repeatedcv",
+#     method = "repeatedcv",
+    method="none",
     number = 5,
     repeats=1,
     verboseIter = TRUE,
     classProbs=TRUE,
     summaryFunction=caretLogLossSummary)
 
-# tune.grid <-  expand.grid(interaction.depth = c(1, 3, 5),
-#                         n.trees = (1:10)*50,
-#                         shrinkage = 0.1)
+tune.grid <-  expand.grid(mtry=47)
 
 Sys.time()
 set.seed(825)
@@ -58,7 +57,7 @@ time.data <- system.time(rfFit1 <- train(train.df[,1:(ncol(train.df)-1)],
                  ## remaining train options
                  trControl = tr.ctrl,
                  maximize=FALSE,
-#                  tuneGrid=tune.grid,
+                 tuneGrid=tune.grid,
                  metric="LogLoss"))
 time.data
 rfFit1
