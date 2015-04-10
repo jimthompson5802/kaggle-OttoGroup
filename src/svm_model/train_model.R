@@ -1,5 +1,5 @@
 ###
-# training svm model
+# training random forest model
 ###
 
 library(caret)
@@ -8,6 +8,24 @@ library(kernlab)
 # Common Functions and Global variables
 source("./src/CommonFunctions.R")
 WORK.DIR <- "./src/svm_model"
+MODEL.METHOD <- "svmRadial"
+
+tr.ctrl <- trainControl(
+    method = "repeatedcv",
+    number = 5,
+    repeats=1,
+    verboseIter = TRUE,
+    classProbs=TRUE,
+    summaryFunction=caretLogLossSummary,
+    allowParallel=FALSE)
+
+# tune.grid <-  expand.grid(interaction.depth = c(1, 3, 5),
+#                         n.trees = (1:10)*50,
+#                         shrinkage = 0.1)
+
+
+# load model performance data
+load(paste0(WORK.DIR,"/modPerf.RData"))
 
 # get training data
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
@@ -20,33 +38,22 @@ registerDoMC(cores = 5)
 
 # extract subset for inital training
 set.seed(29)
-idx <- sample(nrow(train.raw),0.1*nrow(train.raw))
+idx <- sample(nrow(train.raw),0.2*nrow(train.raw))
 train.df <- train.raw[idx,]
 
 # eliminate near zero Variance
 train.df <- train.df[,setdiff(names(train.df),c(nz.vars,"id"))]
 train.df$target <- factor(train.df$target)
 
-tr.ctrl <- trainControl(
-    method = "repeatedcv",
-    number = 5,
-    repeats=1,
-    verboseIter = TRUE,
-    classProbs=TRUE,
-    summaryFunction=caretLogLossSummary)
-
-# tune.grid <-  expand.grid(interaction.depth = c(1, 3, 5, 7, 9),
-#                         n.trees = (1:10)*50,
-#                         shrinkage = 0.1)
 
 Sys.time()
 set.seed(825)
 time.data <- system.time(svmFit1 <- train(train.df[,1:(ncol(train.df)-1)],
                  train.df[,ncol(train.df)],
-                 method = "svmRadial",
+                 method = MODEL.METHOD,
+                 preProcess=c("center","scale"),
 
-                 ## This last option is actually one
-                 ## for gbm() that passes through
+                 ## model specific parameters, if any
                  
                  ## remaining train options
                  trControl = tr.ctrl,
@@ -65,8 +72,31 @@ pred.probs <- predict(svmFit1,newdata = test[,1:(ncol(test)-1)],type = "prob")
 score <- logLossEval(pred.probs,test$target)
 score
 
-# save generated model
-# save(svmFit1,file=paste0(WORK.DIR,"/svmFit1.RData"))
+# record Model performance
+modPerf.df <- recordModelPerf(modPerf.df,MODEL.METHOD,time.data,
+                              train.df[,1:(ncol(train.df)-1)],
+                              score,svmFit1$bestTune)
+save(modPerf.df,file=paste0(WORK.DIR,"/modPerf.RData"))
+
+#display model performance record for this run
+modPerf.df[nrow(modPerf.df),1:(ncol(modPerf.df)-1)]
+
+# if last score recorded is better than previous ones save model object
+last.idx <- length(modPerf.df$score)
+if (last.idx == 1 ||
+        modPerf.df$score[last.idx] < min(modPerf.df$score[1:(last.idx-1)])) {
+    cat("found improved model, saving...\n")
+    flush.console()
+    #yes we have improvement or first score, save generated model
+    file.name <- paste0("/svmFit1_",modPerf.df$date.time[last.idx],".RData")
+    file.name <- gsub(" ","_",file.name)
+    file.name <- gsub(":","_",file.name)
+    
+    save(svmFit1,file=paste0(WORK.DIR,file.name))
+} else {
+    cat("no improvement!!!\n")
+    flush.console()
+}
 
 
 
