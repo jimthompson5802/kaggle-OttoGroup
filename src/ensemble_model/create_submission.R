@@ -51,7 +51,7 @@ id <- new.df$id
 new.df <- new.df[,setdiff(names(new.df),c("id"))]
 
 # retrive rf model
-load("./src/rf_model/rfFit1_2015-04-09_21_25_47.RData")
+load("./src/rf_model/rfFit1_2015-04-09_23_06_33.RData")
 
 # predict class probabilities
 rf.probs <- predict(rfFit1,newdata = new.df,type = "prob")
