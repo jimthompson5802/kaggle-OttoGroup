@@ -12,6 +12,9 @@ library(randomForest)
 source("./src/CommonFunctions.R")
 WORK.DIR <- "./src/ensemble_model"
 
+# load optimal weighting factors
+load(paste0(WORK.DIR,"/ensembleWeights_2015-04-11_17_29_18.RData"))
+
 # get near zero Vars to eliminate
 load(paste0(DATA.DIR,"/near_zero_vars.RData"))
 
@@ -63,7 +66,8 @@ rf.probs <- data.frame(id,rf.probs)
 # Average the individual probablities
 #
 
-pred.probs <- (rf.probs[,2:10] + gbm.probs[,2:10])/2
+pred.probs <- (ensemble.weights[1]*rf.probs[,2:10]) + 
+    (ensemble.weights[2]*gbm.probs[,2:10])
 
 
 #create kaggle submission file
