@@ -66,8 +66,8 @@ rf.probs <- data.frame(id,rf.probs)
 # Average the individual probablities
 #
 
-pred.probs <- (ensemble.weights[1]*rf.probs[,2:10]) + 
-    (ensemble.weights[2]*gbm.probs[,2:10])
+pred.probs <- (ensemble.weights[1]*gbm.probs[,2:10]) + 
+    (ensemble.weights[2]*rf.probs[,2:10])
 
 
 #create kaggle submission file
