@@ -74,11 +74,13 @@ rf.probs <- data.frame(id,rf.probs)
 # Average the individual probablities
 #
 
-pred.probs <- (rf.probs[,2:10] + gbm.probs[,2:10])/2
+wt <- 0.5
 
-ensemble.weights <- c(0.5, 0.5)
+pred.probs <- (rf.probs[,2:10]*(1-wt) )+ (gbm.probs[,2:10]*wt)
 
-model.weights <- paste(c("gbm.wt","rf.wt"),ensemble.weights,sep="=",collapse=",")
+ensemble.weights <- c(wt,1-wt)
+
+model.weights <- paste(c("gbmFit1_2015-04-07_21_12_42.RData","rfFit1_2015-04-09_23_06_33.RData"),ensemble.weights,sep="=",collapse=",")
 bestTune <- data.frame(model.weights, stringsAsFactors=FALSE)
 
 #
