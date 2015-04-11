@@ -84,22 +84,15 @@ ensFunc <- makeEnsembleFunction(calib.raw$target,gbm.probs[,2:10],rf.probs[2:10]
 
 wt <- 0.5
 
-# pred.probs <- (rf.probs[,2:10]*(1-wt) )+ (gbm.probs[,2:10]*wt)
+opt.wts <- optim(0.5,ensFunc,method="L-BFGS-B",lower=0,upper=1)
 
-
-
-#
-# calculate model performance
-#
-# score <- logLossEval(pred.probs,calib.raw$target)
-score <- ensFunc(wt)
-score
+score <- opt.wts$value
 
 #
 # record Model performance
 #
 
-ensemble.weights <- c(wt,1-wt)
+ensemble.weights <- c(opt.wts$par,1-opt.wts)
 
 model.weights <- paste(c("gbmFit1_2015-04-07_21_12_42.RData","rfFit1_2015-04-09_23_06_33.RData"),ensemble.weights,sep="=",collapse=",")
 bestTune <- data.frame(model.weights, stringsAsFactors=FALSE)
