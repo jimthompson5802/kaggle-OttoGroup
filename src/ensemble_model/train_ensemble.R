@@ -71,27 +71,38 @@ rf.probs <- predict(rfFit1,newdata = new.df,type = "prob")
 rf.probs <- data.frame(id,rf.probs)
 
 #
-# Average the individual probablities
+# determine optimal weighting factor for combining model estimates
 #
+makeEnsembleFunction <- function(target,gbm.probs, rf.probs) {
+    function(w) {
+        pred.probs <- w*gbm.probs + (1-w)*rf.probs
+        logLossEval(pred.probs,target)
+    }
+}
+
+ensFunc <- makeEnsembleFunction(calib.raw$target,gbm.probs[,2:10],rf.probs[2:10])
 
 wt <- 0.5
 
-pred.probs <- (rf.probs[,2:10]*(1-wt) )+ (gbm.probs[,2:10]*wt)
+# pred.probs <- (rf.probs[,2:10]*(1-wt) )+ (gbm.probs[,2:10]*wt)
 
-ensemble.weights <- c(wt,1-wt)
 
-model.weights <- paste(c("gbmFit1_2015-04-07_21_12_42.RData","rfFit1_2015-04-09_23_06_33.RData"),ensemble.weights,sep="=",collapse=",")
-bestTune <- data.frame(model.weights, stringsAsFactors=FALSE)
 
 #
 # calculate model performance
 #
-score <- logLossEval(pred.probs,calib.raw$target)
+# score <- logLossEval(pred.probs,calib.raw$target)
+score <- ensFunc(wt)
 score
 
 #
 # record Model performance
 #
+
+ensemble.weights <- c(wt,1-wt)
+
+model.weights <- paste(c("gbmFit1_2015-04-07_21_12_42.RData","rfFit1_2015-04-09_23_06_33.RData"),ensemble.weights,sep="=",collapse=",")
+bestTune <- data.frame(model.weights, stringsAsFactors=FALSE)
 
 # set up dummy data structures to account for recrodModelPerf() function
 time.data <- system.time(dummy.df <- data.frame())
