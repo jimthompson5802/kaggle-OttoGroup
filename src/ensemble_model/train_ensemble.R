@@ -92,7 +92,7 @@ score <- opt.wts$value
 # record Model performance
 #
 
-ensemble.weights <- c(opt.wts$par,1-opt.wts)
+ensemble.weights <- c(opt.wts$par,1-opt.wts$par)
 
 model.weights <- paste(c("gbmFit1_2015-04-07_21_12_42.RData","rfFit1_2015-04-09_23_06_33.RData"),ensemble.weights,sep="=",collapse=",")
 bestTune <- data.frame(model.weights, stringsAsFactors=FALSE)
