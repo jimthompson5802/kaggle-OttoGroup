@@ -21,10 +21,13 @@ load(paste0(DATA.DIR,"/near_zero_vars.RData"))
 
 # library(doMC)
 # registerDoMC(cores = 2)
+library(doSNOW)
+cl <- makeCluster(5,type="SOCK")
+registerDoSNOW(cl)
 
 # extract subset for inital training
 set.seed(29)
-idx <- sample(nrow(train.raw),0.05*nrow(train.raw))
+idx <- sample(nrow(train.raw),0.1*nrow(train.raw))
 train.df <- train.raw[idx,]
 
 # eliminate near zero Variance
@@ -37,13 +40,15 @@ tr.ctrl <- trainControl(
     repeats=1,
     verboseIter = TRUE,
     classProbs=TRUE,
-#     allowParallel=FALSE,
     summaryFunction=caretLogLossSummary)
 
-tune.grid <-  expand.grid(coeflearn="Breiman",
+TUNE.LENGTH <- NULL
+# TUNE.GRID <- NULL
+TUNE.GRID <-  expand.grid(coeflearn="Zhu",
                         maxdepth=c(1,5,9),
                         mfinal=(1:10)*30)
 
+clusterExport(cl,list("logLossEval"))
 Sys.time()
 set.seed(825)
 time.data <- system.time(adaFit1 <- train(target~.,data=train.df,
@@ -55,11 +60,13 @@ time.data <- system.time(adaFit1 <- train(target~.,data=train.df,
                  ## remaining train options
                  trControl = tr.ctrl,
                  maximize=FALSE,
-                 tuneGrid=tune.grid,
+                 tuneGrid=TUNE.GRID,
+                 tuneLength=TUNE.LENGTH,
                  metric="LogLoss"))
 time.data
 adaFit1
 
+stopCluster(cl)
 
 # evaluate on test ste
 test <- test.raw[,setdiff(names(test.raw),c("id"))]
