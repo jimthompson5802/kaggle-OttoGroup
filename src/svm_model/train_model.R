@@ -8,7 +8,7 @@ library(kernlab)
 # Common Functions and Global variables
 source("./src/CommonFunctions.R")
 WORK.DIR <- "./src/svm_model"
-MODEL.METHOD <- "svmRadial"
+MODEL.METHOD <- "svmLinear"
 
 tr.ctrl <- trainControl(
     method = "repeatedcv",
@@ -75,7 +75,7 @@ score
 # record Model performance
 modPerf.df <- recordModelPerf(modPerf.df,MODEL.METHOD,time.data,
                               train.df[,1:(ncol(train.df)-1)],
-                              score,svmFit1$bestTune)
+                              score,data.frame(sigma=NA,svmFit1$bestTune))
 save(modPerf.df,file=paste0(WORK.DIR,"/modPerf.RData"))
 
 #display model performance record for this run
