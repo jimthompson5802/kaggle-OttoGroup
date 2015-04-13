@@ -16,12 +16,10 @@ tr.ctrl <- trainControl(
     repeats=1,
     verboseIter = TRUE,
     classProbs=TRUE,
-    summaryFunction=caretLogLossSummary,
-    allowParallel=FALSE)
+    summaryFunction=caretLogLossSummary)
 
-# tune.grid <-  expand.grid(interaction.depth = c(1, 3, 5),
-#                         n.trees = (1:10)*50,
-#                         shrinkage = 0.1)
+# TUNE.GRID <- NULL
+TUNE.GRID <-  expand.grid(C=c(1e-3,1e-2,1e-1,1,2,4,8))
 
 
 # load model performance data
@@ -33,19 +31,22 @@ load(paste0(DATA.DIR,"/train_calib_test.RData"))
 # get near zero Vars to eliminate
 load(paste0(DATA.DIR,"/near_zero_vars.RData"))
 
-library(doMC)
-registerDoMC(cores = 5)
+# library(doMC)
+# registerDoMC(cores = 5)
+library(doSNOW)
+cl <- makeCluster(5,type="SOCK")
+registerDoSNOW(cl)
 
 # extract subset for inital training
 set.seed(29)
-idx <- sample(nrow(train.raw),0.2*nrow(train.raw))
+idx <- sample(nrow(train.raw),0.6*nrow(train.raw))
 train.df <- train.raw[idx,]
 
 # eliminate near zero Variance
 train.df <- train.df[,setdiff(names(train.df),c(nz.vars,"id"))]
 train.df$target <- factor(train.df$target)
 
-
+clusterExport(cl,list("logLossEval"))
 Sys.time()
 set.seed(825)
 time.data <- system.time(svmFit1 <- train(train.df[,1:(ncol(train.df)-1)],
@@ -58,11 +59,12 @@ time.data <- system.time(svmFit1 <- train(train.df[,1:(ncol(train.df)-1)],
                  ## remaining train options
                  trControl = tr.ctrl,
                  maximize=FALSE,
-#                  tuneGrid=tune.grid,
+                 tuneGrid=TUNE.GRID,
                  metric="LogLoss"))
 time.data
 svmFit1
 
+stopCluster(cl)
 
 # evaluate on test ste
 test <- test.raw[,setdiff(names(test.raw),c(nz.vars,"id"))]
