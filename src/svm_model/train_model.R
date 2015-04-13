@@ -1,5 +1,5 @@
 ###
-# training random forest model
+# training svm model
 ###
 
 library(caret)
@@ -55,6 +55,7 @@ time.data <- system.time(svmFit1 <- train(train.df[,1:(ncol(train.df)-1)],
                  preProcess=c("center","scale"),
 
                  ## model specific parameters, if any
+                 tol=1e-4,
                  
                  ## remaining train options
                  trControl = tr.ctrl,
