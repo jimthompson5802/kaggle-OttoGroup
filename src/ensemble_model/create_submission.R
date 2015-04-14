@@ -6,7 +6,7 @@
 library(caret)
 library(gbm)
 library(randomForest)
-
+library(kernlab)
 
 # import global variabels and common functions
 source("./src/CommonFunctions.R")
@@ -63,11 +63,34 @@ rf.probs <- predict(rfFit1,newdata = new.df,type = "prob")
 rf.probs <- data.frame(id,rf.probs)
 
 #
+# make svm prediction
+#
+
+# read kaggle submission data
+new.df <- read.csv(unz(paste0(DATA.DIR,"/test.csv.zip"),"test.csv"),stringsAsFactors=FALSE)
+
+#save id vector
+id <- new.df$id
+
+# prep the data for submission
+new.df <- new.df[,setdiff(names(new.df),c(nz.vars,"id"))]
+
+# retrive svm model
+load("./src/svm_model/svmFit1_2015-04-12_20_19_00.RData")
+
+# predict class probabilities
+svm.probs <- predict(svmFit1,newdata = new.df,type = "prob")
+
+# recombine with id
+svm.probs <- data.frame(id,svm.probs)
+
+#
 # Average the individual probablities
 #
 
-pred.probs <- (ensemble.weights[1]*gbm.probs[,2:10]) + 
-    (ensemble.weights[2]*rf.probs[,2:10])
+pred.probs <- ((1/3)*gbm.probs[,2:10]) + 
+    ((1/3)*rf.probs[,2:10]) +
+    ((1/3)*svm.probs[,2:10])
 
 
 #create kaggle submission file
