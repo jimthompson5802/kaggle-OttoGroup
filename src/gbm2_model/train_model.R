@@ -83,14 +83,14 @@ comment(gbm.mdls) <- MODEL.COMMENT
 
 
 # evaluate on test ste
-test <- test.raw[,setdiff(names(test.raw),c("id"))]
+test <- test.raw[,setdiff(names(test.raw),c("id","target"))]
 
 ll <- lapply(classes,predictForOneClass,gbm.mdls,test)
 names(ll) <- classes
 
 pred.probs <- do.call(cbind,ll)
 
-score <- logLossEval(pred.probs,test$target)
+score <- logLossEval(pred.probs,test.raw$target)
 score
 
 # record Model performance
