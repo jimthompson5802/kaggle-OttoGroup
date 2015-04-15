@@ -71,7 +71,6 @@ recordModelPerf <- function(df,model=NULL,time.data=NULL,train.df=NULL,score=NA,
     # bestTune is data frame for optimal model hyper-paramters
     # 
    
-    # no optional data to capture
     new.row <- data.frame(date.time=as.character(Sys.time()),
                           model=model,
                           user.cpu.time=summary(time.data)["user"],
