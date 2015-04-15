@@ -10,6 +10,21 @@ source("./src/CommonFunctions.R")
 WORK.DIR <- "./src/gbm2_model"
 MODEL.METHOD <- "gbm"
 MODEL.COMMENT <- "Collection of gbm one vs all classification models."
+FRACTION.TRAIN.DATA <- 0.6
+
+TRAIN.CTRL<- trainControl(
+    method = "repeatedcv",
+    number = 5,
+    repeats=1,
+    verboseIter = TRUE,
+    classProbs=TRUE,
+    summaryFunction=twoClassSummary)
+
+# TUNE.GRID <- NULL
+TUNE.GRID <-  expand.grid(interaction.depth = c(3, 5, 7, 9),
+                        n.trees = c(100,200,300,400,500),
+                        shrinkage = 0.1)  # avoid numerical issue in gbm
+
 
 # load model performance data
 # load(paste0(WORK.DIR,"/modPerf.RData"))
@@ -25,14 +40,12 @@ registerDoMC(cores = 5)
 
 # extract subset for inital training
 set.seed(29)
-idx <- sample(nrow(train.raw),0.2*nrow(train.raw))
+idx <- sample(nrow(train.raw),FRACTION.TRAIN.DATA*nrow(train.raw))
 train.df <- train.raw[idx,]
 
-
-trainForOneClass <- function(this.class,train.df) {
+trainForOneClass <- function(this.class,train.data,response) {
     
-    train.data <- subset(train.df,select=-target)
-    response <- factor(ifelse(train.df$target == this.class,this.class,
+    response <- factor(ifelse(response == this.class,this.class,
                               paste0("Not_",this.class)))
     
     gbmFit <- train(train.data,
@@ -56,34 +69,21 @@ predictForOneClass <- function(this.class,mdls,new.data) {
 }
 
 # eliminate near zero Variance
-train.df <- train.df[,setdiff(names(train.df),c(nz.vars,"id"))]
+train.data <- train.df[,setdiff(names(train.df),c("id","target"))]
 
-
-TRAIN.CTRL<- trainControl(
-    method = "repeatedcv",
-    number = 5,
-    repeats=1,
-    verboseIter = TRUE,
-    classProbs=TRUE,
-    summaryFunction=twoClassSummary)
-
-TUNE.GRID <- NULL
-# TUNE.GRID <-  expand.grid(interaction.depth = c(3, 5, 7, 9),
-#                         n.trees = c(1000, 2000, 3000),
-#                         shrinkage = 0.01)  # avoid numerical issue in gbm
-
+# generate list of classes to model
 classes <- paste("Class_",1:9,sep="")
 
 Sys.time()
 set.seed(825)
-time.data <- system.time(gbm.mdls<-lapply(classes,trainForOneClass,train.df))
+time.data <- system.time(gbm.mdls<-lapply(classes,trainForOneClass,train.data,train.df$target))
 time.data
 names(gbm.mdls) <- classes
 comment(gbm.mdls) <- MODEL.COMMENT
 
 
 # evaluate on test ste
-test <- test.raw[,setdiff(names(test.raw),c(nz.vars,"id"))]
+test <- test.raw[,setdiff(names(test.raw),c("id"))]
 
 ll <- lapply(classes,predictForOneClass,gbm.mdls,test)
 names(ll) <- classes
@@ -94,9 +94,12 @@ score <- logLossEval(pred.probs,test$target)
 score
 
 # record Model performance
+ll <- llply(gbm.mdls,function(x){print(x$bestTune)})
+bestTune <- do.call(cbind,ll)
+
 modPerf.df <- recordModelPerf(modPerf.df,MODEL.METHOD,time.data,
                               train.df[,1:(ncol(train.df)-1)],
-                              score,gbmFit1$bestTune)
+                              score,bestTune)
 save(modPerf.df,file=paste0(WORK.DIR,"/modPerf.RData"))
 
 #display model performance record for this run
@@ -109,11 +112,11 @@ if (last.idx == 1 ||
     cat("found improved model, saving...\n")
     flush.console()
     #yes we have improvement or first score, save generated model
-    file.name <- paste0("/gbmFit1_",modPerf.df$date.time[last.idx],".RData")
+    file.name <- paste0("/gbm.mdls_",modPerf.df$date.time[last.idx],".RData")
     file.name <- gsub(" ","_",file.name)
     file.name <- gsub(":","_",file.name)
     
-    save(gbmFit1,file=paste0(WORK.DIR,file.name))
+    save(gbm.mdls,file=paste0(WORK.DIR,file.name))
 } else {
     cat("no improvement!!!\n")
     flush.console()
