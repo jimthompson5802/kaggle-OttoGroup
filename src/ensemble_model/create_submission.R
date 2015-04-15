@@ -63,8 +63,13 @@ rf.probs <- predict(rfFit1,newdata = new.df,type = "prob")
 rf.probs <- data.frame(id,rf.probs)
 
 #
-# make svm prediction
+# make one vs all using gbm predictions
 #
+
+predictForOneClass <- function(this.class,mdls,new.data) {
+    pred.probs <- predict(mdls[[this.class]],newdata = new.data,type = "prob")
+    return(pred.probs[,1])
+}
 
 # read kaggle submission data
 new.df <- read.csv(unz(paste0(DATA.DIR,"/test.csv.zip"),"test.csv"),stringsAsFactors=FALSE)
@@ -73,24 +78,27 @@ new.df <- read.csv(unz(paste0(DATA.DIR,"/test.csv.zip"),"test.csv"),stringsAsFac
 id <- new.df$id
 
 # prep the data for submission
-new.df <- new.df[,setdiff(names(new.df),c(nz.vars,"id"))]
+new.df <- new.df[,setdiff(names(new.df),c("id"))]
 
-# retrive svm model
-load("./src/svm_model/svmFit1_2015-04-12_20_19_00.RData")
+# retrive one versus all gbm model
+load(paste0("./src/gbm2_model/gbm.mdls_2015-04-14_22_32_15.RData"))
 
 # predict class probabilities
-svm.probs <- predict(svmFit1,newdata = new.df,type = "prob")
+classes <- paste("Class_",1:9,sep="")  # generate list of classes to model
+ll <- lapply(classes,predictForOneClass,gbm.mdls,new.df)
+names(ll) <- classes
 
-# recombine with id
-svm.probs <- data.frame(id,svm.probs)
+gbm2.probs <- do.call(cbind,ll)
+
+gbm2.probs <- data.frame(id,gbm2.probs)
 
 #
 # Average the individual probablities
 #
 
-pred.probs <- ((1/3)*gbm.probs[,2:10]) + 
-    ((1/3)*rf.probs[,2:10]) +
-    ((1/3)*svm.probs[,2:10])
+pred.probs <- ((0)*gbm.probs[,2:10]) + 
+    ((1/2)*rf.probs[,2:10]) +
+    ((1/2)*gbm2.probs[,2:10])
 
 
 #create kaggle submission file
