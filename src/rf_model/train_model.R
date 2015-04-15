@@ -9,7 +9,8 @@ library(randomForest)
 source("./src/CommonFunctions.R")
 WORK.DIR <- "./src/rf_model"
 MODEL.METHOD <- "rf"
-RF.NTREE <- 2000   #custom parameter for randomForest
+RF.NTREE <- 3000   #custom parameter for randomForest
+FRACTION.TRAINING.DATA <- 1.0
 
 # load model performance data
 load(paste0(WORK.DIR,"/modPerf.RData"))
@@ -25,7 +26,7 @@ registerDoMC(cores = 5)
 
 # extract subset for inital training
 set.seed(29)
-idx <- sample(nrow(train.raw),1.0*nrow(train.raw))
+idx <- sample(nrow(train.raw),FRACTION.TRAINING.DATA*nrow(train.raw))
 train.df <- train.raw[idx,]
 
 # eliminate identifier
