@@ -3,14 +3,13 @@
 ###
 
 library(caret)
+library(randomForest)
 
+WORK.DIR <- "./src/gbm2_model"
 
 # import global variabels and common functions
 source("./src/CommonFunctions.R")
-WORK.DIR <- "./src/gbm2_model"
-
-# get near zero Vars to eliminate
-load(paste0(DATA.DIR,"/near_zero_vars.RData"))
+source(paste0(WORK.DIR,"/ModelCommonFunctions.R"))
 
 # read kaggle submission data
 new.df <- read.csv(unz(paste0(DATA.DIR,"/test.csv.zip"),"test.csv"),stringsAsFactors=FALSE)
@@ -19,14 +18,14 @@ new.df <- read.csv(unz(paste0(DATA.DIR,"/test.csv.zip"),"test.csv"),stringsAsFac
 id <- new.df$id
 
 # prep the data for submission
-new.df <- new.df[,setdiff(names(new.df),c("id"))]
+submission <- prepModelData(new.df,only.predictors=TRUE)
 
 # retrive one versus all gbm model
 load(paste0(WORK.DIR,"/gbm.mdls_2015-04-14_22_32_15.RData"))
 
 # predict class probabilities
-ll <- lapply(classes,predictForOneClass,gbm.mdls,new.df)
-names(ll) <- classes
+ll <- lapply(PRODUCT.CLASSES,predictForOneClass,gbm.mdls,submission$predictors)
+names(ll) <- PRODUCT.CLASSES
 
 pred.probs <- do.call(cbind,ll)
 
