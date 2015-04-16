@@ -53,51 +53,49 @@ createModelPerfDF <- function(...) {
                 num.observations=numeric(0), # number of observations used in training
                 num.features=numeric(0),  # number of featurs used in training
                 score=numeric(0),  # performance score using hold-out test set
-                ...,  # model specific hyper-paramters
+                improved=character(0), # indicator if score is an improvement
+                bestTune=character(0), # optimal hyper-parameters
+                tune.grid=character(0), # hyper-parameter tuning grid specified
+                model.parms=character(0), # model specific parameters
+                comment=character(0), # general comments
                 features=character(0),  # features used in training
                 stringsAsFactors=FALSE)
     return(df)
 }
 
 # function to record model performance
-recordModelPerf <- function(df,model,time.data,train.df,score,bestTune,...) {
+recordModelPerf <- function(df,model=NULL,time.data=NULL,train.df=NULL,score=NA,
+                            improved="No", bestTune="", tune.grid="",
+                            model.parms="", comment="") {
     # time.data is a proc_time object from system.time() function call
     # bestTune is data frame for optimal model hyper-paramters
-    # ... optional other model data to capture
-    
-    # determine if we have any optional data to capture
-    dots <- list(...)
-    if (length(dots) > 0) {
-        # package other data to record
-        dots <- list(...)
-        other.data <- data.frame(do.call(cbind,dots), stringsAsFactors=FALSE)
-        new.row <- data.frame(date.time=as.character(Sys.time()),
-                              model=model,
-                              user.cpu.time=summary(time.data)["user"],
-                              sys.cpu.time=summary(time.data)["system"],
-                              elapsed.time=summary(time.data)["elapsed"],
-                              num.observations=nrow(train.df),
-                              num.features=ncol(train.df),
-                              score=score,
-                              bestTune,
-                              other.data,
-                              features=paste(names(train.df),collapse=","),
-                              stringsAsFactors=FALSE) 
-    } else {
-        # no optional data to capture
-        new.row <- data.frame(date.time=as.character(Sys.time()),
-                              model=model,
-                              user.cpu.time=summary(time.data)["user"],
-                              sys.cpu.time=summary(time.data)["system"],
-                              elapsed.time=summary(time.data)["elapsed"],
-                              num.observations=nrow(train.df),
-                              num.features=ncol(train.df),
-                              score=score,
-                              bestTune,
-                              features=paste(names(train.df),collapse=","),
-                              stringsAsFactors=FALSE) 
-    }
+    # 
+   
+    new.row <- data.frame(date.time=as.character(Sys.time()),
+                          model=model,
+                          user.cpu.time=summary(time.data)["user"],
+                          sys.cpu.time=summary(time.data)["system"],
+                          elapsed.time=summary(time.data)["elapsed"],
+                          num.observations=nrow(train.df),
+                          num.features=ncol(train.df),
+                          score=score,
+                          improved=improved,
+                          bestTune=bestTune,
+                          tune.grid=tune.grid,
+                          model.parms=model.parms,
+                          comment=comment,
+                          features=paste(names(train.df),collapse=","),
+                          stringsAsFactors=FALSE) 
     
     
     return(rbind(df,new.row))
+}
+
+#function to flatten one or more rows of data.frame into a string representation
+flattenDF <- function(df) {
+    #convert data frame to list
+    x <- as.list(df)
+    
+    # convert named list to a string
+    return(paste(names(x),as.character(x),sep="=",collapse=","))
 }
