@@ -66,7 +66,7 @@ createModelPerfDF <- function(...) {
 # function to record model performance
 recordModelPerf <- function(df,model=NULL,time.data=NULL,train.df=NULL,score=NA,
                             improved="No", bestTune="", tune.grid="",
-                            model.parms="", comment="", features="") {
+                            model.parms="", comment="") {
     # time.data is a proc_time object from system.time() function call
     # bestTune is data frame for optimal model hyper-paramters
     # 
@@ -89,4 +89,13 @@ recordModelPerf <- function(df,model=NULL,time.data=NULL,train.df=NULL,score=NA,
     
     
     return(rbind(df,new.row))
+}
+
+#function to flatten one or more rows of data.frame into a string representation
+flattenDF <- function(df) {
+    #convert data frame to list
+    x <- as.list(df)
+    
+    # convert named list to a string
+    return(paste(names(x),as.character(x),sep="=",collapse=","))
 }
