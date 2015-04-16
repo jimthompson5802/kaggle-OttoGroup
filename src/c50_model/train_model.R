@@ -15,7 +15,9 @@ source(paste0(WORK.DIR,"/ModelCommonFunctions.R"))
 # set caret training parameters
 CARET.TRAIN.PARMS <- list(method="C5.0")
 
-CARET.TUNE.GRID <-  NULL #expand.grid(C=c(0.1,0.01))
+CARET.TUNE.GRID <-  expand.grid(trials=c(100),
+                                model=c("tree","rule"),
+                                winnow=c(TRUE,FALSE))
 
 CARET.TRAIN.CTRL <- trainControl(method="repeatedcv",
                                  number=5,
@@ -27,6 +29,7 @@ CARET.TRAIN.CTRL <- trainControl(method="repeatedcv",
 CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
                             maximize=FALSE,
                            tuneGrid=CARET.TUNE.GRID,
+                           tuneLength=5,
                            metric="LogLoss")
 
 MODEL.SPECIFIC.PARMS <- NULL #list(ntree=3000)
@@ -34,7 +37,7 @@ MODEL.SPECIFIC.PARMS <- NULL #list(ntree=3000)
 MODEL.COMMENT <- "Initial test of new model building set"
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 0.05
+FRACTION.TRAIN.DATA <- 0.2
 
 
 
