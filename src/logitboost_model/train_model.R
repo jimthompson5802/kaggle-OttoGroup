@@ -42,8 +42,6 @@ MODEL.COMMENT <- "Initial test of new model building set"
 # amount of data to train
 FRACTION.TRAIN.DATA <- 0.6
 
-
-
 # load model performance data
 load(paste0(WORK.DIR,"/modelPerf.RData"))
 
