@@ -4,7 +4,6 @@
 
 library(caret)
 # add any model specific package library commands
-library(caTools)
 
 # set working directory
 WORK.DIR <- "./src/logitboost_model"  # modify to specify directory to contain model artififacts
@@ -14,12 +13,12 @@ source("./src/CommonFunctions.R")
 source(paste0(WORK.DIR,"/ModelCommonFunctions.R"))
 
 # set caret training parameters
-CARET.TRAIN.PARMS <- list(method="LogitBoost")   # Replace MODEL.METHOD with appropriate caret model
+CARET.TRAIN.PARMS <- list(method=“MODEL.METHOD”)   # Replace MODEL.METHOD with appropriate caret model
 
-# CARET.TUNE.GRID <-  NULL  # NULL provides model specific default tuning parameters
+CARET.TUNE.GRID <-  NULL  # NULL provides model specific default tuning parameters
 
 # user specified tuning parameters
-CARET.TUNE.GRID <- expand.grid(nIter=c(100))
+#CARET.TUNE.GRID <- expand.grid(nIter=c(100))
 
 # model specific training parameter
 CARET.TRAIN.CTRL <- trainControl(method="none",
@@ -37,7 +36,7 @@ CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
 
 MODEL.SPECIFIC.PARMS <- NULL # Other model specific parameters
 
-MODEL.COMMENT <- "Initial test of new model building set"
+MODEL.COMMENT <- ""
 
 # amount of data to train
 FRACTION.TRAIN.DATA <- 0.3
