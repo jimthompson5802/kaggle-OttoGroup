@@ -29,13 +29,14 @@ id <- new.df$id
 #
 
 # prep the data for submission
-new.df <- new.df[,setdiff(names(new.df),c(nz.vars,"id"))]
+source("./src/gbm_model/ModelCommonFunctions.R")
+new.df <- prepModelData(new.df,only.predictors=TRUE)
 
 # retrive gbm model
 load("./src/gbm_model/gbmFit1_2015-04-07_21_12_42.RData")
 
 # predict class probabilities
-gbm.probs <- predict(gbmFit1,newdata = new.df,type = "prob")
+gbm.probs <- predict(gbmFit1,newdata = new.df$predictors,type = "prob")
 
 # combine with id
 gbm.probs <- data.frame(id,gbm.probs)
@@ -51,13 +52,14 @@ new.df <- read.csv(unz(paste0(DATA.DIR,"/test.csv.zip"),"test.csv"),stringsAsFac
 id <- new.df$id
 
 # prep the data for submission
-new.df <- new.df[,setdiff(names(new.df),c("id"))]
+source("./src/rf_model/ModelCommonFunctions.R")
+new.df <- prepModelData(new.df,only.predictors=TRUE)
 
 # retrive rf model
 load("./src/rf_model/rfFit1_2015-04-09_23_06_33.RData")
 
 # predict class probabilities
-rf.probs <- predict(rfFit1,newdata = new.df,type = "prob")
+rf.probs <- predict(rfFit1,newdata = new.df$predictors,type = "prob")
 
 # recombine with id
 rf.probs <- data.frame(id,rf.probs)
@@ -78,14 +80,15 @@ new.df <- read.csv(unz(paste0(DATA.DIR,"/test.csv.zip"),"test.csv"),stringsAsFac
 id <- new.df$id
 
 # prep the data for submission
-new.df <- new.df[,setdiff(names(new.df),c("id"))]
+source("./src/gbm2_model/ModelCommonFunctions.R")
+new.df <- prepModelData(new.df,only.predictors=TRUE)
 
 # retrive one versus all gbm model
-load(paste0("./src/gbm2_model/gbm.mdls_2015-04-14_22_32_15.RData"))
+load(paste0("./src/gbm2_model/model_gbm_one_vs_all_2015-04-19_12_57_35.RData"))
 
 # predict class probabilities
 classes <- paste("Class_",1:9,sep="")  # generate list of classes to model
-ll <- lapply(classes,predictForOneClass,gbm.mdls,new.df)
+ll <- lapply(classes,predictForOneClass,gbm.mdls,new.df$predictors)
 names(ll) <- classes
 
 gbm2.probs <- do.call(cbind,ll)
