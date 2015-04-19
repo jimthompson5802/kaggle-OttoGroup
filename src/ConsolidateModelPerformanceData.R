@@ -19,3 +19,6 @@ for (dir in model.dirs){
     consolidatedModelPerf.df <- rbind(consolidatedModelPerf.df,df)
 }
 
+write.table(consolidatedModelPerf.df,
+            file="./ConsolidatedModelPerformance.tsv",
+            sep="\t",row.names=FALSE)
