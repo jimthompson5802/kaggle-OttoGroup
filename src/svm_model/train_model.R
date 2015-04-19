@@ -4,16 +4,17 @@
 
 library(caret)
 # add any model specific package library commands
+library(kernlab)
 
 # set working directory
-WORK.DIR <- "./src/logitboost_model"  # modify to specify directory to contain model artififacts
+WORK.DIR <- "./src/svm_model"  # modify to specify directory to contain model artififacts
 
 # Common Functions and Global variables
 source("./src/CommonFunctions.R")
 source(paste0(WORK.DIR,"/ModelCommonFunctions.R"))
 
 # set caret training parameters
-CARET.TRAIN.PARMS <- list(method=“MODEL.METHOD”)   # Replace MODEL.METHOD with appropriate caret model
+CARET.TRAIN.PARMS <- list(method="svmRadial")   # Replace MODEL.METHOD with appropriate caret model
 
 CARET.TUNE.GRID <-  NULL  # NULL provides model specific default tuning parameters
 
@@ -21,7 +22,7 @@ CARET.TUNE.GRID <-  NULL  # NULL provides model specific default tuning paramete
 #CARET.TUNE.GRID <- expand.grid(nIter=c(100))
 
 # model specific training parameter
-CARET.TRAIN.CTRL <- trainControl(method="none",
+CARET.TRAIN.CTRL <- trainControl(method="repeatedcv",
                                  number=5,
                                  repeats=1,
                                  verboseIter=TRUE,
@@ -31,15 +32,15 @@ CARET.TRAIN.CTRL <- trainControl(method="none",
 CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
                             maximize=FALSE,
                            tuneGrid=CARET.TUNE.GRID,
-                           tuneLength=5,
+#                            tuneLength=5,
                            metric="LogLoss")
 
 MODEL.SPECIFIC.PARMS <- NULL # Other model specific parameters
 
-MODEL.COMMENT <- ""
+MODEL.COMMENT <- "svm with factor variables"
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 0.3
+FRACTION.TRAIN.DATA <- 0.1
 
 
 
@@ -47,7 +48,7 @@ FRACTION.TRAIN.DATA <- 0.3
 load(paste0(WORK.DIR,"/modelPerf.RData"))
 
 # get training data
-load(paste0(DATA.DIR,"/train_calib_test.RData"))
+load(paste0(DATA.DIR,"/factors_train_calib_test.RData"))
      
 # extract subset for inital training
 set.seed(29)
@@ -57,13 +58,13 @@ train.df <- train.raw[idx,]
 # prepare data for training
 train.data <- prepModelData(train.df)
 
-library(doMC)
-registerDoMC(cores = 5)
+# library(doMC)
+# registerDoMC(cores = 5)
 
-# library(doSNOW)
-# cl <- makeCluster(5,type="SOCK")
-# registerDoSNOW(cl)
-# clusterExport(cl,list("logLossEval"))
+library(doSNOW)
+cl <- makeCluster(5,type="SOCK")
+registerDoSNOW(cl)
+clusterExport(cl,list("logLossEval"))
 
 # train the model
 Sys.time()
@@ -78,7 +79,7 @@ time.data <- system.time(mdl.fit <- do.call(train,c(list(train.data$predictors,
 time.data
 mdl.fit
 
-# stopCluster(cl)
+stopCluster(cl)
 
 # prepare data for training
 test.data <- prepModelData(test.raw)
