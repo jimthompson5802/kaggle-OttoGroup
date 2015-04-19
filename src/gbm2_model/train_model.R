@@ -39,7 +39,7 @@ MODEL.SPECIFIC.PARMS <- list(verbose=FALSE)
 MODEL.COMMENT <- "Collection of gbm one vs all classification models."
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 0.05
+FRACTION.TRAIN.DATA <- 1.0
 
 
 
@@ -74,7 +74,7 @@ registerDoMC(cores = 5)
 
 # extract subset for inital training
 set.seed(29)
-idx <- sample(nrow(train.raw),FRACTION.TRAIN.DATA*nrow(train.raw))
+idx <- createDataPartition(train.raw$target, p = FRACTION.TRAIN.DATA, list=FALSE)
 train.df <- train.raw[idx,]
 
 # prepare data for modeling
