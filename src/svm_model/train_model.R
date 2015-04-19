@@ -6,14 +6,14 @@ library(caret)
 # add any model specific package library commands
 
 # set working directory
-WORK.DIR <- "./src/skeleton_model"  # modify to specify directory to contain model artififacts
+WORK.DIR <- "./src/logitboost_model"  # modify to specify directory to contain model artififacts
 
 # Common Functions and Global variables
 source("./src/CommonFunctions.R")
 source(paste0(WORK.DIR,"/ModelCommonFunctions.R"))
 
 # set caret training parameters
-CARET.TRAIN.PARMS <- list(method="MODEL.METHOD")   # Replace MODEL.METHOD with appropriate caret model
+CARET.TRAIN.PARMS <- list(method=“MODEL.METHOD”)   # Replace MODEL.METHOD with appropriate caret model
 
 CARET.TUNE.GRID <-  NULL  # NULL provides model specific default tuning parameters
 
@@ -31,6 +31,7 @@ CARET.TRAIN.CTRL <- trainControl(method="none",
 CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
                             maximize=FALSE,
                            tuneGrid=CARET.TUNE.GRID,
+                           tuneLength=5,
                            metric="LogLoss")
 
 MODEL.SPECIFIC.PARMS <- NULL # Other model specific parameters
