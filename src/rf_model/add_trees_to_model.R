@@ -36,7 +36,7 @@ before.score
 print(rfFit1$finalModel)
 
 # add trees to model
-time.data <- system.time(rfFit1$finalModel <- grow(rfFit1$finalModel,TREES.TO.ADD))
+time.data <- system.time(rfFit1$finalModel <- grow(rfFit1$finalModel,how.many=TREES.TO.ADD))
 
 # check score after adding tees
 after.score <- logLossEval(pred.probs,test.data$predictors)
