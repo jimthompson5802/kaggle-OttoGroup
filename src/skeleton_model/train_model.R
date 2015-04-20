@@ -21,7 +21,7 @@ CARET.TUNE.GRID <-  NULL  # NULL provides model specific default tuning paramete
 #CARET.TUNE.GRID <- expand.grid(nIter=c(100))
 
 # model specific training parameter
-CARET.TRAIN.CTRL <- trainControl(method="none",
+CARET.TRAIN.CTRL <- trainControl(method="repeatedcv",
                                  number=5,
                                  repeats=1,
                                  verboseIter=TRUE,
@@ -38,7 +38,7 @@ MODEL.SPECIFIC.PARMS <- NULL # Other model specific parameters
 MODEL.COMMENT <- ""
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 0.3
+FRACTION.TRAIN.DATA <- 0.1
 
 
 
