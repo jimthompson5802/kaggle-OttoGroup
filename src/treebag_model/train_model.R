@@ -1,5 +1,5 @@
 ###
-# training skeleton
+# training bagging model
 ###
 
 library(caret)
@@ -39,7 +39,7 @@ MODEL.SPECIFIC.PARMS <- NULL # Other model specific parameters
 MODEL.COMMENT <- ""
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 0.05
+FRACTION.TRAIN.DATA <- 0.1
 
 
 
