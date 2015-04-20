@@ -15,7 +15,10 @@ source(paste0(WORK.DIR,"/ModelCommonFunctions.R"))
 # set caret training parameters
 CARET.TRAIN.PARMS <- list(method="gbm")
 
-CARET.TUNE.GRID <-  NULL #expand.grid(C=c(0.1,0.01))
+# CARET.TUNE.GRID <-  NULL #expand.grid(C=c(0.1,0.01))
+CARET.TUNE.GRID <- expand.grid(interaction.depth=c(1,3,5),
+                               n.trees=c(100,200,300),
+                               shrinkage=0.1)
 
 CARET.TRAIN.CTRL <- trainControl(method="repeatedcv",
                                  number=5,
@@ -31,7 +34,7 @@ CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
 
 MODEL.SPECIFIC.PARMS <- list(verbose=FALSE)
 
-MODEL.COMMENT <- "Initial test of new model building set"
+MODEL.COMMENT <- "tests with new features, non-zero count and pair-wise difference for top 20 variables"
 
 # amount of data to train
 FRACTION.TRAIN.DATA <- 0.05
