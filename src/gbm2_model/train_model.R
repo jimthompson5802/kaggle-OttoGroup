@@ -36,7 +36,7 @@ CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
 
 MODEL.SPECIFIC.PARMS <- list(verbose=FALSE)
 
-MODEL.COMMENT <- "gbm one vs all with new features, pair-wise differences."
+MODEL.COMMENT <- "gbm one vs all with new features with non-zero count"
 
 # amount of data to train
 FRACTION.TRAIN.DATA <- 0.2
