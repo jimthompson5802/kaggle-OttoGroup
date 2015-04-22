@@ -1,0 +1,15 @@
+.Rproj.user
+.Rhistory
+.RData
+data
+*.pdf
+*.RData
+*.csv
+Plaftorm & Session Info.txt
+PlatformInfo.R
+caret_good_run.txt
+caret_problem.txt
+tree_list.txt
+.DS_Store
+.Rapp.history
+ConsolidatedModelPerformance.tsv
