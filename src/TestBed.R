@@ -21,4 +21,8 @@ df <- createModelPerfDF(n.trees=integer(0), shrinkage=numeric(0),interaction.dep
 df <- recordModelPerf(df,"gbm",time.data,train.df,score,gbmFit1$bestTune)
 
 
+# test of pairwise sum and differences
+features <- names(train.raw)[2:4]
 
+diff <- calcPairwiseDiff(features,train.raw)
+sumdf <- calcPairwiseSum(features,train.raw)

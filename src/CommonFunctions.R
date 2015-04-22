@@ -99,3 +99,46 @@ flattenDF <- function(df) {
     # convert named list to a string
     return(paste(names(x),as.character(x),sep="=",collapse=","))
 }
+
+
+# function to generate new features - pairwise differences for selcted features
+calcPairwiseDiff <- function(selected.features,predictors) {
+    # selected.features:  character vector of features to calculate pairwise difference
+    # predictors: matrix of predictor attributes
+    
+    # generate pairwise combinations of selected features
+    feature.pairs <- combn(selected.features,2)
+    
+    #compute pairwise differences
+    ll <- lapply(1:ncol(feature.pairs), 
+                 function(pair,feature.pairs,predictors) {
+                     predictors[,feature.pairs[1,pair]] - predictors[, feature.pairs[2,pair]]},
+                 feature.pairs,predictors)
+    
+    # generate feature names
+    names(ll) <- apply(feature.pairs,2,function(x){paste("diff",x[1],x[2],sep=".")})
+    
+    # return pairwise differences
+    return(do.call(cbind,ll))
+}
+
+# function to generate new features - pairwise sume for selcted features
+calcPairwiseSum <- function(selected.features,predictors) {
+    # selected.features:  character vector of features to calculate pairwise difference
+    # predictors: matrix of predictor attributes
+    
+    # generate pairwise combinations of selected features
+    feature.pairs <- combn(selected.features,2)
+    
+    #compute pairwise sum
+    ll <- lapply(1:ncol(feature.pairs), 
+                 function(pair,feature.pairs,predictors) {
+                     predictors[,feature.pairs[1,pair]] + predictors[, feature.pairs[2,pair]]},
+                 feature.pairs,predictors)
+    
+    # generate feature names
+    names(ll) <- apply(feature.pairs,2,function(x){paste("sum",x[1],x[2],sep=".")})
+    
+    # return pairwise differences
+    return(do.call(cbind,ll))
+}
