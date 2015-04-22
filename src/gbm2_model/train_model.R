@@ -18,8 +18,8 @@ source(paste0(WORK.DIR,"/ModelCommonFunctions.R"))
 CARET.TRAIN.PARMS <- list(method="gbm")
 
 # CARET.TUNE.GRID <-  NULL #expand.grid(C=c(0.1,0.01))
-CARET.TUNE.GRID <- expand.grid(interaction.depth = c(3, 5, 7, 9),
-                               n.trees = c(100,200,300,400,500),
+CARET.TUNE.GRID <- expand.grid(interaction.depth = c(3, 5, 7, 9, 11),
+                               n.trees = c(100,200,300,400,500,600),
                                shrinkage = 0.1)
 
 CARET.TRAIN.CTRL <- trainControl(method="repeatedcv",
@@ -36,31 +36,10 @@ CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
 
 MODEL.SPECIFIC.PARMS <- list(verbose=FALSE)
 
-MODEL.COMMENT <- "Collection of gbm one vs all classification models."
+MODEL.COMMENT <- "gbm one vs all with new features, pair-wise differences."
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 1.0
-
-
-
-#######################
-
-# MODEL.METHOD <- "gbm"
-# MODEL.COMMENT <- "Collection of gbm one vs all classification models."
-# FRACTION.TRAIN.DATA <- 0.6
-
-# TRAIN.CTRL<- trainControl(
-#     method = "repeatedcv",
-#     number = 5,
-#     repeats=1,
-#     verboseIter = TRUE,
-#     classProbs=TRUE,
-#     summaryFunction=twoClassSummary)
-
-# TUNE.GRID <- NULL
-# TUNE.GRID <-  expand.grid(interaction.depth = c(3, 5, 7, 9),
-#                         n.trees = c(100,200,300,400,500),
-#                         shrinkage = 0.1)  # avoid numerical issue in gbm
+FRACTION.TRAIN.DATA <- 0.2
 
 
 # load model performance data
