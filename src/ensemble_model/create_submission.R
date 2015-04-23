@@ -28,18 +28,18 @@ id <- new.df$id
 # make gbm prediction
 #
 
-# prep the data for submission
-source("./src/gbm_model/ModelCommonFunctions.R")
-new.df <- prepModelData(new.df,only.predictors=TRUE)
-
-# retrive gbm model
-load("./src/gbm_model/gbmFit1_2015-04-07_21_12_42.RData")
-
-# predict class probabilities
-gbm.probs <- predict(gbmFit1,newdata = new.df$predictors,type = "prob")
-
-# combine with id
-gbm.probs <- data.frame(id,gbm.probs)
+# # prep the data for submission
+# source("./src/gbm_model/ModelCommonFunctions.R")
+# new.df <- prepModelData(new.df,only.predictors=TRUE)
+# 
+# # retrive gbm model
+# load("./src/gbm_model/gbmFit1_2015-04-07_21_12_42.RData")
+# 
+# # predict class probabilities
+# gbm.probs <- predict(gbmFit1,newdata = new.df$predictors,type = "prob")
+# 
+# # combine with id
+# gbm.probs <- data.frame(id,gbm.probs)
 
 #
 # make rf prediction
@@ -63,6 +63,30 @@ rf.probs <- predict(rfFit1,newdata = new.df$predictors,type = "prob")
 
 # recombine with id
 rf.probs <- data.frame(id,rf.probs)
+
+#
+# make rf prediction with expanded feature set
+#
+
+# read kaggle submission data
+new.df <- read.csv(unz(paste0(DATA.DIR,"/test.csv.zip"),"test.csv"),stringsAsFactors=FALSE)
+
+#save id vector
+id <- new.df$id
+
+# prep the data for submission
+source("./src/rf2_model/ModelCommonFunctions.R")
+new.df <- prepModelData(new.df,only.predictors=TRUE)
+
+# retrive rf model with expanded features
+load("./src/rf2_model/model_rf_2015-04-22_21_32_43.RData")
+
+# predict class probabilities
+rf2.probs <- predict(mdl.fit,newdata = new.df$predictors,type = "prob")
+
+# recombine with id
+rf2.probs <- data.frame(id,rf2.probs)
+
 
 #
 # make one vs all using gbm predictions
@@ -99,9 +123,9 @@ gbm2.probs <- data.frame(id,gbm2.probs)
 # Average the individual probablities
 #
 
-pred.probs <- ((0)*gbm.probs[,2:10]) + 
-    ((1/2)*rf.probs[,2:10]) +
-    ((1/2)*gbm2.probs[,2:10])
+pred.probs <- ((1/3)*rf2.probs[,2:10]) + 
+    ((1/3)*rf.probs[,2:10]) +
+    ((1/3)*gbm2.probs[,2:10])
 
 
 #create kaggle submission file
