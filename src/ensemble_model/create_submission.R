@@ -123,9 +123,9 @@ gbm2.probs <- data.frame(id,gbm2.probs)
 # Average the individual probablities
 #
 
-pred.probs <- ((1/3)*rf2.probs[,2:10]) + 
-    ((1/3)*rf.probs[,2:10]) +
-    ((1/3)*gbm2.probs[,2:10])
+pred.probs <- ((1/2)*rf2.probs[,2:10]) + 
+    ((0)*rf.probs[,2:10]) +
+    ((1/2)*gbm2.probs[,2:10])
 
 
 #create kaggle submission file
