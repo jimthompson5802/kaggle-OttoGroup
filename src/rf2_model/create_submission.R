@@ -27,7 +27,7 @@ load(paste0(WORK.DIR,"/model_parRF_2015-04-24_06_49_26.RData"))
 system.time(pred.probs <- predictInParallel(mdl.fit,new.df,5,only.predictors = TRUE))
 
 #create kaggle submission file
-write.csv(data.frame(id,pred.probs),file=paste0(WORK.DIR,"/submission.csv"),
+write.csv(data.frame(id,pred.probs[,2:10]),file=paste0(WORK.DIR,"/submission.csv"),
           row.names=FALSE)
 
 
