@@ -26,13 +26,15 @@ sapply(r,function(x){x$p.value})
 # bin the feature values and then re-run chisq test
 features <- setdiff(names(train.raw),c("id","target"))
 df <- as.data.frame(lapply(features,function(this.col,mydf){cut(mydf[,this.col],
-                                                                 breaks=c(seq(0,10,1),Inf),right=FALSE)},
+                                                                 breaks=c(seq(0,1,1),Inf),right=FALSE)},
                                                                  train.raw[features]))
 names(df) <- features
 
 r1 <- apply(df,2,function(x){chisq.test(x,train.raw$target,simulate.p.value=TRUE)})
 sapply(r1,function(x){x$p.value})
 
-df <- data.frame(id=train.raw$id,df)
+# df <- data.frame(id=train.raw$id,df)
 
-df3 <- dcast(df,id~feat_1,id.vars="feat_1")
+
+
+
