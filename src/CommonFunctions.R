@@ -142,3 +142,42 @@ calcPairwiseSum <- function(selected.features,predictors) {
     # return pairwise differences
     return(do.call(cbind,ll))
 }
+
+# partition data set and make predictions in parallel and rejoin predictions
+predictInParallel <- function(mdl.fit,input.data,number.workers,only.predictors=FALSE) {
+    # mdl.fit: model to use for prediction
+    # input.data:  input data set with predictors and response if required
+    # number.workers: number of parallel worker tasks to create
+    # only.predictors:  Boolean indicating if predictors and response are returned
+    
+    require(foreach)
+    require(doMC)
+    
+    
+    # determine partition size
+    partition.size <- ceiling(nrow(input.data) / number.workers)
+    
+    ll <- NULL
+    for(i in seq(1,nrow(input.data),partition.size)) {
+        ll[[length(ll)+1]] <- i:min((i+partition.size-1),nrow(input.data))
+    }
+    
+    makePrediction <- function(idx,mdl.fit,input.data,only.predictors) {
+        # prepare selected data partition for prediction
+        this.data <- prepModelData(input.data[idx,],only.predictors)
+        
+        id <- input.data[idx,"id"]
+        
+        pred.probs <- predict(mdl.fit,newdata = this.data$predictors,type = "prob")
+        
+        return(cbind(id,pred.probs))
+    }
+    
+    # set up for parallel processing
+    registerDoMC(cores = number.workers)
+    
+    prediction <- foreach(idx=ll, .combine=rbind, .packages="randomForest", .verbose=FALSE) %dopar%
+                            makePrediction(idx,mdl.fit,input.data,only.predictors)
+    
+    return(prediction)
+}

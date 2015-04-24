@@ -83,12 +83,10 @@ mdl.fit
 
 # stopCluster(cl)
 
-# prepare data for training
-test.data <- prepModelData(test.raw)
+# make prediction on test data set
+system.time(pred.probs <- predictInParallel(mdl.fit,test.raw,5))
 
-pred.probs <- predict(mdl.fit,newdata = test.data$predictors,type = "prob")
-
-score <- logLossEval(pred.probs,test.data$response)
+score <- logLossEval(pred.probs[,2:10],test.data$response)
 score
 
 # determine if score improved
