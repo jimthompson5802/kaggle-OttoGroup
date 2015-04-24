@@ -48,6 +48,9 @@ load(paste0(WORK.DIR,"/modelPerf.RData"))
 
 # get training data
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
+
+# combine train and calibration data sets 
+train.raw <- rbind(train.raw,calib.raw)
      
 # extract subset for inital training
 set.seed(29)
