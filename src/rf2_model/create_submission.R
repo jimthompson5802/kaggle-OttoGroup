@@ -4,10 +4,10 @@
 
 library(caret)
 # add model specific libraries
-library(caTools)
+library(randomForest)
 
 # set working directory
-WORK.DIR <- "./src/logitboost_model"   # directory where model artifacts are stored
+WORK.DIR <- "./src/rf2_model"   # directory where model artifacts are stored
 
 # Common Functions and Global variables
 source("./src/CommonFunctions.R")
@@ -23,7 +23,7 @@ id <- new.df$id
 submission <- prepModelData(new.df,only.predictors=TRUE)
 
 # retrive generated model-name created in training run
-load(paste0(WORK.DIR,"/model_LogitBoost_2015-04-16_13_04_33.RData"))
+load(paste0(WORK.DIR,"/model_parRF_2015-04-24_06_49_26.RData"))
 
 # predict class probabilities
 pred.probs <- predict(mdl.fit,newdata = submission$predictors,type = "prob")
