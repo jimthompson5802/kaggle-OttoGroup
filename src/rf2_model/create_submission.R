@@ -19,14 +19,12 @@ new.df <- read.csv(unz(paste0(DATA.DIR,"/test.csv.zip"),"test.csv"),stringsAsFac
 #save id vector
 id <- new.df$id
 
-# prep the data for submission
-submission <- prepModelData(new.df,only.predictors=TRUE)
-
 # retrive generated model-name created in training run
 load(paste0(WORK.DIR,"/model_parRF_2015-04-24_06_49_26.RData"))
 
 # predict class probabilities
-pred.probs <- predict(mdl.fit,newdata = submission$predictors,type = "prob")
+
+system.time(pred.probs <- predictInParallel(mdl.fit,new.df,5,only.predictors = TRUE))
 
 #create kaggle submission file
 write.csv(data.frame(id,pred.probs),file=paste0(WORK.DIR,"/submission.csv"),
