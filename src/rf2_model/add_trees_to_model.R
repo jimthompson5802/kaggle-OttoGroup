@@ -1,9 +1,8 @@
 ###
-#  add trees to model
-#  This code adds trees to a random forest model created with caret
+#  add trees to an existing rf model in parallel
 ###
 
-library(caret)
+library(foreach)
 library(randomForest)
 
 # set up global variables and common functions
@@ -11,14 +10,15 @@ source("./src/CommonFunctions.R")
 WORK.DIR <- "./src/rf2_model"
 source(paste0(WORK.DIR,"/ModelCommonFunctions.R"))
 
-TREES.TO.ADD <- 1000
-MODEL.COMMENT <- paste("Growing trees by",TREES.TO.ADD)
 
-# load model performance data
-load(paste0(WORK.DIR,"/modelPerf.RData"))
+PARALLEL.WORKERS <- 5
+NEW.RF.TREES <- 200
+MTRY <- 48
+MODEL.SPECIFIC.PARMS <- NULL
+MODEL.COMMENT <- paste("Adding trees to model",PARALLEL.WORKERS * NEW.RF.TREES)
 
-# load caret model structure
-load(paste0(WORK.DIR,"/model_rf_2015-04-23_21_34_24.RData"))
+# load orignal rf model
+load(paste0(WORK.DIR,"/model_parRF_2015-04-24_06_49_26.RData"))
 
 # load model performance data
 load(paste0(WORK.DIR,"/modelPerf.RData"))
@@ -32,18 +32,20 @@ train.raw <- rbind(train.raw,calib.raw)
 train.data <- prepModelData(train.raw)
 
 # add trees to model
+library(doMC)
+registerDoMC(cores = PARALLEL.WORKERS)
 Sys.time()
-time.data <- system.time({rf.new <- randomForest(train.data$predictors,train.data$response,
-                                                 ntree=TREES.TO.ADD)
-                          mdl.fit$finalModel <- combine(mdl.fit$finalModel,rf.new)})
+time.data <- system.time({new.rf <- foreach(ntree=rep(NEW.RF.TREES, PARALLEL.WORKERS), .combine=combine, .packages='randomForest') %dopar% 
+                             randomForest(train.data$predictors, train.data$response, ntree=ntree,mtry=MTRY)
+#combine rf models
+mdl.fit <- combine(mdl.fit, new.rf)})
 
+time.data
 
-# prepare data for training
-test.data <- prepModelData(test.raw)
+# make prediction on test data set
+system.time(pred.probs <- predictInParallel(mdl.fit,test.raw,PARALLEL.WORKERS))
 
-pred.probs <- predict(mdl.fit,newdata = test.data$predictors,type = "prob")
-
-score <- logLossEval(pred.probs,test.data$response)
+score <- logLossEval(pred.probs[,2:10],test.data$response)
 score
 
 # determine if score improved
@@ -51,13 +53,13 @@ improved <- ifelse(score < min(modelPerf.df$score),"Yes","No")
 
 # record Model performance
 modelPerf.df <- recordModelPerf(modelPerf.df,
-                                mdl.fit$method,
+                                "parallel_rf",
                                 time.data,
                                 train.data$predictors,
                                 score,
                                 improved=improved,
-                                bestTune=flattenDF(mdl.fit$bestTune),
-                                tune.grid=flattenDF(CARET.TUNE.GRID),
+                                bestTune=flattenDF(data.frame(mtry=MTRY, workers=PARALLEL.WORKERS, new.tree=NEW.RF.TREES)),
+                                tune.grid=flattenDF(data.frame(total.ntree=mdl.fit$ntree)),
                                 model.parms=paste(names(MODEL.SPECIFIC.PARMS),
                                                   as.character(MODEL.SPECIFIC.PARMS),
                                                   sep="=",collapse=","),
@@ -73,7 +75,7 @@ if (last.idx == 1 || improved == "Yes") {
     cat("found improved model, saving...\n")
     flush.console()
     #yes we have improvement or first score, save generated model
-    file.name <- paste0("/model_",mdl.fit$method,"_",modelPerf.df$date.time[last.idx],".RData")
+    file.name <- paste0("/model_parRF_",modelPerf.df$date.time[last.idx],".RData")
     file.name <- gsub(" ","_",file.name)
     file.name <- gsub(":","_",file.name)
     
