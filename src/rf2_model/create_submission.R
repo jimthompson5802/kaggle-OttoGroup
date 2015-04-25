@@ -20,7 +20,7 @@ new.df <- read.csv(unz(paste0(DATA.DIR,"/test.csv.zip"),"test.csv"),stringsAsFac
 id <- new.df$id
 
 # retrive generated model-name created in training run
-load(paste0(WORK.DIR,"/model_parRF_2015-04-24_06_49_26.RData"))
+load(paste0(WORK.DIR,"/model_rf_all_data_ntree_5000.RData"))
 
 # predict class probabilities
 
