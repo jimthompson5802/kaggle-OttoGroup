@@ -35,6 +35,7 @@ train.data <- prepModelData(train.raw)
 library(doMC)
 registerDoMC(cores = PARALLEL.WORKERS)
 Sys.time()
+set.seed(47)
 time.data <- system.time({new.rf <- foreach(ntree=rep(NEW.RF.TREES, PARALLEL.WORKERS), .combine=combine, .packages='randomForest') %dopar% 
                              randomForest(train.data$predictors, train.data$response, ntree=ntree,mtry=MTRY)
 #combine rf models
@@ -45,7 +46,7 @@ time.data
 # make prediction on test data set
 system.time(pred.probs <- predictInParallel(mdl.fit,test.raw,PARALLEL.WORKERS))
 
-score <- logLossEval(pred.probs[,2:10],test.data$response)
+score <- logLossEval(pred.probs[,2:10],test.raw$target)
 score
 
 # determine if score improved
