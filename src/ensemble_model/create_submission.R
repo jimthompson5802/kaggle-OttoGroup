@@ -45,48 +45,40 @@ id <- new.df$id
 # make rf prediction
 #
 
-# read kaggle submission data
-new.df <- read.csv(unz(paste0(DATA.DIR,"/test.csv.zip"),"test.csv"),stringsAsFactors=FALSE)
-
-#save id vector
-id <- new.df$id
-
-# prep the data for submission
-source("./src/rf_model/ModelCommonFunctions.R")
-new.df <- prepModelData(new.df,only.predictors=TRUE)
-
-# retrive rf model
-load("./src/rf_model/rfFit1_2015-04-09_23_06_33.RData")
-
-# predict class probabilities
-rf.probs <- predict(rfFit1,newdata = new.df$predictors,type = "prob")
-
-# recombine with id
-rf.probs <- data.frame(id,rf.probs)
+# # read kaggle submission data
+# new.df <- read.csv(unz(paste0(DATA.DIR,"/test.csv.zip"),"test.csv"),stringsAsFactors=FALSE)
+# 
+# #save id vector
+# id <- new.df$id
+# 
+# # prep the data for submission
+# source("./src/rf_model/ModelCommonFunctions.R")
+# new.df <- prepModelData(new.df,only.predictors=TRUE)
+# 
+# # retrive rf model
+# load("./src/rf_model/rfFit1_2015-04-09_23_06_33.RData")
+# 
+# # predict class probabilities
+# rf.probs <- predict(rfFit1,newdata = new.df$predictors,type = "prob")
+# 
+# # recombine with id
+# rf.probs <- data.frame(id,rf.probs)
 
 #
 # make rf prediction with expanded feature set
 #
-
+source("./src/rf2_model/ModelCommonFunctions.R")
 # read kaggle submission data
 new.df <- read.csv(unz(paste0(DATA.DIR,"/test.csv.zip"),"test.csv"),stringsAsFactors=FALSE)
 
 #save id vector
 id <- new.df$id
 
-# prep the data for submission
-source("./src/rf2_model/ModelCommonFunctions.R")
-new.df <- prepModelData(new.df,only.predictors=TRUE)
-
 # retrive rf model with expanded features
-load("./src/rf2_model/model_rf_2015-04-22_21_32_43.RData")
+load("./src/rf2_model/model_rf_all_data_ntree_5000.RData")
 
 # predict class probabilities
-rf2.probs <- predict(mdl.fit,newdata = new.df$predictors,type = "prob")
-
-# recombine with id
-rf2.probs <- data.frame(id,rf2.probs)
-
+system.time(rf2.probs <- predictInParallel(mdl.fit,new.df,5,only.predictors = TRUE))
 
 #
 # make one vs all using gbm predictions
@@ -124,7 +116,6 @@ gbm2.probs <- data.frame(id,gbm2.probs)
 #
 
 pred.probs <- ((1/2)*rf2.probs[,2:10]) + 
-    ((0)*rf.probs[,2:10]) +
     ((1/2)*gbm2.probs[,2:10])
 
 
