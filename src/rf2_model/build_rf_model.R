@@ -25,7 +25,7 @@ load(paste0(WORK.DIR,"/modelPerf.RData"))
 # get training data
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
 
-train.raw <- rbind(train.raw,calib.raw)
+train.raw <- rbind(train.raw,calib.raw,test.raw)
 
 # prepare data for training
 train.data <- prepModelData(train.raw)
@@ -34,54 +34,55 @@ train.data <- prepModelData(train.raw)
 library(doMC)
 registerDoMC(cores = PARALLEL.WORKERS)
 Sys.time()
+set.seed(13)
 time.data <- system.time(mdl.fit <- foreach(ntree=rep(RF.TREES, PARALLEL.WORKERS), .combine=combine, .packages='randomForest') %dopar% 
                              randomForest(train.data$predictors, train.data$response, ntree=ntree,mtry=MTRY))
 
-
-# prepare data for training
-test.data <- prepModelData(test.raw)
-
-pred.probs <- predict(mdl.fit,newdata = test.data$predictors,type = "prob")
-
-score <- logLossEval(pred.probs,test.data$response)
-score
-
-# determine if score improved
-improved <- ifelse(score < min(modelPerf.df$score),"Yes","No")
-
-# record Model performance
-modelPerf.df <- recordModelPerf(modelPerf.df,
-                                "parallel_rf",
-                                time.data,
-                                train.data$predictors,
-                                score,
-                                improved=improved,
-                                bestTune=flattenDF(data.frame(mtry=MTRY, workers=PARALLEL.WORKERS, each.tree=RF.TREES)),
-                                tune.grid=flattenDF(NULL),
-                                model.parms=paste(names(MODEL.SPECIFIC.PARMS),
-                                                  as.character(MODEL.SPECIFIC.PARMS),
-                                                  sep="=",collapse=","),
-                                comment=MODEL.COMMENT)
-save(modelPerf.df,file=paste0(WORK.DIR,"/modelPerf.RData"))
-
-#display model performance record for this run
-tail(modelPerf.df[,1:10],1)
-
-# if last score recorded is better than previous ones save model object
-last.idx <- length(modelPerf.df$score)
-if (last.idx == 1 || improved == "Yes") {
-    cat("found improved model, saving...\n")
-    flush.console()
-    #yes we have improvement or first score, save generated model
-    file.name <- paste0("/model_parRF_",modelPerf.df$date.time[last.idx],".RData")
-    file.name <- gsub(" ","_",file.name)
-    file.name <- gsub(":","_",file.name)
-    
-    save(mdl.fit,file=paste0(WORK.DIR,file.name))
-} else {
-    cat("no improvement!!!\n")
-    flush.console()
-}
+time.data
+file.name <- paste("model_rf_all_data_ntree_",mdl.fit$ntree,".RData",sep="")
+save(mdl.fit,file=paste(WORK.DIR,file.name,sep="/"))
+# #make prediction on test data set
+# system.time(pred.probs <- predictInParallel(mdl.fit,test.raw,PARALLEL.WORKERS))
+# 
+# score <- logLossEval(pred.probs[,2:10],test.raw$target)
+# score
+# 
+# # determine if score improved
+# improved <- ifelse(score < min(modelPerf.df$score),"Yes","No")
+# 
+# # record Model performance
+# modelPerf.df <- recordModelPerf(modelPerf.df,
+#                                 "parallel_rf",
+#                                 time.data,
+#                                 train.data$predictors,
+#                                 score,
+#                                 improved=improved,
+#                                 bestTune=flattenDF(data.frame(mtry=MTRY, workers=PARALLEL.WORKERS, each.tree=RF.TREES)),
+#                                 tune.grid=flattenDF(data.frame(total.ntree=mdl.fit$ntree)),
+#                                 model.parms=paste(names(MODEL.SPECIFIC.PARMS),
+#                                                   as.character(MODEL.SPECIFIC.PARMS),
+#                                                   sep="=",collapse=","),
+#                                 comment=MODEL.COMMENT)
+# save(modelPerf.df,file=paste0(WORK.DIR,"/modelPerf.RData"))
+# 
+# #display model performance record for this run
+# tail(modelPerf.df[,1:10],1)
+# 
+# # if last score recorded is better than previous ones save model object
+# last.idx <- length(modelPerf.df$score)
+# if (last.idx == 1 || improved == "Yes") {
+#     cat("found improved model, saving...\n")
+#     flush.console()
+#     #yes we have improvement or first score, save generated model
+#     file.name <- paste0("/model_parRF_",modelPerf.df$date.time[last.idx],".RData")
+#     file.name <- gsub(" ","_",file.name)
+#     file.name <- gsub(":","_",file.name)
+#     
+#     save(mdl.fit,file=paste0(WORK.DIR,file.name))
+# } else {
+#     cat("no improvement!!!\n")
+#     flush.console()
+# }
 
 
 
