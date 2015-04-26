@@ -1,21 +1,22 @@
 ###
-# Analysis of Kaggle Leaderboard
+# Produce visualizations of Leaderboard scores
+# Instructions:
+#   1) Download Leaderboard zip file 
+#   2) Set DATA.DIR to the directonry containing the leaderboard zip file
+#   3) Set TEAM.NAME to identifier of one team whose scores are higlighted
 ###
 
 library(lubridate)
 library(ggplot2)
-library(caTools)
+library(grid)
 library(plyr)
 library(RCurl)
 
 DATA.DIR <- "./data"
-USER.ID <- "JMT5802"
 
-# download the leaderboard data
-# download.file("https://www.kaggle.com/c/4280/publicleaderboarddata.zip",
-#               destfile=paste0(DATA.DIR,"/publicleaderboarddata.zip"),
-#               mode="wb",
-#               method="curl")
+TEAM.NAME <- "JMT5802"  # specify team name 
+
+# read the leaderboard data
 lb.df <- read.csv(unz(paste0(DATA.DIR,"/publicleaderboarddata.zip"),
                        "otto-group-product-classification-challenge_public_leaderboard.csv"),
                   stringsAsFactors=FALSE)
@@ -23,12 +24,12 @@ lb.df <- read.csv(unz(paste0(DATA.DIR,"/publicleaderboarddata.zip"),
 # convert date/time to numeric representation
 lb.df$SubmissionDate <- ymd_hms(lb.df$SubmissionDate)
 
-# determine number of teams by date/time
+# determine number of teams and leader scores by date/time
 lb.df$number.teams <- sapply(1:nrow(lb.df),function(pos,df){length(unique(df[1:pos,"TeamName"]))},lb.df)
 lb.df$leader.score <- sapply(1:nrow(lb.df),function(pos,df){min(df[1:pos,"Score"])},lb.df)
 lb.df$report.date <- as.Date(lb.df[,"SubmissionDate"])
 
-# get team standings by day
+# function to get team standings by day
 teamStandings <- function(this.date,lb.df) {
     df <- lb.df[lb.df$report.date <= this.date,]
 
@@ -41,14 +42,14 @@ teamStandings <- function(this.date,lb.df) {
 
 }
 
-# user score and ranking for specified user as of specified date
-userRanking <- function(this.date,lb.df) {
+# function to get score and ranking for specified team as of specified date
+teamRanking <- function(this.date,lb.df) {
     standings <- teamStandings(this.date,lb.df)
     
     leader.score <- standings[1,"Score"]
     number.teams <- nrow(standings)
-    team.rank <- standings[standings$TeamName == USER.ID,"team.rank"]
-    team.score <- standings[standings$TeamName == USER.ID,"Score"]
+    team.rank <- standings[standings$TeamName == TEAM.NAME,"team.rank"]
+    team.score <- standings[standings$TeamName == TEAM.NAME,"Score"]
     
     if (length(team.rank) > 0 ) {
         team.percentile <- 100*(1-team.rank/number.teams)
@@ -64,23 +65,67 @@ userRanking <- function(this.date,lb.df) {
                 team.score=team.score,stringsAsFactors=FALSE))
 }
 
+
 # get team ranking for specified user by competition day
-ll <- lapply(unique(lb.df$report.date),userRanking,lb.df)
+ll <- lapply(unique(lb.df$report.date),teamRanking,lb.df)
 ranking.df <- do.call(rbind,ll)
 
 
-ggplot() + 
-    geom_point(data=lb.df[lb.df$TeamName != USER.ID,], aes(x=SubmissionDate, y=Score),color="grey75") +
-    geom_point(data=lb.df[lb.df$TeamName == USER.ID,],aes(x=SubmissionDate,y=Score),
+
+# plot all scores and identify selected team
+p1 <- ggplot() + 
+    # plot points for all teams except for selected team
+    geom_point(data=lb.df[lb.df$TeamName != TEAM.NAME,], aes(x=SubmissionDate, y=Score),color="grey75") +
+    # plot scores for selected team
+    geom_point(data=lb.df[lb.df$TeamName == TEAM.NAME,],aes(x=SubmissionDate,y=Score),
                                                           pch=18,color="red",size=3) +
-    scale_fill_manual("Team", values=c("red","grey75")) +
-    ggtitle("Otto Group Scores") +
+    # identify selected team
+    geom_text(data=head(lb.df[lb.df$TeamName == TEAM.NAME,],1),aes(x=SubmissionDate, y=Score,
+                                                                   vjust=-0.2, hjust=0.5, lineheight=0.8,
+                                                                   label=paste("Team:\n",TEAM.NAME))) +
+    ylab("Score") +
+    xlab("Submission Date") +
+    ggtitle("Otto Group Competition\nAll Participant Scores") +
     theme()
 
-
-ggplot(data=ranking.df) +
+# plot leader score for the first 24 hours of competition
+p2 <- ggplot(data=lb.df[lb.df$SubmissionDate < (lb.df$SubmissionDate[1]+hms("24:00:00")),]) +
+    geom_line(aes(x=SubmissionDate,y=leader.score),color="blue", size=1.25) +
+    ylab("Score") +
+    xlab("Submission Date") +
+    ggtitle("Otto Group Competition\nLeader Score During First 24 Hours")
+    
+    
+# plot selected team vs leader score
+p3 <- ggplot(data=ranking.df) +
+    #plot leader score
     geom_line(aes(x=report.date,y=leader.score),color="blue",size=1.25) +
+    # identify leader
+    geom_text(data=head(ranking.df,1),aes(x=report.date, y=leader.score,
+                                          vjust=-0.2, hjust=0, lineheight=0.8,
+                                          label=paste("Leader"))) +
+    # plot slected team score
     geom_point(aes(x=report.date, y=team.score), pch=18,color="red",size=3) +
+    # identify selected team
+    geom_text(data=head(ranking.df[!is.na(ranking.df$team.score),],1),aes(x=report.date, y=team.score,
+                                                                   vjust=2, hjust=0.5, lineheight=0.8,
+                                                                   label=paste(TEAM.NAME))) +
     xlab("Submission Date") +
     ylab("Score") +
-    ggtitle("Team Score")
+    ggtitle(paste("Otto Group Competition\nLeader Score vs. Team:",TEAM.NAME))
+
+p4 <- ggplot(ranking.df) +
+    geom_bar(aes(x=report.date, y=team.percentile),color="red", fill="red",stat="identity") +
+    ylim(0,100) +
+    xlab("SubmissionDate") +
+    ylab("Percentile") +
+    ggtitle(paste("Otto Group Competition\nPercentile Ranking for Team:",TEAM.NAME))
+    
+# display 4 charts on one page
+grid.newpage()
+pushViewport(viewport(layout=grid.layout(2,2)))
+
+print(p1, vp=viewport(layout.pos.row=1, layout.pos.col = 1))
+print(p2, vp=viewport(layout.pos.row=1, layout.pos.col = 2))
+print(p3, vp=viewport(layout.pos.row=2, layout.pos.col = 1))
+print(p4, vp=viewport(layout.pos.row=2, layout.pos.col = 2))
