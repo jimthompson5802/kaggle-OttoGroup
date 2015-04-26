@@ -12,9 +12,8 @@ library(lubridate)
 library(ggplot2)
 library(grid)
 library(plyr)
-library(RCurl)
 
-DATA.DIR <- "./data"
+DATA.DIR <- "./data"  # directory where publicleaderboarddata.zip is stored
 
 TEAM.NAME <- "JMT5802"  # specify team name 
 
@@ -72,7 +71,8 @@ teamRanking <- function(this.date,lb.df) {
 ll <- lapply(unique(lb.df$report.date),teamRanking,lb.df)
 ranking.df <- do.call(rbind,ll)
 
-
+# determine submission date for last submission
+last.submission.date <- as.Date(tail(lb.df,1)$SubmissionDate)
 
 # plot all scores and identify selected team
 p1 <- ggplot() + 
@@ -87,7 +87,7 @@ p1 <- ggplot() +
                                                                    label=paste("Team:\n",TEAM.NAME))) +
     ylab("Score") +
     xlab("Submission Date") +
-    ggtitle("Otto Group Competition\nAll Participant Scores") +
+    ggtitle(paste("Otto Group Competition\nAll Participant Scores as of",last.submission.date)) +
     theme()
 
 # plot leader score for the first 24 hours of competition
@@ -124,7 +124,7 @@ p4 <- ggplot(ranking.df) +
     ggtitle(paste("Otto Group Competition\nPercentile Ranking for Team:",TEAM.NAME))
     
 # display 4 charts on one page
-png(filename="leaderboard_analysis.png",width=600, height=600)
+# png(filename="leaderboard_analysis.png",width=600, height=600)
 grid.newpage()
 pushViewport(viewport(layout=grid.layout(2,2)))
 
@@ -132,5 +132,5 @@ print(p1, vp=viewport(layout.pos.row=1, layout.pos.col = 1))
 print(p2, vp=viewport(layout.pos.row=1, layout.pos.col = 2))
 print(p3, vp=viewport(layout.pos.row=2, layout.pos.col = 1))
 print(p4, vp=viewport(layout.pos.row=2, layout.pos.col = 2))
-dev.off()
+# dev.off()
 
