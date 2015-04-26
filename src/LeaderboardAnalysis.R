@@ -4,6 +4,8 @@
 #   1) Download Leaderboard zip file 
 #   2) Set DATA.DIR to the directonry containing the leaderboard zip file
 #   3) Set TEAM.NAME to identifier of one team whose scores are higlighted
+#
+# output will be a png image called "leaderboard_analysis.png in the current working directory
 ###
 
 library(lubridate)
@@ -122,6 +124,7 @@ p4 <- ggplot(ranking.df) +
     ggtitle(paste("Otto Group Competition\nPercentile Ranking for Team:",TEAM.NAME))
     
 # display 4 charts on one page
+png(filename="leaderboard_analysis.png",width=600, height=600)
 grid.newpage()
 pushViewport(viewport(layout=grid.layout(2,2)))
 
@@ -129,3 +132,5 @@ print(p1, vp=viewport(layout.pos.row=1, layout.pos.col = 1))
 print(p2, vp=viewport(layout.pos.row=1, layout.pos.col = 2))
 print(p3, vp=viewport(layout.pos.row=2, layout.pos.col = 1))
 print(p4, vp=viewport(layout.pos.row=2, layout.pos.col = 2))
+dev.off()
+
