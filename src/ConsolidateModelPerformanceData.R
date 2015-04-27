@@ -20,5 +20,5 @@ for (dir in model.dirs){
 }
 
 write.table(consolidatedModelPerf.df,
-            file="./ConsolidatedModelPerformance.tsv",
+            file="./model_results/ConsolidatedModelPerformance.tsv",
             sep="\t",row.names=FALSE)
