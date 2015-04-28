@@ -1,5 +1,5 @@
 ###
-# training skeleton
+# training svm model
 ###
 
 library(caret)
@@ -14,12 +14,13 @@ source("./src/CommonFunctions.R")
 source(paste0(WORK.DIR,"/ModelCommonFunctions.R"))
 
 # set caret training parameters
-CARET.TRAIN.PARMS <- list(method="svmRadial")   # Replace MODEL.METHOD with appropriate caret model
+CARET.TRAIN.PARMS <- list(method="svmLinear",  # Replace MODEL.METHOD with appropriate caret model
+                          preProcess=c("center","scale"))   
 
-CARET.TUNE.GRID <-  NULL  # NULL provides model specific default tuning parameters
+# CARET.TUNE.GRID <-  NULL  # NULL provides model specific default tuning parameters
 
 # user specified tuning parameters
-#CARET.TUNE.GRID <- expand.grid(nIter=c(100))
+CARET.TUNE.GRID <- expand.grid(C=10^(-5:0))
 
 # model specific training parameter
 CARET.TRAIN.CTRL <- trainControl(method="repeatedcv",
@@ -27,6 +28,7 @@ CARET.TRAIN.CTRL <- trainControl(method="repeatedcv",
                                  repeats=1,
                                  verboseIter=TRUE,
                                  classProbs=TRUE,
+#                                  allowParallel=FALSE,
                                  summaryFunction=caretLogLossSummary)
 
 CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
@@ -35,9 +37,9 @@ CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
 #                            tuneLength=5,
                            metric="LogLoss")
 
-MODEL.SPECIFIC.PARMS <- NULL # Other model specific parameters
+MODEL.SPECIFIC.PARMS <- list(tol=1e-4)  #NULL # Other model specific parameters
 
-MODEL.COMMENT <- "svm with factor variables"
+MODEL.COMMENT <- "preProcess(center and scale)"
 
 # amount of data to train
 FRACTION.TRAIN.DATA <- 0.1
@@ -48,7 +50,7 @@ FRACTION.TRAIN.DATA <- 0.1
 load(paste0(WORK.DIR,"/modelPerf.RData"))
 
 # get training data
-load(paste0(DATA.DIR,"/factors_train_calib_test.RData"))
+load(paste0(DATA.DIR,"/train_calib_test.RData"))
      
 # extract subset for inital training
 set.seed(29)
