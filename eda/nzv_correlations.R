@@ -8,11 +8,21 @@ data.dir <- "./data"
 
 load(file=paste0(data.dir,"/train_calib_test.RData"))
 
-nz <- nearZeroVar(train.raw[,2:(ncol(train.raw)-1)], saveMetrics= TRUE)
+predictors <- train.raw[setdiff(names(train.raw),c("id","target"))]
 
-nzidx <- nearZeroVar(train.raw[,2:(ncol(train.raw)-1)])
+nz <- nearZeroVar(predictors, saveMetrics= TRUE)
 
-nz.vars <- names(train.raw[,2:(ncol(train.raw)-1)])[nzidx]
+nzidx <- nearZeroVar(predictors)
+
+nz.vars <- names(predictors)[nzidx]
 
 save(nz.vars,file=paste0(data.dir,"/near_zero_vars.RData"))
+
+correlations <- cor(predictors)
+
+coridx <- findCorrelation(correlations,cutoff=0.8)
+
+corr.vars <- names(predictors)[coridx]
+
+save(corr.vars, file=paste0(data.dir,"/correlated_vars.RData"))
 
