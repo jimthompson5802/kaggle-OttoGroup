@@ -1,0 +1,193 @@
+Training size: 11,144 observations
+Models: model_svmRadial_one_vs_all_2015-04-29_14_54_46.RData
+
+
+Support Vector Machines with Radial Basis Function Kernel 
+
+7429 samples
+  94 predictor
+   2 classes: 'Class_1', 'Not_Class_1' 
+
+Pre-processing: centered, scaled 
+Resampling: Cross-Validated (5 fold, repeated 1 times) 
+
+Summary of sample sizes: 5944, 5943, 5944, 5943, 5942 
+
+Resampling results across tuning parameters:
+
+  C     ROC        Sens       Spec       ROC SD      Sens SD     Spec SD    
+  0.25  0.9066576  0.2927845  0.9955537  0.03038685  0.04433221  0.002282817
+  0.50  0.9067718  0.2927845  0.9958315  0.03044337  0.04433221  0.002304122
+  1.00  0.9067895  0.2801110  0.9962482  0.02989621  0.01332790  0.002118974
+
+Tuning parameter 'sigma' was held constant at a value of 0.01852033
+ROC was used to select the optimal model using  the largest value.
+The final values used for the model were sigma = 0.01852033 and C = 1. 
+Support Vector Machines with Radial Basis Function Kernel 
+
+7429 samples
+  94 predictor
+   2 classes: 'Class_2', 'Not_Class_2' 
+
+Pre-processing: centered, scaled 
+Resampling: Cross-Validated (5 fold, repeated 1 times) 
+
+Summary of sample sizes: 5943, 5944, 5943, 5943, 5943 
+
+Resampling results across tuning parameters:
+
+  C     ROC        Sens       Spec       ROC SD       Sens SD     Spec SD   
+  0.25  0.9104128  0.6682171  0.9109924  0.009053119  0.02400460  0.01303115
+  0.50  0.9147220  0.6795866  0.9122657  0.009587711  0.01845330  0.01457242
+  1.00  0.9192503  0.6852713  0.9146323  0.009514604  0.02749237  0.01284363
+
+Tuning parameter 'sigma' was held constant at a value of 0.01887916
+ROC was used to select the optimal model using  the largest value.
+The final values used for the model were sigma = 0.01887916 and C = 1. 
+Support Vector Machines with Radial Basis Function Kernel 
+
+7429 samples
+  94 predictor
+   2 classes: 'Class_3', 'Not_Class_3' 
+
+Pre-processing: centered, scaled 
+Resampling: Cross-Validated (5 fold, repeated 1 times) 
+
+Summary of sample sizes: 5943, 5942, 5944, 5943, 5944 
+
+Resampling results across tuning parameters:
+
+  C     ROC        Sens       Spec       ROC SD       Sens SD     Spec SD    
+  0.25  0.8275031  0.1311367  0.9879397  0.013102508  0.03143645  0.005090594
+  0.50  0.8310073  0.1415425  0.9859299  0.011242478  0.04032781  0.006861153
+  1.00  0.8359104  0.1748057  0.9822198  0.007621086  0.04328972  0.005965298
+
+Tuning parameter 'sigma' was held constant at a value of 0.018309
+ROC was used to select the optimal model using  the largest value.
+The final values used for the model were sigma = 0.018309 and C = 1. 
+Support Vector Machines with Radial Basis Function Kernel 
+
+7429 samples
+  94 predictor
+   2 classes: 'Class_4', 'Not_Class_4' 
+
+Pre-processing: centered, scaled 
+Resampling: Cross-Validated (5 fold, repeated 1 times) 
+
+Summary of sample sizes: 5944, 5943, 5942, 5944, 5943 
+
+Resampling results across tuning parameters:
+
+  C     ROC        Sens       Spec       ROC SD      Sens SD     Spec SD    
+  0.25  0.8583703  0.1796635  0.9962006  0.01626937  0.03260363  0.002026945
+  0.50  0.8580958  0.1580769  0.9964818  0.01626004  0.04368742  0.001927244
+  1.00  0.8583221  0.1580769  0.9966226  0.01615528  0.04880536  0.001888259
+
+Tuning parameter 'sigma' was held constant at a value of 0.01831841
+ROC was used to select the optimal model using  the largest value.
+The final values used for the model were sigma = 0.01831841 and C = 0.25. 
+Support Vector Machines with Radial Basis Function Kernel 
+
+7429 samples
+  94 predictor
+   2 classes: 'Class_5', 'Not_Class_5' 
+
+Pre-processing: centered, scaled 
+Resampling: Cross-Validated (5 fold, repeated 1 times) 
+
+Summary of sample sizes: 5943, 5943, 5943, 5944, 5943 
+
+Resampling results across tuning parameters:
+
+  C     ROC        Sens       Spec       ROC SD       Sens SD     Spec SD    
+  0.25  0.9936970  0.9209790  0.9974648  0.005748356  0.03282495  0.001542880
+  0.50  0.9933067  0.9270396  0.9980282  0.006029033  0.02917946  0.001354605
+  1.00  0.9925213  0.9331002  0.9985915  0.006457333  0.02762508  0.000995925
+
+Tuning parameter 'sigma' was held constant at a value of 0.01883646
+ROC was used to select the optimal model using  the largest value.
+The final values used for the model were sigma = 0.01883646 and C = 0.25. 
+Support Vector Machines with Radial Basis Function Kernel 
+
+7429 samples
+  94 predictor
+   2 classes: 'Class_6', 'Not_Class_6' 
+
+Pre-processing: centered, scaled 
+Resampling: Cross-Validated (5 fold, repeated 1 times) 
+
+Summary of sample sizes: 5943, 5943, 5944, 5944, 5942 
+
+Resampling results across tuning parameters:
+
+  C     ROC        Sens       Spec       ROC SD       Sens SD     Spec SD    
+  0.25  0.9819437  0.8591949  0.9877874  0.004353282  0.02539952  0.004406307
+  0.50  0.9827972  0.8715686  0.9881364  0.004463618  0.02483785  0.003833621
+  1.00  0.9838194  0.8804008  0.9898810  0.004374231  0.02007329  0.002731590
+
+Tuning parameter 'sigma' was held constant at a value of 0.01763773
+ROC was used to select the optimal model using  the largest value.
+The final values used for the model were sigma = 0.01763773 and C = 1. 
+Support Vector Machines with Radial Basis Function Kernel 
+
+7429 samples
+  94 predictor
+   2 classes: 'Class_7', 'Not_Class_7' 
+
+Pre-processing: centered, scaled 
+Resampling: Cross-Validated (5 fold, repeated 1 times) 
+
+Summary of sample sizes: 5943, 5943, 5944, 5942, 5944 
+
+Resampling results across tuning parameters:
+
+  C     ROC        Sens       Spec       ROC SD      Sens SD     Spec SD    
+  0.25  0.9224589  0.4425831  0.9933690  0.02345483  0.06777705  0.002713678
+  0.50  0.9236307  0.4308184  0.9936511  0.02286110  0.08839777  0.002865042
+  1.00  0.9242121  0.4425831  0.9940742  0.02272044  0.08087085  0.002976324
+
+Tuning parameter 'sigma' was held constant at a value of 0.01795462
+ROC was used to select the optimal model using  the largest value.
+The final values used for the model were sigma = 0.01795462 and C = 1. 
+Support Vector Machines with Radial Basis Function Kernel 
+
+7429 samples
+  94 predictor
+   2 classes: 'Class_8', 'Not_Class_8' 
+
+Pre-processing: centered, scaled 
+Resampling: Cross-Validated (5 fold, repeated 1 times) 
+
+Summary of sample sizes: 5944, 5944, 5943, 5942, 5943 
+
+Resampling results across tuning parameters:
+
+  C     ROC        Sens       Spec       ROC SD       Sens SD     Spec SD    
+  0.25  0.9765663  0.7243601  0.9831592  0.006733213  0.04198409  0.002105909
+  0.50  0.9782837  0.7479958  0.9853420  0.006513790  0.03036089  0.001944785
+  1.00  0.9792621  0.7676615  0.9879930  0.006210762  0.03774006  0.002247465
+
+Tuning parameter 'sigma' was held constant at a value of 0.0177222
+ROC was used to select the optimal model using  the largest value.
+The final values used for the model were sigma = 0.0177222 and C = 1. 
+Support Vector Machines with Radial Basis Function Kernel 
+
+7429 samples
+  94 predictor
+   2 classes: 'Class_9', 'Not_Class_9' 
+
+Pre-processing: centered, scaled 
+Resampling: Cross-Validated (5 fold, repeated 1 times) 
+
+Summary of sample sizes: 5944, 5943, 5943, 5943, 5943 
+
+Resampling results across tuning parameters:
+
+  C     ROC        Sens       Spec       ROC SD       Sens SD     Spec SD    
+  0.25  0.9692521  0.6722689  0.9896112  0.011262458  0.03710824  0.002446484
+  0.50  0.9711630  0.6957983  0.9897576  0.010340059  0.03633907  0.003058765
+  1.00  0.9729066  0.7243697  0.9901967  0.009407929  0.04501881  0.002859913
+
+Tuning parameter 'sigma' was held constant at a value of 0.01862468
+ROC was used to select the optimal model using  the largest value.
+The final values used for the model were sigma = 0.01862468 and C = 1. 
