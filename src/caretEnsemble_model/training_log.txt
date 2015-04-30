@@ -1,0 +1,1097 @@
+
+> cat(rep("\n",3),rep("*",80),rep("\n",1),rep("*",80),rep("\n",1),rep("*",80),sep="")
+
+
+
+********************************************************************************
+********************************************************************************
+********************************************************************************
+> cat("\n\n***************Date/Time******************\n")
+
+
+***************Date/Time******************
+
+> modelPerf.df$date.time[last.idx]
+[1] "2015-04-30 06:17:34"
+
+> cat("\n\n***************Dimension of training data**************\n")
+
+
+***************Dimension of training data**************
+
+> train.obs
+
+
+
+********************************************************************************
+********************************************************************************
+********************************************************************************
+
+***************Date/Time******************
+[1] "2015-04-30 06:17:34"
+
+
+***************Dimension of training data**************
+[1] 1856   94
+
+
+***************Timing data******************************
+   user  system elapsed 
+ 80.351   1.767 312.325 
+
+
+**************Ensembles by Class************************
+
+
+ Class_1$models
+$gbm
+Stochastic Gradient Boosting 
+
+1856 samples
+  94 predictor
+   2 classes: 'Class_1', 'Not_Class_1' 
+
+No pre-processing
+Resampling: Bootstrapped (5 reps) 
+
+Summary of sample sizes: 1485, 1484, 1486, 1484, 1485 
+
+Resampling results across tuning parameters:
+
+  interaction.depth  n.trees  ROC        Sens        Spec       ROC SD      Sens SD     Spec SD    
+  1                   50      0.8140421  0.01250000  0.9994366  0.04411164  0.02795085  0.001259757
+  1                  100      0.8399104  0.03750000  0.9977465  0.03090147  0.03423266  0.003085761
+  1                  150      0.8455708  0.05000000  0.9949327  0.03433228  0.05229125  0.003672190
+  2                   50      0.8219916  0.05000000  0.9960595  0.05655775  0.05229125  0.002521286
+  2                  100      0.8427213  0.07500000  0.9938060  0.04286897  0.05229125  0.007816873
+  2                  150      0.8474875  0.13916667  0.9921158  0.04006053  0.05192476  0.010039499
+  3                   50      0.8414315  0.08916667  0.9966213  0.04977915  0.03663351  0.006107080
+  3                  100      0.8449489  0.10166667  0.9943678  0.05334380  0.03591560  0.005634793
+  3                  150      0.8490331  0.15333333  0.9921143  0.05092524  0.08899516  0.007292745
+
+Tuning parameter 'shrinkage' was held constant at a value of 0.1
+ROC was used to select the optimal model using  the largest value.
+The final values used for the model were n.trees = 150, interaction.depth = 3 and shrinkage = 0.1. 
+
+$rf
+Random Forest 
+
+1856 samples
+  94 predictor
+   2 classes: 'Class_1', 'Not_Class_1' 
+
+No pre-processing
+Resampling: Bootstrapped (5 reps) 
+
+Summary of sample sizes: 1485, 1484, 1486, 1484, 1485 
+
+Resampling results across tuning parameters:
+
+  mtry  ROC        Sens    Spec       ROC SD      Sens SD     Spec SD    
+   2    0.8806852  0.0000  1.0000000  0.03722954  0.00000000  0.000000000
+  48    0.8330764  0.0625  0.9983099  0.05197430  0.04419417  0.002519513
+  94    0.8270635  0.0750  0.9966229  0.04787069  0.05229125  0.002353013
+
+ROC was used to select the optimal model using  the largest value.
+The final value used for the model was mtry = 2. 
+
+$glm
+Generalized Linear Model 
+
+1856 samples
+  94 predictor
+   2 classes: 'Class_1', 'Not_Class_1' 
+
+No pre-processing
+Resampling: Bootstrapped (5 reps) 
+
+Summary of sample sizes: 1485, 1484, 1486, 1484, 1485 
+
+Resampling results
+
+  ROC       Sens    Spec       ROC SD     Sens SD    Spec SD   
+  0.762336  0.3275  0.9758047  0.1826302  0.1710263  0.01252488
+
+ 
+
+$svmRadial
+Support Vector Machines with Radial Basis Function Kernel 
+
+1856 samples
+  94 predictor
+   2 classes: 'Class_1', 'Not_Class_1' 
+
+No pre-processing
+Resampling: Bootstrapped (5 reps) 
+
+Summary of sample sizes: 1485, 1484, 1486, 1484, 1485 
+
+Resampling results across tuning parameters:
+
+  C     ROC        Sens    Spec       ROC SD      Sens SD     Spec SD    
+  0.25  0.8583091  0.2150  0.9921190  0.03345793  0.05477226  0.004632500
+  0.50  0.8580933  0.2025  0.9926808  0.03370299  0.05184110  0.005120209
+  1.00  0.8580255  0.1900  0.9966245  0.03352632  0.04454632  0.002353487
+
+Tuning parameter 'sigma' was held constant at a value of 0.02003252
+ROC was used to select the optimal model using  the largest value.
+The final values used for the model were sigma = 0.02003252 and C = 0.25. 
+
+attr(,"class")
+[1] "caretList"
+
+$weights
+      gbm        rf       glm svmRadial 
+     0.02      0.50      0.19      0.29 
+
+$error
+                             [,1]
+Class_1 vs. Not_Class_1 0.9100532
+attr(,"names")
+[1] "AUC"
+
+$modelType
+             gbm 
+"Classification" 
+
+attr(,"class")
+[1] "caretEnsemble"
+
+Model Correlations
+                gbm        rf       glm svmRadial
+gbm       1.0000000 0.9578556 0.5122987 0.1015244
+rf        0.9578556 1.0000000 0.7361597 0.3672325
+glm       0.5122987 0.7361597 1.0000000 0.8368856
+svmRadial 0.1015244 0.3672325 0.8368856 1.0000000
+
+
+ Class_2$models
+$gbm
+Stochastic Gradient Boosting 
+
+1856 samples
+  94 predictor
+   2 classes: 'Class_2', 'Not_Class_2' 
+
+No pre-processing
+Resampling: Bootstrapped (5 reps) 
+
+Summary of sample sizes: 1485, 1484, 1486, 1484, 1485 
+
+Resampling results across tuning parameters:
+
+  interaction.depth  n.trees  ROC        Sens       Spec       ROC SD      Sens SD     Spec SD   
+  1                   50      0.8581179  0.3614474  0.9181181  0.02789786  0.04077780  0.01709427
+  1                  100      0.8709980  0.4917325  0.8920022  0.02571595  0.05810967  0.02298756
+  1                  150      0.8775105  0.5358114  0.8854935  0.02366499  0.06617956  0.01682817
+  2                   50      0.8723852  0.4917105  0.8999811  0.02044108  0.06208589  0.02086992
+  2                  100      0.8841265  0.5757237  0.8883895  0.01700771  0.05790987  0.01493907
+  2                  150      0.8900723  0.6071711  0.8920258  0.01672278  0.03492455  0.01187930
+  3                   50      0.8852316  0.5631579  0.8985318  0.01707679  0.05741427  0.01694533
+  3                  100      0.8957348  0.6262061  0.8920179  0.01497172  0.05488122  0.01512433
+  3                  150      0.8980624  0.6428947  0.8913064  0.01439610  0.05585212  0.01053406
+
+Tuning parameter 'shrinkage' was held constant at a value of 0.1
+ROC was used to select the optimal model using  the largest value.
+The final values used for the model were n.trees = 150, interaction.depth = 3 and shrinkage = 0.1. 
+
+$rf
+Random Forest 
+
+1856 samples
+  94 predictor
+   2 classes: 'Class_2', 'Not_Class_2' 
+
+No pre-processing
+Resampling: Bootstrapped (5 reps) 
+
+Summary of sample sizes: 1485, 1484, 1486, 1484, 1485 
+
+Resampling results across tuning parameters:
+
+  mtry  ROC        Sens       Spec       ROC SD       Sens SD     Spec SD    
+   2    0.9052240  0.5442763  0.9079548  0.011633339  0.05503733  0.012031398
+  48    0.9055178  0.6471272  0.8927399  0.009745425  0.04728004  0.015204425
+  94    0.9025517  0.6491009  0.8862313  0.007340740  0.03897347  0.005503161
+
+ROC was used to select the optimal model using  the largest value.
+The final value used for the model was mtry = 48. 
+
+$glm
+Generalized Linear Model 
+
+1856 samples
+  94 predictor
+   2 classes: 'Class_2', 'Not_Class_2' 
+
+No pre-processing
+Resampling: Bootstrapped (5 reps) 
+
+Summary of sample sizes: 1485, 1484, 1486, 1484, 1485 
+
+Resampling results
+
+  ROC        Sens       Spec       ROC SD       Sens SD     Spec SD   
+  0.8921385  0.6743202  0.8775067  0.009779427  0.06121606  0.01551159
+
+ 
+
+$svmRadial
+Support Vector Machines with Radial Basis Function Kernel 
+
+1856 samples
+  94 predictor
+   2 classes: 'Class_2', 'Not_Class_2' 
+
+No pre-processing
+Resampling: Bootstrapped (5 reps) 
+
+Summary of sample sizes: 1485, 1484, 1486, 1484, 1485 
+
+Resampling results across tuning parameters:
+
+  C     ROC        Sens       Spec       ROC SD      Sens SD     Spec SD   
+  0.25  0.8856558  0.5756360  0.8992696  0.01851361  0.05590688  0.01439803
+  0.50  0.8876874  0.5839912  0.8992671  0.01973778  0.07601429  0.02136880
+  1.00  0.8929831  0.5923904  0.9043290  0.01837077  0.06189669  0.01601525
+
+Tuning parameter 'sigma' was held constant at a value of 0.01777477
+ROC was used to select the optimal model using  the largest value.
+The final values used for the model were sigma = 0.01777477 and C = 1. 
+
+attr(,"class")
+[1] "caretList"
+
+$weights
+      gbm        rf       glm svmRadial 
+     0.05      0.62      0.31      0.02 
+
+$error
+                             [,1]
+Class_2 vs. Not_Class_2 0.9146115
+attr(,"names")
+[1] "AUC"
+
+$modelType
+             gbm 
+"Classification" 
+
+attr(,"class")
+[1] "caretEnsemble"
+
+Model Correlations
+                gbm        rf       glm svmRadial
+gbm       1.0000000 0.9418767 0.7377866 0.6355993
+rf        0.9418767 1.0000000 0.6532261 0.4312582
+glm       0.7377866 0.6532261 1.0000000 0.9159672
+svmRadial 0.6355993 0.4312582 0.9159672 1.0000000
+
+
+ Class_3$models
+$gbm
+Stochastic Gradient Boosting 
+
+1856 samples
+  94 predictor
+   2 classes: 'Class_3', 'Not_Class_3' 
+
+No pre-processing
+Resampling: Bootstrapped (5 reps) 
+
+Summary of sample sizes: 1485, 1484, 1486, 1484, 1485 
+
+Resampling results across tuning parameters:
+
+  interaction.depth  n.trees  ROC        Sens       Spec       ROC SD      Sens SD     Spec SD    
+  1                   50      0.8382825  0.0677305  0.9944406  0.02667817  0.02299503  0.002589183
+  1                  100      0.8488603  0.1439716  0.9820909  0.02987935  0.04040064  0.006710170
+  1                  150      0.8502607  0.1780142  0.9771659  0.02574528  0.03584894  0.008307083
+  2                   50      0.8517623  0.1440603  0.9839561  0.02376679  0.02765687  0.003989206
+  2                  100      0.8590317  0.1990248  0.9728373  0.01904756  0.05477296  0.004044775
+  2                  150      0.8595346  0.2414894  0.9697470  0.02096892  0.05313827  0.002673959
+  3                   50      0.8602204  0.1991135  0.9833236  0.02834059  0.02375159  0.006442223
+  3                  100      0.8612269  0.2669326  0.9703834  0.02382882  0.01855465  0.005515520
+  3                  150      0.8621925  0.2796986  0.9672931  0.02586701  0.02370936  0.005944235
+
+Tuning parameter 'shrinkage' was held constant at a value of 0.1
+ROC was used to select the optimal model using  the largest value.
+The final values used for the model were n.trees = 150, interaction.depth = 3 and shrinkage = 0.1. 
+
+$rf
+Random Forest 
+
+1856 samples
+  94 predictor
+   2 classes: 'Class_3', 'Not_Class_3' 
+
+No pre-processing
+Resampling: Bootstrapped (5 reps) 
+
+Summary of sample sizes: 1485, 1484, 1486, 1484, 1485 
+
+Resampling results across tuning parameters:
+
+  mtry  ROC        Sens        Spec       ROC SD      Sens SD     Spec SD    
+   2    0.8567045  0.02118794  1.0000000  0.01220147  0.01504613  0.000000000
+  48    0.8549390  0.21196809  0.9777928  0.02061783  0.06592580  0.006262153
+  94    0.8457798  0.22047872  0.9734679  0.02967517  0.06536550  0.005090252
+
+ROC was used to select the optimal model using  the largest value.
+The final value used for the model was mtry = 2. 
+
+$glm
+Generalized Linear Model 
+
+1856 samples
+  94 predictor
+   2 classes: 'Class_3', 'Not_Class_3' 
+
+No pre-processing
+Resampling: Bootstrapped (5 reps) 
+
+Summary of sample sizes: 1485, 1484, 1486, 1484, 1485 
+
+Resampling results
+
+  ROC        Sens       Spec      ROC SD      Sens SD     Spec SD   
+  0.8498987  0.2967199  0.956178  0.03015061  0.07262175  0.01096578
+
+ 
+
+$svmRadial
+Support Vector Machines with Radial Basis Function Kernel 
+
+1856 samples
+  94 predictor
+   2 classes: 'Class_3', 'Not_Class_3' 
+
+No pre-processing
+Resampling: Bootstrapped (5 reps) 
+
+Summary of sample sizes: 1485, 1484, 1486, 1484, 1485 
+
+Resampling results across tuning parameters:
+
+  C     ROC        Sens        Spec       ROC SD      Sens SD     Spec SD    
+  0.25  0.7724284  0.12730496  0.9870273  0.01716463  0.03420653  0.004072090
+  0.50  0.7719986  0.05939716  0.9932213  0.01746073  0.03168009  0.005512149
+  1.00  0.7721899  0.11019504  0.9851601  0.01666990  0.03813551  0.009696231
+
+Tuning parameter 'sigma' was held constant at a value of 0.01927919
+ROC was used to select the optimal model using  the largest value.
+The final values used for the model were sigma = 0.01927919 and C = 0.25. 
+
+attr(,"class")
+[1] "caretList"
+
+$weights
+      gbm        rf       glm svmRadial 
+     0.27      0.37      0.30      0.06 
+
+$error
+                             [,1]
+Class_3 vs. Not_Class_3 0.8828128
+attr(,"names")
+[1] "AUC"
+
+$modelType
+             gbm 
+"Classification" 
+
+attr(,"class")
+[1] "caretEnsemble"
+
+Model Correlations
+                gbm        rf       glm svmRadial
+gbm       1.0000000 0.5441821 0.8972431 0.5269489
+rf        0.5441821 1.0000000 0.7454329 0.9604860
+glm       0.8972431 0.7454329 1.0000000 0.7881278
+svmRadial 0.5269489 0.9604860 0.7881278 1.0000000
+
+
+ Class_4$models
+$gbm
+Stochastic Gradient Boosting 
+
+1856 samples
+  94 predictor
+   2 classes: 'Class_4', 'Not_Class_4' 
+
+No pre-processing
+Resampling: Bootstrapped (5 reps) 
+
+Summary of sample sizes: 1485, 1484, 1486, 1484, 1485 
+
+Resampling results across tuning parameters:
+
+  interaction.depth  n.trees  ROC        Sens        Spec       ROC SD      Sens SD     Spec SD    
+  1                   50      0.7944244  0.00000000  0.9977575  0.11350233  0.00000000  0.001253583
+  1                  100      0.8195984  0.01333333  0.9971957  0.10614927  0.02981424  0.001986260
+  1                  150      0.8225440  0.05523810  0.9966339  0.10166647  0.05640395  0.003078173
+  2                   50      0.8052062  0.09714286  0.9955151  0.10287956  0.06295807  0.005459180
+  2                  100      0.8303261  0.15238095  0.9932726  0.09571712  0.09153516  0.005806444
+  2                  150      0.8246647  0.19238095  0.9904683  0.10014495  0.07473309  0.008069961
+  3                   50      0.8485908  0.06952381  0.9927139  0.11331357  0.08752065  0.007567340
+  3                  100      0.8510507  0.14952381  0.9910285  0.09628774  0.10846277  0.006073607
+  3                  150      0.8531732  0.15047619  0.9910270  0.09346870  0.11883791  0.005388899
+
+Tuning parameter 'shrinkage' was held constant at a value of 0.1
+ROC was used to select the optimal model using  the largest value.
+The final values used for the model were n.trees = 150, interaction.depth = 3 and shrinkage = 0.1. 
+
+$rf
+Random Forest 
+
+1856 samples
+  94 predictor
+   2 classes: 'Class_4', 'Not_Class_4' 
+
+No pre-processing
+Resampling: Bootstrapped (5 reps) 
+
+Summary of sample sizes: 1485, 1484, 1486, 1484, 1485 
+
+Resampling results across tuning parameters:
+
+  mtry  ROC        Sens        Spec       ROC SD      Sens SD     Spec SD    
+   2    0.8550463  0.00000000  1.0000000  0.04501194  0.00000000  0.000000000
+  48    0.8462710  0.04190476  0.9977591  0.08223204  0.06338880  0.005010797
+  94    0.8316544  0.05523810  0.9943946  0.08454461  0.03097069  0.007921375
+
+ROC was used to select the optimal model using  the largest value.
+The final value used for the model was mtry = 2. 
+
+$glm
+Generalized Linear Model 
+
+1856 samples
+  94 predictor
+   2 classes: 'Class_4', 'Not_Class_4' 
+
+No pre-processing
+Resampling: Bootstrapped (5 reps) 
+
+Summary of sample sizes: 1485, 1484, 1486, 1484, 1485 
+
+Resampling results
+
+  ROC        Sens       Spec       ROC SD     Sens SD    Spec SD    
+  0.7331177  0.1371429  0.9826126  0.1677285  0.1115953  0.003664982
+
+ 
+
+attr(,"class")
+[1] "caretList"
+
+$weights
+ gbm   rf  glm 
+0.41 0.42 0.17 
+
+$error
+                             [,1]
+Class_4 vs. Not_Class_4 0.8774422
+attr(,"names")
+[1] "AUC"
+
+$modelType
+             gbm 
+"Classification" 
+
+attr(,"class")
+[1] "caretEnsemble"
+
+Model Correlations
+           gbm          rf         glm
+gbm  1.0000000  0.81441031 -0.23876968
+rf   0.8144103  1.00000000 -0.09997593
+glm -0.2387697 -0.09997593  1.00000000
+
+
+ Class_5$models
+$gbm
+Stochastic Gradient Boosting 
+
+1856 samples
+  94 predictor
+   2 classes: 'Class_5', 'Not_Class_5' 
+
+No pre-processing
+Resampling: Bootstrapped (5 reps) 
+
+Summary of sample sizes: 1485, 1484, 1486, 1484, 1485 
+
+Resampling results across tuning parameters:
+
+  interaction.depth  n.trees  ROC        Sens       Spec       ROC SD       Sens SD     Spec SD    
+  1                   50      0.9983881  0.8733333  0.9960627  0.002057382  0.11698617  0.002514215
+  1                  100      0.9986180  0.8983333  0.9971894  0.002201228  0.09540666  0.002808991
+  1                  150      0.9989717  0.9108333  0.9971878  0.001618149  0.10539278  0.001986260
+  2                   50      0.9986506  0.8983333  0.9977496  0.001841060  0.09540666  0.001257994
+  2                  100      0.9988311  0.9108333  0.9977496  0.001732985  0.10539278  0.001257994
+  2                  150      0.9988311  0.9108333  0.9977496  0.001732985  0.10539278  0.002355847
+  3                   50      0.9988990  0.8983333  0.9971878  0.001575131  0.09540666  0.002812951
+  3                  100      0.9989717  0.9108333  0.9983114  0.001618149  0.10539278  0.002518631
+  3                  150      0.9989365  0.9108333  0.9988748  0.001695094  0.10539278  0.001540716
+
+Tuning parameter 'shrinkage' was held constant at a value of 0.1
+ROC was used to select the optimal model using  the largest value.
+The final values used for the model were n.trees = 100, interaction.depth = 3 and shrinkage = 0.1. 
+
+$rf
+Random Forest 
+
+1856 samples
+  94 predictor
+   2 classes: 'Class_5', 'Not_Class_5' 
+
+No pre-processing
+Resampling: Bootstrapped (5 reps) 
+
+Summary of sample sizes: 1485, 1484, 1486, 1484, 1485 
+
+Resampling results across tuning parameters:
+
+  mtry  ROC        Sens       Spec       ROC SD        Sens SD     Spec SD    
+   2    0.9978754  0.2041667  1.0000000  0.0022509876  0.08887804  0.000000000
+  48    0.9993228  0.9108333  0.9994382  0.0008643598  0.10539278  0.001256218
+  94    0.9932531  0.9616667  0.9994382  0.0144857888  0.03503471  0.001256218
+
+ROC was used to select the optimal model using  the largest value.
+The final value used for the model was mtry = 48. 
+
+$glm
+Generalized Linear Model 
+
+1856 samples
+  94 predictor
+   2 classes: 'Class_5', 'Not_Class_5' 
+
+No pre-processing
+Resampling: Bootstrapped (5 reps) 
+
+Summary of sample sizes: 1485, 1484, 1486, 1484, 1485 
+
+Resampling results
+
+  ROC        Sens       Spec       ROC SD      Sens SD    Spec SD  
+  0.9850227  0.9491667  0.9780456  0.01765175  0.0525727  0.0121908
+
+ 
+
+$svmRadial
+Support Vector Machines with Radial Basis Function Kernel 
+
+1856 samples
+  94 predictor
+   2 classes: 'Class_5', 'Not_Class_5' 
+
+No pre-processing
+Resampling: Bootstrapped (5 reps) 
+
+Summary of sample sizes: 1485, 1484, 1486, 1484, 1485 
+
+Resampling results across tuning parameters:
+
+  C     ROC        Sens       Spec       ROC SD        Sens SD     Spec SD    
+  0.25  0.9987325  0.8733333  0.9966245  0.0011169823  0.07663722  0.002353487
+  0.50  0.9991542  0.8733333  0.9977496  0.0008790949  0.07663722  0.003081432
+  1.00  0.9993275  0.8733333  0.9983130  0.0006348322  0.07663722  0.002513323
+
+Tuning parameter 'sigma' was held constant at a value of 0.01834759
+ROC was used to select the optimal model using  the largest value.
+The final values used for the model were sigma = 0.01834759 and C = 1. 
+
+attr(,"class")
+[1] "caretList"
+
+$weights
+      gbm        rf       glm svmRadial 
+     0.02      0.61      0.10      0.27 
+
+$error
+                            [,1]
+Class_5 vs. Not_Class_5 0.999537
+attr(,"names")
+[1] "AUC"
+
+$modelType
+             gbm 
+"Classification" 
+
+attr(,"class")
+[1] "caretEnsemble"
+
+Model Correlations
+                 gbm        rf         glm  svmRadial
+gbm       1.00000000 0.9827547  0.08510694  0.8999823
+rf        0.98275474 1.0000000  0.24675151  0.8185069
+glm       0.08510694 0.2467515  1.00000000 -0.1720525
+svmRadial 0.89998229 0.8185069 -0.17205251  1.0000000
+
+
+ Class_6$models
+$gbm
+Stochastic Gradient Boosting 
+
+1856 samples
+  94 predictor
+   2 classes: 'Class_6', 'Not_Class_6' 
+
+No pre-processing
+Resampling: Bootstrapped (5 reps) 
+
+Summary of sample sizes: 1485, 1484, 1486, 1484, 1485 
+
+Resampling results across tuning parameters:
+
+  interaction.depth  n.trees  ROC        Sens       Spec       ROC SD       Sens SD     Spec SD    
+  1                   50      0.9654092  0.7877848  0.9869815  0.009997307  0.02955398  0.003774164
+  1                  100      0.9723928  0.8256013  0.9876688  0.011212689  0.04379917  0.003074430
+  1                  150      0.9718560  0.8509177  0.9869862  0.012793373  0.02930600  0.002865536
+  2                   50      0.9761409  0.8383228  0.9862942  0.008048759  0.03307537  0.004874435
+  2                  100      0.9751280  0.8610443  0.9890410  0.012456414  0.03925078  0.002872497
+  2                  150      0.9754720  0.8711392  0.9883420  0.013128203  0.04618432  0.006256196
+  3                   50      0.9721749  0.8534494  0.9862965  0.013308828  0.04283044  0.002455033
+  3                  100      0.9772751  0.8711076  0.9842394  0.010634977  0.04167909  0.003938983
+  3                  150      0.9771587  0.8711392  0.9856116  0.011945263  0.03965077  0.004487150
+
+Tuning parameter 'shrinkage' was held constant at a value of 0.1
+ROC was used to select the optimal model using  the largest value.
+The final values used for the model were n.trees = 100, interaction.depth = 3 and shrinkage = 0.1. 
+
+$rf
+Random Forest 
+
+1856 samples
+  94 predictor
+   2 classes: 'Class_6', 'Not_Class_6' 
+
+No pre-processing
+Resampling: Bootstrapped (5 reps) 
+
+Summary of sample sizes: 1485, 1484, 1486, 1484, 1485 
+
+Resampling results across tuning parameters:
+
+  mtry  ROC        Sens       Spec       ROC SD       Sens SD     Spec SD    
+   2    0.9778963  0.7372468  0.9958810  0.010215461  0.06651628  0.003760131
+  48    0.9741848  0.8762025  0.9842324  0.009098603  0.04060905  0.009881054
+  94    0.9719380  0.8636076  0.9821823  0.008146580  0.03850500  0.010398399
+
+ROC was used to select the optimal model using  the largest value.
+The final value used for the model was mtry = 2. 
+
+$glm
+Generalized Linear Model 
+
+1856 samples
+  94 predictor
+   2 classes: 'Class_6', 'Not_Class_6' 
+
+No pre-processing
+Resampling: Bootstrapped (5 reps) 
+
+Summary of sample sizes: 1485, 1484, 1486, 1484, 1485 
+
+Resampling results
+
+  ROC        Sens       Spec       ROC SD      Sens SD     Spec SD  
+  0.9519217  0.8762025  0.9554954  0.02507388  0.03533437  0.0203042
+
+ 
+
+$svmRadial
+Support Vector Machines with Radial Basis Function Kernel 
+
+1856 samples
+  94 predictor
+   2 classes: 'Class_6', 'Not_Class_6' 
+
+No pre-processing
+Resampling: Bootstrapped (5 reps) 
+
+Summary of sample sizes: 1485, 1484, 1486, 1484, 1485 
+
+Resampling results across tuning parameters:
+
+  C     ROC        Sens       Spec       ROC SD      Sens SD     Spec SD    
+  0.25  0.9789859  0.8408861  0.9883514  0.01077205  0.03657658  0.005192462
+  0.50  0.9797159  0.8409177  0.9890340  0.01084447  0.04946887  0.004477573
+  1.00  0.9804133  0.8434177  0.9904062  0.01120734  0.04261614  0.004475219
+
+Tuning parameter 'sigma' was held constant at a value of 0.01779527
+ROC was used to select the optimal model using  the largest value.
+The final values used for the model were sigma = 0.01779527 and C = 1. 
+
+attr(,"class")
+[1] "caretList"
+
+$weights
+      gbm        rf       glm svmRadial 
+     0.35      0.10      0.13      0.42 
+
+$error
+                             [,1]
+Class_6 vs. Not_Class_6 0.9827556
+attr(,"names")
+[1] "AUC"
+
+$modelType
+             gbm 
+"Classification" 
+
+attr(,"class")
+[1] "caretEnsemble"
+
+Model Correlations
+                gbm        rf       glm svmRadial
+gbm       1.0000000 0.9535502 0.4366658 0.8728127
+rf        0.9535502 1.0000000 0.5338371 0.9391216
+glm       0.4366658 0.5338371 1.0000000 0.7901145
+svmRadial 0.8728127 0.9391216 0.7901145 1.0000000
+
+
+ Class_7$models
+$gbm
+Stochastic Gradient Boosting 
+
+1856 samples
+  94 predictor
+   2 classes: 'Class_7', 'Not_Class_7' 
+
+No pre-processing
+Resampling: Bootstrapped (5 reps) 
+
+Summary of sample sizes: 1485, 1484, 1486, 1484, 1485 
+
+Resampling results across tuning parameters:
+
+  interaction.depth  n.trees  ROC        Sens       Spec       ROC SD       Sens SD     Spec SD    
+  1                   50      0.8762913  0.2600000  0.9954497  0.015261647  0.08099109  0.005893203
+  1                  100      0.8763201  0.2810526  0.9937451  0.013826921  0.08692978  0.006161267
+  1                  150      0.8734559  0.3015789  0.9914772  0.013457763  0.11182817  0.005673854
+  2                   50      0.8758511  0.3331579  0.9914691  0.007499802  0.10150529  0.005323629
+  2                  100      0.8783110  0.3436842  0.9863587  0.028194962  0.12064577  0.006157841
+  2                  150      0.8723194  0.3442105  0.9869220  0.025658216  0.10404559  0.005909226
+  3                   50      0.8800072  0.3126316  0.9903343  0.011144210  0.11187151  0.007676255
+  3                  100      0.8879700  0.2921053  0.9886249  0.015116465  0.08132388  0.005344265
+  3                  150      0.8792129  0.3131579  0.9857889  0.008085401  0.06734992  0.002881564
+
+Tuning parameter 'shrinkage' was held constant at a value of 0.1
+ROC was used to select the optimal model using  the largest value.
+The final values used for the model were n.trees = 100, interaction.depth = 3 and shrinkage = 0.1. 
+
+$rf
+Random Forest 
+
+1856 samples
+  94 predictor
+   2 classes: 'Class_7', 'Not_Class_7' 
+
+No pre-processing
+Resampling: Bootstrapped (5 reps) 
+
+Summary of sample sizes: 1485, 1484, 1486, 1484, 1485 
+
+Resampling results across tuning parameters:
+
+  mtry  ROC        Sens        Spec       ROC SD      Sens SD    Spec SD    
+   2    0.8835997  0.02105263  1.0000000  0.03684201  0.0288275  0.000000000
+  48    0.8922646  0.32315789  0.9920389  0.02422466  0.1146837  0.006791828
+  94    0.8761318  0.35421053  0.9886314  0.03826737  0.1010951  0.008036214
+
+ROC was used to select the optimal model using  the largest value.
+The final value used for the model was mtry = 48. 
+
+$svmRadial
+Support Vector Machines with Radial Basis Function Kernel 
+
+1856 samples
+  94 predictor
+   2 classes: 'Class_7', 'Not_Class_7' 
+
+No pre-processing
+Resampling: Bootstrapped (5 reps) 
+
+Summary of sample sizes: 1485, 1484, 1486, 1484, 1485 
+
+Resampling results across tuning parameters:
+
+  C     ROC        Sens       Spec       ROC SD      Sens SD     Spec SD    
+  0.25  0.8699294  0.3331579  0.9943133  0.03269022  0.05812157  0.004500907
+  0.50  0.8697786  0.3226316  0.9965860  0.03274927  0.04023821  0.003709411
+  1.00  0.8692389  0.3121053  0.9971542  0.03133051  0.04850964  0.002849058
+
+Tuning parameter 'sigma' was held constant at a value of 0.01857431
+ROC was used to select the optimal model using  the largest value.
+The final values used for the model were sigma = 0.01857431 and C = 0.25. 
+
+attr(,"class")
+[1] "caretList"
+
+$weights
+      gbm        rf svmRadial 
+     0.65      0.29      0.06 
+
+$error
+                             [,1]
+Class_7 vs. Not_Class_7 0.9058653
+attr(,"names")
+[1] "AUC"
+
+$modelType
+             gbm 
+"Classification" 
+
+attr(,"class")
+[1] "caretEnsemble"
+
+Model Correlations
+                 gbm         rf  svmRadial
+gbm        1.0000000 -0.2278787 -0.2362274
+rf        -0.2278787  1.0000000  0.9702959
+svmRadial -0.2362274  0.9702959  1.0000000
+
+
+ Class_8$models
+$gbm
+Stochastic Gradient Boosting 
+
+1856 samples
+  94 predictor
+   2 classes: 'Class_8', 'Not_Class_8' 
+
+No pre-processing
+Resampling: Bootstrapped (5 reps) 
+
+Summary of sample sizes: 1485, 1484, 1486, 1484, 1485 
+
+Resampling results across tuning parameters:
+
+  interaction.depth  n.trees  ROC        Sens       Spec       ROC SD       Sens SD     Spec SD    
+  1                   50      0.9426648  0.4527059  0.9850136  0.021619699  0.10885218  0.007122602
+  1                  100      0.9592369  0.6138039  0.9787752  0.012565452  0.05683596  0.007767090
+  1                  150      0.9648041  0.6612549  0.9781463  0.011545916  0.02457544  0.009625774
+  2                   50      0.9587934  0.5863529  0.9812655  0.014140603  0.04908263  0.008837334
+  2                  100      0.9672571  0.7005490  0.9800253  0.012073780  0.04484121  0.010708034
+  2                  150      0.9711275  0.7477647  0.9818964  0.012515267  0.04895085  0.008072807
+  3                   50      0.9660101  0.6688627  0.9831483  0.014002864  0.06468425  0.007819322
+  3                  100      0.9721673  0.7358431  0.9831483  0.008572369  0.06248082  0.009752377
+  3                  150      0.9718061  0.7790588  0.9850155  0.009333863  0.07520092  0.006004137
+
+Tuning parameter 'shrinkage' was held constant at a value of 0.1
+ROC was used to select the optimal model using  the largest value.
+The final values used for the model were n.trees = 100, interaction.depth = 3 and shrinkage = 0.1. 
+
+$rf
+Random Forest 
+
+1856 samples
+  94 predictor
+   2 classes: 'Class_8', 'Not_Class_8' 
+
+No pre-processing
+Resampling: Bootstrapped (5 reps) 
+
+Summary of sample sizes: 1485, 1484, 1486, 1484, 1485 
+
+Resampling results across tuning parameters:
+
+  mtry  ROC        Sens       Spec       ROC SD      Sens SD     Spec SD    
+   2    0.9684051  0.4407843  0.9981250  0.01453197  0.05494396  0.004192627
+  48    0.9657546  0.8148235  0.9762772  0.01228262  0.03660780  0.010932553
+  94    0.9624247  0.8069020  0.9750369  0.01369173  0.02755945  0.011853073
+
+ROC was used to select the optimal model using  the largest value.
+The final value used for the model was mtry = 2. 
+
+$glm
+Generalized Linear Model 
+
+1856 samples
+  94 predictor
+   2 classes: 'Class_8', 'Not_Class_8' 
+
+No pre-processing
+Resampling: Bootstrapped (5 reps) 
+
+Summary of sample sizes: 1485, 1484, 1486, 1484, 1485 
+
+Resampling results
+
+  ROC        Sens      Spec       ROC SD      Sens SD     Spec SD   
+  0.9538619  0.791451  0.9662751  0.01344892  0.04867518  0.01004769
+
+ 
+
+$svmRadial
+Support Vector Machines with Radial Basis Function Kernel 
+
+1856 samples
+  94 predictor
+   2 classes: 'Class_8', 'Not_Class_8' 
+
+No pre-processing
+Resampling: Bootstrapped (5 reps) 
+
+Summary of sample sizes: 1485, 1484, 1486, 1484, 1485 
+
+Resampling results across tuning parameters:
+
+  C     ROC        Sens       Spec       ROC SD      Sens SD     Spec SD    
+  0.25  0.9648435  0.6534902  0.9775311  0.01188909  0.06322707  0.007104262
+  0.50  0.9661041  0.6612549  0.9831463  0.01130771  0.07355132  0.002791254
+  1.00  0.9668592  0.6652549  0.9856464  0.01207591  0.05443047  0.002766896
+
+Tuning parameter 'sigma' was held constant at a value of 0.01844076
+ROC was used to select the optimal model using  the largest value.
+The final values used for the model were sigma = 0.01844076 and C = 1. 
+
+attr(,"class")
+[1] "caretList"
+
+$weights
+      gbm        rf       glm svmRadial 
+     0.53      0.10      0.35      0.02 
+
+$error
+                             [,1]
+Class_8 vs. Not_Class_8 0.9784964
+attr(,"names")
+[1] "AUC"
+
+$modelType
+             gbm 
+"Classification" 
+
+attr(,"class")
+[1] "caretEnsemble"
+
+Model Correlations
+                 gbm         rf        glm  svmRadial
+gbm        1.0000000  0.8215942 -0.9218335  0.8388323
+rf         0.8215942  1.0000000 -0.7355849  0.6276474
+glm       -0.9218335 -0.7355849  1.0000000 -0.8883137
+svmRadial  0.8388323  0.6276474 -0.8883137  1.0000000
+
+
+ Class_9$models
+$gbm
+Stochastic Gradient Boosting 
+
+1856 samples
+  94 predictor
+   2 classes: 'Class_9', 'Not_Class_9' 
+
+No pre-processing
+Resampling: Bootstrapped (5 reps) 
+
+Summary of sample sizes: 1485, 1484, 1486, 1484, 1485 
+
+Resampling results across tuning parameters:
+
+  interaction.depth  n.trees  ROC        Sens       Spec       ROC SD       Sens SD     Spec SD    
+  1                   50      0.9176411  0.5267380  0.9922954  0.007017581  0.05843060  0.004496771
+  1                  100      0.9385822  0.6048128  0.9869647  0.011826135  0.05303442  0.005796598
+  1                  150      0.9470810  0.6467023  0.9887398  0.009644981  0.02474446  0.005716041
+  2                   50      0.9425140  0.6288770  0.9899285  0.011992702  0.06125012  0.004973214
+  2                  100      0.9626714  0.6650624  0.9899268  0.008539179  0.06251070  0.005394829
+  2                  150      0.9640790  0.6768271  0.9875599  0.005302398  0.05661326  0.005714225
+  3                   50      0.9382935  0.6409982  0.9881499  0.006390394  0.06160186  0.006969362
+  3                  100      0.9581871  0.6766488  0.9857865  0.009507139  0.03273142  0.003873381
+  3                  150      0.9610855  0.7003565  0.9863800  0.005465186  0.05794049  0.004499108
+
+Tuning parameter 'shrinkage' was held constant at a value of 0.1
+ROC was used to select the optimal model using  the largest value.
+The final values used for the model were n.trees = 150, interaction.depth = 2 and shrinkage = 0.1. 
+
+$rf
+Random Forest 
+
+1856 samples
+  94 predictor
+   2 classes: 'Class_9', 'Not_Class_9' 
+
+No pre-processing
+Resampling: Bootstrapped (5 reps) 
+
+Summary of sample sizes: 1485, 1484, 1486, 1484, 1485 
+
+Resampling results across tuning parameters:
+
+  mtry  ROC        Sens       Spec       ROC SD      Sens SD     Spec SD    
+   2    0.9662967  0.3233512  0.9982249  0.01760250  0.06098953  0.002646234
+  48    0.9560221  0.7178253  0.9822379  0.01412579  0.07561484  0.005930429
+  94    0.9522717  0.7180036  0.9786876  0.01872180  0.07512476  0.011151619
+
+ROC was used to select the optimal model using  the largest value.
+The final value used for the model was mtry = 2. 
+
+$glm
+Generalized Linear Model 
+
+1856 samples
+  94 predictor
+   2 classes: 'Class_9', 'Not_Class_9' 
+
+No pre-processing
+Resampling: Bootstrapped (5 reps) 
+
+Summary of sample sizes: 1485, 1484, 1486, 1484, 1485 
+
+Resampling results
+
+  ROC       Sens       Spec       ROC SD      Sens SD     Spec SD    
+  0.875458  0.7846702  0.9662458  0.02743094  0.05597829  0.008296021
+
+ 
+
+$svmRadial
+Support Vector Machines with Radial Basis Function Kernel 
+
+1856 samples
+  94 predictor
+   2 classes: 'Class_9', 'Not_Class_9' 
+
+No pre-processing
+Resampling: Bootstrapped (5 reps) 
+
+Summary of sample sizes: 1485, 1484, 1486, 1484, 1485 
+
+Resampling results across tuning parameters:
+
+  C     ROC        Sens       Spec       ROC SD       Sens SD     Spec SD    
+  0.25  0.9631918  0.6819964  0.9846066  0.008759092  0.06862571  0.003239153
+  0.50  0.9632918  0.6761141  0.9887538  0.008099112  0.07364033  0.002455593
+  1.00  0.9642567  0.7064171  0.9905272  0.005301075  0.05770420  0.002473952
+
+Tuning parameter 'sigma' was held constant at a value of 0.01828684
+ROC was used to select the optimal model using  the largest value.
+The final values used for the model were sigma = 0.01828684 and C = 1. 
+
+attr(,"class")
+[1] "caretList"
+
+$weights
+      gbm        rf       glm svmRadial 
+     0.43      0.19      0.19      0.19 
+
+$error
+                             [,1]
+Class_9 vs. Not_Class_9 0.9749063
+attr(,"names")
+[1] "AUC"
+
+$modelType
+             gbm 
+"Classification" 
+
+attr(,"class")
+[1] "caretEnsemble"
+
+Model Correlations
+                  gbm          rf        glm  svmRadial
+gbm        1.00000000 -0.07540119  0.2583077 -0.7936151
+rf        -0.07540119  1.00000000 -0.1616036 -0.1732850
+glm        0.25830772 -0.16160360  1.0000000  0.3517249
+svmRadial -0.79361511 -0.17328503  0.3517249  1.0000000
