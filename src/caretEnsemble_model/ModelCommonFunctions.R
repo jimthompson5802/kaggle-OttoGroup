@@ -45,10 +45,10 @@ trainEnsembleForOneClass <- function(this.class,train.data,response) {
 
     ens <- caretEnsemble(model.list)
     
-    return(list(ens=ens))
+    return(ens)
 }
 
 predictForOneClass <- function(this.class,mdls,new.data) {
-    pred.probs <- predict(mdls[[this.class]]$ens,newdata = new.data)
+    pred.probs <- predict(mdls[[this.class]],newdata = new.data)
     return(1.0 - pred.probs)
 }

@@ -70,22 +70,19 @@ pred.probs <- do.call(cbind,ll)
 score <- logLossEval(pred.probs,test.raw$target)
 score
 
-
 # determine if score improved
 improved <- ifelse(score < min(modelPerf.df$score),"Yes","No")
 
 # record Model performance
 modelPerf.df <- recordModelPerf(modelPerf.df,
-                              mdl.fit$method,
+                              "caretEnsemble",
                               time.data,
                               train.data$predictors,
                               score,
                               improved=improved,
-                              bestTune=flattenDF(mdl.fit$bestTune),
-                              tune.grid=flattenDF(CARET.TUNE.GRID),
-                              model.parms=paste(names(MODEL.SPECIFIC.PARMS),
-                                                as.character(MODEL.SPECIFIC.PARMS),
-                                                sep="=",collapse=","),
+                              bestTune="",
+                              tune.grid="",
+                              model.parms=paste(ENS.MODELS,collapse=","),
                               comment=MODEL.COMMENT)
 save(modelPerf.df,file=paste0(WORK.DIR,"/modelPerf.RData"))
 
@@ -98,15 +95,35 @@ if (last.idx == 1 || improved == "Yes") {
     cat("found improved model, saving...\n")
     flush.console()
     #yes we have improvement or first score, save generated model
-    file.name <- paste0("/model_",mdl.fit$method,"_",modelPerf.df$date.time[last.idx],".RData")
+    file.name <- paste0("/model_ensemble_",modelPerf.df$date.time[last.idx],".RData")
     file.name <- gsub(" ","_",file.name)
     file.name <- gsub(":","_",file.name)
     
-    save(mdl.fit,file=paste0(WORK.DIR,file.name))
+    save(all.classes,file=paste0(WORK.DIR,file.name))
 } else {
     cat("no improvement!!!\n")
     flush.console()
 }
 
+# record details on training log
+sink(paste0(WORK.DIR,"/training_log.txt"),append=TRUE)
+cat(rep("\n",3),rep("*",80),rep("\n",1),rep("*",80),rep("\n",1),rep("*",80),sep="")
+
+cat("\n\n***************Date/Time******************\n")
+modelPerf.df$date.time[last.idx]
+
+cat("\n\n***************Dimension of training data**************\n")
+dim(train.data$predictors)
+
+cat("\n\n***************Timing data******************************\n")
+time.data
+
+cat("\n\n**************Ensembles by Class************************\n")
+l_ply(PRODUCT.CLASSES, function(x){cat("\n\n",x);
+                                   print(all.classes[[x]]);
+                                   cat("\nModel Correlations\n");
+                                   modelCor(resamples(all.classes[[x]]$models))}, .print=TRUE)
+
+sink()
 
 
