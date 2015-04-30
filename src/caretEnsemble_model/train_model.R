@@ -19,7 +19,7 @@ ENS.MODELS <- c('gbm', 'rf',"glm","svmRadial")
 MODEL.COMMENT <- "caretEnsemble one vs all"
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 0.1
+FRACTION.TRAIN.DATA <- 0.2
 
 # load model performance data
 load(paste0(WORK.DIR,"/modelPerf.RData"))
