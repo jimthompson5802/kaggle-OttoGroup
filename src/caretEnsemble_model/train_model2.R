@@ -1,5 +1,7 @@
 ###
 # training caretEnsemble model one vs all approach
+# train models separately then combine into caretEnsemble structure
+# this allows support for intermedidate saves of models.
 ###
 
 library(caretEnsemble)
@@ -14,9 +16,10 @@ source("./src/CommonFunctions.R")
 source(paste0(WORK.DIR,"/ModelCommonFunctions.R"))
 
 # set caretEnsemble training parameters
-ENS.MODELS <- c('gbm', 'rf',"svmRadial","glm")
+# ENS.MODELS <- c('gbm', 'rf',"svmRadial","glm")
+ENS.MODELS <- c('glm')
 
-MODEL.COMMENT <- "caretEnsemble one vs all"
+MODEL.COMMENT <- "caretEnsemble one vs all with separate model training"
 
 # amount of data to train
 FRACTION.TRAIN.DATA <- 0.05
@@ -42,21 +45,40 @@ registerDoSNOW(cl)
 # train the model
 Sys.time()
 set.seed(825)
-
 ENS.TRAIN.CTRL <- trainControl(savePredictions=TRUE,
                                classProbs=TRUE,
                                index=createMultiFolds(train.data$response,5,1),
                                summaryFunction=twoClassSummary)
 
-time.data <- system.time(all.classes <-lapply(PRODUCT.CLASSES,trainEnsembleForOneClass,
+# train one model to initialize the caretList structure
+time.data <- system.time(caret.list <-lapply(PRODUCT.CLASSES,trainCaretListForOneClass,
                                           train.data$predictors,
                                           train.data$response))
 
-names(all.classes) <- PRODUCT.CLASSES
-comment(all.classes) <- MODEL.COMMENT
+names(caret.list) <- PRODUCT.CLASSES
 
-time.data
+
+# generate the other models, set up list of remaining models
+model.list <- list(list(method="gbm",verbose=FALSE),
+                   list(method="rf"),
+                   list(method="svmRadial"))
+
+# generate remaining models using caret train()
+other.mdls <- lapply(model.list,function(mdl.parms){
+    time.data <- system.time(models<-lapply(PRODUCT.CLASSES,trainForOneClass,train.data$predictors,
+                                          train.data$response,mdl.parms))
+    names(models) <- PRODUCT.CLASSES
+    return(list(model.parms=mdl.parms, models=models,time.data=time.data))
+})
+
+
 stopCluster(cl)
+
+save(caret.list,other.mdls,file=paste0(WORK.DIR,"/train2_models.RData"))
+
+# comment(all.classes) <- MODEL.COMMENT
+time.data
+
 
 # prepare data for testing
 test.data <- prepModelData(test.raw)

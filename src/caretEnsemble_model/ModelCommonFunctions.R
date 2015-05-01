@@ -34,6 +34,17 @@ prepModelData <- function(df,only.predictors=FALSE){
 #
 # helper functions for one vs all modeling
 #
+trainForOneClass <- function(this.class,train.data,response,method.list) {
+    
+    response <- factor(ifelse(response == this.class,this.class,
+                              paste0("Not_",this.class)))
+    
+    mdl.fit <- do.call(train, c(list(train.data,response),
+                                method.list, # list contain method and models specific parameters
+                                list(trControl=ENS.TRAIN.CTRL)))
+    return(mdl.fit)
+}
+
 trainEnsembleForOneClass <- function(this.class,train.data,response) {
     
     response <- factor(ifelse(response == this.class,this.class,
@@ -46,6 +57,18 @@ trainEnsembleForOneClass <- function(this.class,train.data,response) {
     ens <- caretEnsemble(model.list)
     
     return(ens)
+}
+
+trainCaretListForOneClass <- function(this.class,train.data,response) {
+    
+    response <- factor(ifelse(response == this.class,this.class,
+                              paste0("Not_",this.class)))
+    
+    model.list <- do.call(caretList,c(list(train.data,response),
+                                      list(trControl=ENS.TRAIN.CTRL,
+                                           methodList=ENS.MODELS)))
+    
+    return(model.list)
 }
 
 predictForOneClass <- function(this.class,mdls,new.data) {
