@@ -56,6 +56,7 @@ time.data <- system.time(caret.list <-lapply(PRODUCT.CLASSES,trainCaretListForOn
                                           train.data$response))
 
 names(caret.list) <- PRODUCT.CLASSES
+save(caret.list,file=paste0(WORK.DIR,"/chkpt_caret_list.RData"))
 
 
 # generate the other models, set up list of remaining models
@@ -68,17 +69,37 @@ other.mdls <- lapply(model.list,function(mdl.parms){
     time.data <- system.time(models<-lapply(PRODUCT.CLASSES,trainForOneClass,train.data$predictors,
                                           train.data$response,mdl.parms))
     names(models) <- PRODUCT.CLASSES
+    save(models,file=paste0(WORK.DIR,"/chkpt_model_",mdl.parms$method,".RData"))
     return(list(model.parms=mdl.parms, models=models,time.data=time.data))
 })
 
-
 stopCluster(cl)
 
-save(caret.list,other.mdls,file=paste0(WORK.DIR,"/train2_models.RData"))
+###
+# merge models into caretList structure
+###
 
-# comment(all.classes) <- MODEL.COMMENT
+all.classes <- list()
+
+for (cls in PRODUCT.CLASSES) {
+    for (i in 1:length(other.mdls)) {
+        # add models to respective class
+        caret.list[[cls]][[other.mdls[[i]]$model.parm$method]] <- other.mdls[[i]]$models[[cls]]
+        
+    }
+    
+    #generate caretEnsemble from the newly combined models
+    all.classes[[cls]] <- caretEnsemble(caret.list[[cls]])
+}
+
+# accumulate the time for training
+time.data <- time.data + Reduce("+",lapply(other.mdls,function(x){x$time.data}))
+
+comment(all.classes) <- MODEL.COMMENT
 time.data
 
+# clean-up data structures no longer needed
+rm(caret.list,other.mdls)
 
 # prepare data for testing
 test.data <- prepModelData(test.raw)
@@ -104,7 +125,8 @@ modelPerf.df <- recordModelPerf(modelPerf.df,
                               improved=improved,
                               bestTune="",
                               tune.grid="",
-                              model.parms=paste(ENS.MODELS,collapse=","),
+                              model.parms=paste(c(ENS.MODELS,unlist(lapply(model.list,function(x){x$method}))),
+                                                collapse=","),
                               comment=MODEL.COMMENT)
 save(modelPerf.df,file=paste0(WORK.DIR,"/modelPerf.RData"))
 
