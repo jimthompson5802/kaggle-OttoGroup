@@ -3,7 +3,7 @@
 ###
 
 library(caret)
-library(randomForest)
+library(gbm)
 
 WORK.DIR <- "./src/gbm2_model"
 
