@@ -17,10 +17,10 @@ source(paste0(WORK.DIR,"/ModelCommonFunctions.R"))
 # set caret training parameters
 CARET.TRAIN.PARMS <- list(method="gbm")
 
-# CARET.TUNE.GRID <-  NULL #expand.grid(C=c(0.1,0.01))
-CARET.TUNE.GRID <- expand.grid(interaction.depth = c(3, 5, 7, 9, 11),
-                               n.trees = c(100,200,300,400,500,600),
-                               shrinkage = 0.1)
+CARET.TUNE.GRID <-  NULL #expand.grid(C=c(0.1,0.01))
+# CARET.TUNE.GRID <- expand.grid(interaction.depth = c(3, 5, 7, 9, 11),
+#                                n.trees = c(100,200,300,400,500,600),
+#                                shrinkage = 0.1)
 
 CARET.TRAIN.CTRL <- trainControl(method="none",
 #                                  number=5,
@@ -30,20 +30,27 @@ CARET.TRAIN.CTRL <- trainControl(method="none",
                                  summaryFunction=twoClassSummary)
 
 FINAL.MODEL.TUNE <- list(
-                        Class_1=list(n.trees)
+                        Class_1=data.frame(n.trees=500, interaction.depth=9, shrinkage=0.1),
+                        Class_2=data.frame(n.trees=500, interaction.depth=9, shrinkage=0.1),
+                        Class_3=data.frame(n.trees=500, interaction.depth=9, shrinkage=0.1),
+                        Class_4=data.frame(n.trees=500, interaction.depth=9, shrinkage=0.1),
+                        Class_5=data.frame(n.trees=300, interaction.depth=3, shrinkage=0.1),
+                        Class_6=data.frame(n.trees=500, interaction.depth=9, shrinkage=0.1),
+                        Class_7=data.frame(n.trees=500, interaction.depth=9, shrinkage=0.1),
+                        Class_8=data.frame(n.trees=500, interaction.depth=9, shrinkage=0.1),
+                        Class_9=data.frame(n.trees=500, interaction.depth=9, shrinkage=0.1)
                         )
 
 CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
-#                                 maximize=FALSE,
-                                tuneGrid=CARET.TUNE.GRID,
+                                maximize=TRUE,
                                 metric="ROC")
 
 MODEL.SPECIFIC.PARMS <- list(verbose=FALSE)
 
-MODEL.COMMENT <- "final model gbm one vs all with new features with non-zero count"
+MODEL.COMMENT <- "final model(train,calib,test data) gbm one vs all with new features with non-zero count"
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 0.2
+FRACTION.TRAIN.DATA <- 1.0
 
 
 # load model performance data
@@ -51,7 +58,7 @@ load(paste0(WORK.DIR,"/modelPerf.RData"))
 
 # get training data
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
-train.raw <- rbind(train.raw,calib.raw)
+train.raw <- rbind(train.raw,calib.raw,test.raw)
 
 library(doMC)
 registerDoMC(cores = 5)
@@ -64,12 +71,36 @@ train.df <- train.raw[idx,]
 # prepare data for modeling
 train.data <- prepModelData(train.df)
 
+# function to do final model training
+finalTrainForOneClass <- function(this.class) {
+    
+    response <- factor(ifelse(RESPONSE == this.class,this.class,
+                              paste0("Not_",this.class)))
+    
+    mdl.fit <- do.call(train, c(list(PREDICTORS,response),
+                                CARET.TRAIN.PARMS,
+                                MODEL.SPECIFIC.PARMS,
+                                CARET.TRAIN.OTHER.PARMS,
+                                list(tuneGrid=FINAL.MODEL.TUNE[[this.class]])))
+    
+    return(mdl.fit)
+}
+
 Sys.time()
 set.seed(825)
-time.data <- system.time(gbm.mdls<-lapply(PRODUCT.CLASSES,trainForOneClass,
-                                          train.data$predictors,
-                                          train.data$response))
+# time.data <- system.time(gbm.mdls<-parLapply(PRODUCT.CLASSES,finalTrainForOneClass,
+#                                           train.data$predictors,
+#                                           train.data$response,
+#                                           FINAL.MODEL.TUNE))
+
+PREDICTORS <- train.data$predictors
+RESPONSE <-train.data$response
+
+time.data <- system.time(gbm.mdls <- foreach(this.class=PRODUCT.CLASSES) %dopar%
+                             finalTrainForOneClass(this.class))
+
 time.data
+
 names(gbm.mdls) <- PRODUCT.CLASSES
 comment(gbm.mdls) <- MODEL.COMMENT
 
