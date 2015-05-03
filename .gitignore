@@ -4,6 +4,7 @@
 data
 *.pdf
 *.RData
+*.csv
 Plaftorm & Session Info.txt
 PlatformInfo.R
 caret_good_run.txt
@@ -12,3 +13,4 @@ tree_list.txt
 .DS_Store
 .Rapp.history
 leaderboard_analysis.png
+ModelListing.xlsx
