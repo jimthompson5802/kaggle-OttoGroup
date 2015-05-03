@@ -4,7 +4,6 @@
 data
 *.pdf
 *.RData
-*.csv
 Plaftorm & Session Info.txt
 PlatformInfo.R
 caret_good_run.txt
