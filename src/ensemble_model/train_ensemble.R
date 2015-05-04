@@ -7,68 +7,50 @@ library(caret)
 library(gbm)
 library(randomForest)
 
+source("./src/CommonFunctions.R")
+
 # import global variabels and common functions
 source("./src/CommonFunctions.R")
 WORK.DIR <- "./src/ensemble_model"
 
-# model performance Comments to captuer
-MODEL.METHOD <- "weighted ensemble"
-FEATURES <- c("models in the ensemble",
-            "gbm_model/gbmFit1_2015-04-07_21_12_42.RData",
-             "rf_model/rfFit1_2015-04-09_23_06_33.RData",
-             sep=", ")
-
-# get near zero Vars to eliminate
-load(paste0(DATA.DIR,"/near_zero_vars.RData"))
-
-# get calibration data
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
 
-# load model performance data
-load(paste0(WORK.DIR,"/modPerf.RData"))
 #
-# make gbm prediction
+# make rf prediction with expanded feature set
 #
+source("./src/rf2_model/ModelCommonFunctions.R")
+# read kaggle submission data
+new.df <- prepModelData(calib.raw)
 
-# read calibration data set
-new.df <- calib.raw
-
-#save id vector
-id <- new.df$id
-
-# prep the data for submission
-new.df <- new.df[,setdiff(names(new.df),c(nz.vars,"id"))]
-
-# retrive gbm model
-load("./src/gbm_model/gbmFit1_2015-04-07_21_12_42.RData")
+# retrive rf model with expanded features
+load("./src/rf2_model/model_rf_all_data_ntree_5000.RData")
 
 # predict class probabilities
-gbm.probs <- predict(gbmFit1,newdata = new.df,type = "prob")
-
-# combine with id
-gbm.probs <- data.frame(id,gbm.probs)
+system.time(rf2.probs <- predictInParallel(mdl.fit,new.df$predictors,5,only.predictors = TRUE))
 
 #
-# make rf prediction
+# make one vs all using gbm predictions
 #
 
-# read calibaration data set
-new.df <- calib.raw
+predictForOneClass <- function(this.class,mdls,new.data) {
+    pred.probs <- predict(mdls[[this.class]],newdata = new.data,type = "prob")
+    return(pred.probs[,1])
+}
 
-#save id vector
-id <- new.df$id
+# read kaggle submission data
+source("./src/gbm2_model/ModelCommonFunctions.R")
+new.df <- prepModelData(calib.raw)
 
-# prep the data for submission
-new.df <- new.df[,setdiff(names(new.df),c("id"))]
-
-# retrive rf model
-load("./src/rf_model/rfFit1_2015-04-09_23_06_33.RData")
+# retrive one versus all gbm model
+load(paste0("./src/gbm2_model/model_gbm_one_vs_all_2015-05-03_21_24_50.RData"))
 
 # predict class probabilities
-rf.probs <- predict(rfFit1,newdata = new.df,type = "prob")
+classes <- paste("Class_",1:9,sep="")  # generate list of classes to model
+ll <- lapply(classes,predictForOneClass,gbm.mdls,new.df$predictors)
+names(ll) <- classes
 
-# recombine with id
-rf.probs <- data.frame(id,rf.probs)
+gbm2.probs <- do.call(cbind,ll)
+
 
 #
 # determine optimal weighting factor for combining model estimates
@@ -80,7 +62,7 @@ makeEnsembleFunction <- function(target,gbm.probs, rf.probs) {
     }
 }
 
-ensFunc <- makeEnsembleFunction(calib.raw$target,gbm.probs[,2:10],rf.probs[2:10])
+ensFunc <- makeEnsembleFunction(calib.raw$target,gbm2.probs,rf2.probs)
 
 wt <- 0.5
 
