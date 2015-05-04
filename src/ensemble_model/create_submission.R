@@ -70,7 +70,7 @@ id <- new.df$id
 source("./src/rf2_model/ModelCommonFunctions.R")
 # read kaggle submission data
 new.df <- read.csv(unz(paste0(DATA.DIR,"/test.csv.zip"),"test.csv"),stringsAsFactors=FALSE)
-
+new.df <- prepModelData(new.df,only.predictors = TRUE)
 #save id vector
 id <- new.df$id
 
@@ -78,7 +78,7 @@ id <- new.df$id
 load("./src/rf2_model/model_rf_all_data_ntree_5000.RData")
 
 # predict class probabilities
-system.time(rf2.probs <- predictInParallel(mdl.fit,new.df,5,only.predictors = TRUE))
+system.time(rf2.probs <- predictInParallel(mdl.fit,new.df$predictors,5,only.predictors = TRUE))
 
 #
 # make one vs all using gbm predictions
@@ -109,14 +109,13 @@ names(ll) <- classes
 
 gbm2.probs <- do.call(cbind,ll)
 
-gbm2.probs <- data.frame(id,gbm2.probs)
 
 #
 # Average the individual probablities
 #
 
-pred.probs <- ((1/2)*rf2.probs[,2:10]) + 
-    ((1/2)*gbm2.probs[,2:10])
+pred.probs <- ((1/2)*rf2.probs) + 
+    ((1/2)*gbm2.probs)
 
 
 #create kaggle submission file
