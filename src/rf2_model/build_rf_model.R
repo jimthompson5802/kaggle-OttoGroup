@@ -13,8 +13,8 @@ WORK.DIR <- "./src/rf2_model"
 source(paste0(WORK.DIR,"/ModelCommonFunctions.R"))
 
 
-PARALLEL.WORKERS <- 6
-RF.TREES <- 1000
+PARALLEL.WORKERS <- 5
+RF.TREES <- 200
 MTRY <- 48
 MODEL.SPECIFIC.PARMS <- NULL
 MODEL.COMMENT <- paste("Growing trees in parallel workers",PARALLEL.WORKERS,
