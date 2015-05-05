@@ -85,15 +85,15 @@ p1 <- ggplot() +
     geom_text(data=head(lb.df[lb.df$TeamName == TEAM.NAME,],1),aes(x=SubmissionDate, y=Score,
                                                                    vjust=-0.2, hjust=0.5, lineheight=0.8,
                                                                    label=paste("Team:\n",TEAM.NAME))) +
-    ylab("Score") +
+    ylab("(Better)  Log Loss Function  (Worse)") +
     xlab("Submission Date") +
-    ggtitle(paste("Otto Group Competition\nAll Participant Scores as of",last.submission.date)) +
+    ggtitle(paste("Kaggle: Otto Group Competition\nAll Participant Scores as of",last.submission.date)) +
     theme()
 
 # plot leader score for the first 24 hours of competition
 p2 <- ggplot(data=lb.df[lb.df$SubmissionDate < (lb.df$SubmissionDate[1]+hms("24:00:00")),]) +
     geom_line(aes(x=SubmissionDate,y=leader.score),color="blue", size=1.25) +
-    ylab("Score") +
+    ylab("(Better)  Log Loss Function  (Worse)") +
     xlab("Submission Date") +
     ggtitle("Otto Group Competition\nLeader Score During First 24 Hours")
     
@@ -113,23 +113,23 @@ p3 <- ggplot(data=ranking.df) +
                                                                    vjust=2, hjust=0.5, lineheight=0.8,
                                                                    label=paste(TEAM.NAME))) +
     xlab("Submission Date") +
-    ylab("Score") +
-    ggtitle(paste("Otto Group Competition\nLeader Score vs. Team:",TEAM.NAME))
+    ylab("(Better)  Log Loss Function  (Worse)") +
+    ggtitle(paste("Leader Score vs. Team:",TEAM.NAME))
 
 p4 <- ggplot(ranking.df) +
     geom_bar(aes(x=report.date, y=team.percentile),color="red", fill="red",stat="identity") +
     ylim(0,100) +
     xlab("SubmissionDate") +
     ylab("Percentile") +
-    ggtitle(paste("Otto Group Competition\nPercentile Ranking for Team:",TEAM.NAME))
+    ggtitle(paste("Percentile Ranking for Team:",TEAM.NAME))
     
 # display 4 charts on one page
 # png(filename="leaderboard_analysis.png",width=600, height=600)
 grid.newpage()
 pushViewport(viewport(layout=grid.layout(2,2)))
 
-print(p1, vp=viewport(layout.pos.row=1, layout.pos.col = 1))
-print(p2, vp=viewport(layout.pos.row=1, layout.pos.col = 2))
+print(p1, vp=viewport(layout.pos.row=1, layout.pos.col = 1:2))
+# print(p2, vp=viewport(layout.pos.row=1, layout.pos.col = 2))
 print(p3, vp=viewport(layout.pos.row=2, layout.pos.col = 1))
 print(p4, vp=viewport(layout.pos.row=2, layout.pos.col = 2))
 # dev.off()
