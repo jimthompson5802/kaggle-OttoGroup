@@ -8,7 +8,7 @@ source("./src/CommonFunctions.R")
 model.dirs <- list.dirs("./src",recursive=FALSE)
 model.dirs <- setdiff(model.dirs,c("skeleton_model","./src/ada_model",
                                    "./src/ensemble_model",
-                                   "./src/c50_model"))
+                                   "./src/c50_model","./src/sandbox"))
 
 #initialize consolidation data frame
 consolidatedModelPerf.df <- data.frame()
