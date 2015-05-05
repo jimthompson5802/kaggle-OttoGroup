@@ -17,8 +17,8 @@ MTRY <- 48
 MODEL.SPECIFIC.PARMS <- NULL
 MODEL.COMMENT <- paste("Adding trees to model",PARALLEL.WORKERS * NEW.RF.TREES)
 
-# load orignal rf model
-load(paste0(WORK.DIR,"/model_parRF_2015-04-24_06_49_26.RData"))
+# load orignal rf model if not already loaded
+# load(paste0(WORK.DIR,"/model_rf_all_data_ntree_1000.RData"))
 
 # load model performance data
 load(paste0(WORK.DIR,"/modelPerf.RData"))
@@ -26,7 +26,7 @@ load(paste0(WORK.DIR,"/modelPerf.RData"))
 # get training data
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
 
-train.raw <- rbind(train.raw,calib.raw)
+train.raw <- rbind(train.raw,calib.raw,test.raw)
 
 # prepare data for training
 train.data <- prepModelData(train.raw)
@@ -37,13 +37,13 @@ registerDoMC(cores = PARALLEL.WORKERS)
 Sys.time()
 set.seed(47)
 time.data <- system.time({new.rf <- foreach(ntree=rep(NEW.RF.TREES, PARALLEL.WORKERS), .combine=combine, .packages='randomForest') %dopar% 
-                             randomForest(train.data$predictors, train.data$response, ntree=ntree,mtry=MTRY)
-#combine rf models
-mdl.fit <- combine(mdl.fit, new.rf)})
+                             randomForest(train.data$predictors, train.data$response, ntree=ntree,mtry=MTRY,norm.votes=FALSE)
+                        #combine rf models
+                        mdl.fit <- combine(mdl.fit, new.rf)})
 
 time.data
 
-# make prediction on test data set
+#make prediction on test data set - note this will give overly optimistic score
 system.time(pred.probs <- predictInParallel(mdl.fit,test.raw,PARALLEL.WORKERS))
 
 score <- logLossEval(pred.probs[,2:10],test.raw$target)
@@ -59,7 +59,7 @@ modelPerf.df <- recordModelPerf(modelPerf.df,
                                 train.data$predictors,
                                 score,
                                 improved=improved,
-                                bestTune=flattenDF(data.frame(mtry=MTRY, workers=PARALLEL.WORKERS, new.tree=NEW.RF.TREES)),
+                                bestTune=flattenDF(data.frame(mtry=MTRY, workers=PARALLEL.WORKERS, each.tree=NEW.RF.TREES)),
                                 tune.grid=flattenDF(data.frame(total.ntree=mdl.fit$ntree)),
                                 model.parms=paste(names(MODEL.SPECIFIC.PARMS),
                                                   as.character(MODEL.SPECIFIC.PARMS),
@@ -75,12 +75,9 @@ last.idx <- length(modelPerf.df$score)
 if (last.idx == 1 || improved == "Yes") {
     cat("found improved model, saving...\n")
     flush.console()
-    #yes we have improvement or first score, save generated model
-    file.name <- paste0("/model_parRF_",modelPerf.df$date.time[last.idx],".RData")
-    file.name <- gsub(" ","_",file.name)
-    file.name <- gsub(":","_",file.name)
-    
-    save(mdl.fit,file=paste0(WORK.DIR,file.name))
+    #     #yes we have improvement or first score, save generated model
+    file.name <- paste("model_rf_all_data_ntree_",mdl.fit$ntree,".RData",sep="")#     
+    save(mdl.fit,file=paste(WORK.DIR,file.name,sep="/"))
 } else {
     cat("no improvement!!!\n")
     flush.console()
