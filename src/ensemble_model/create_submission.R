@@ -75,7 +75,7 @@ new.df <- prepModelData(new.df,only.predictors = TRUE)
 id <- new.df$id
 
 # retrive rf model with expanded features
-load("./src/rf2_model/model_rf_all_data_ntree_1000.RData")
+load("./src/rf2_model/model_rf_all_data_ntree_4000.RData")
 
 # predict class probabilities
 system.time(rf2.probs <- predictInParallel(mdl.fit,new.df$predictors,5,only.predictors = TRUE))
