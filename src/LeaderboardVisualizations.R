@@ -48,7 +48,9 @@ teamRanking <- function(this.date,lb.df) {
     standings <- teamStandings(this.date,lb.df)
     
     leader.score <- standings[1,"Score"]
+    leader.team <- standings[1,"TeamName"]
     number.teams <- nrow(standings)
+    team.name <- standings[standings$TeamName == TEAM.NAME,"TeamName"]
     team.rank <- standings[standings$TeamName == TEAM.NAME,"team.rank"]
     team.score <- standings[standings$TeamName == TEAM.NAME,"Score"]
     
@@ -61,6 +63,7 @@ teamRanking <- function(this.date,lb.df) {
     }
     
     return(data.frame(report.date=this.date,
+                leader.team=leader.team,
                 leader.score=leader.score, number.teams=number.teams,
                 team.rank=team.rank,team.percentile=team.percentile,
                 team.score=team.score,stringsAsFactors=FALSE))
@@ -77,7 +80,7 @@ last.submission.date <- as.Date(tail(lb.df,1)$SubmissionDate)
 # plot all scores and identify selected team
 p1 <- ggplot() + 
     # plot points for all teams except for selected team
-    geom_point(data=lb.df[lb.df$TeamName != TEAM.NAME,], aes(x=SubmissionDate, y=Score),color="grey75") +
+    geom_point(data=lb.df[lb.df$TeamName != TEAM.NAME,], aes(x=SubmissionDate, y=Score),color="grey60") +
     # plot scores for selected team
     geom_point(data=lb.df[lb.df$TeamName == TEAM.NAME,],aes(x=SubmissionDate,y=Score),
                                                           pch=18,color="red",size=3) +
@@ -85,7 +88,7 @@ p1 <- ggplot() +
     geom_text(data=head(lb.df[lb.df$TeamName == TEAM.NAME,],1),aes(x=SubmissionDate, y=Score,
                                                                    vjust=-0.2, hjust=0.5, lineheight=0.8,
                                                                    label=paste("Team:\n",TEAM.NAME))) +
-    ylab("(Better)  Log Loss Function  (Worse)") +
+    ylab("(Better)  Log Loss Error Function  (Worse)") +
     xlab("Submission Date") +
     ggtitle(paste("Kaggle: Otto Group Competition\nAll Participant Scores as of",last.submission.date)) +
     theme()
@@ -93,7 +96,7 @@ p1 <- ggplot() +
 # plot leader score for the first 24 hours of competition
 p2 <- ggplot(data=lb.df[lb.df$SubmissionDate < (lb.df$SubmissionDate[1]+hms("24:00:00")),]) +
     geom_line(aes(x=SubmissionDate,y=leader.score),color="blue", size=1.25) +
-    ylab("(Better)  Log Loss Function  (Worse)") +
+    ylab("(Better)  Log Loss Error Function  (Worse)") +
     xlab("Submission Date") +
     ggtitle("Otto Group Competition\nLeader Score During First 24 Hours")
     
@@ -107,30 +110,30 @@ p3 <- ggplot(data=ranking.df) +
                                           vjust=-0.2, hjust=0, lineheight=0.8,
                                           label=paste("Leader"))) +
     # plot slected team score
-    geom_point(aes(x=report.date, y=team.score), pch=18,color="red",size=3) +
+    geom_line(aes(x=report.date, y=team.score), color="red",size=1.25) +
     # identify selected team
     geom_text(data=head(ranking.df[!is.na(ranking.df$team.score),],1),aes(x=report.date, y=team.score,
                                                                    vjust=2, hjust=0.5, lineheight=0.8,
                                                                    label=paste(TEAM.NAME))) +
     xlab("Submission Date") +
-    ylab("(Better)  Log Loss Function  (Worse)") +
-    ggtitle(paste("Leader Score vs. Team:",TEAM.NAME))
+    ylab("(Better)  Log Loss Error Function  (Worse)") +
+    ggtitle(paste("Comparision of\nLeader Score vs. Team:",TEAM.NAME))
 
 p4 <- ggplot(ranking.df) +
     geom_bar(aes(x=report.date, y=team.percentile),color="red", fill="red",stat="identity") +
     ylim(0,100) +
     xlab("SubmissionDate") +
     ylab("Percentile") +
-    ggtitle(paste("Percentile Ranking for Team:",TEAM.NAME))
+    ggtitle(paste("Relative Percentile Ranking\nfor",TEAM.NAME))
     
 # display 4 charts on one page
-# png(filename="leaderboard_analysis.png",width=600, height=600)
+png(filename="leaderboard_analysis.png",width=8.5, height=11,units="in",res=300)
 grid.newpage()
 pushViewport(viewport(layout=grid.layout(2,2)))
 
 print(p1, vp=viewport(layout.pos.row=1, layout.pos.col = 1:2))
-# print(p2, vp=viewport(layout.pos.row=1, layout.pos.col = 2))
+# print(p2, vp=viewport(layout.pos.row=2, layout.pos.col = 1))
 print(p3, vp=viewport(layout.pos.row=2, layout.pos.col = 1))
 print(p4, vp=viewport(layout.pos.row=2, layout.pos.col = 2))
-# dev.off()
+dev.off()
 
