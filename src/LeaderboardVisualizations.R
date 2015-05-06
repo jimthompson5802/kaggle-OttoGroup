@@ -90,7 +90,7 @@ p1 <- ggplot() +
                                                                    label=paste("Team:\n",TEAM.NAME))) +
     ylab("(Better)  Log Loss Error Function  (Worse)") +
     xlab("Submission Date") +
-    ggtitle(paste("Kaggle: Otto Group Competition\nAll Participant Scores as of",last.submission.date)) +
+    ggtitle(paste("Kaggle: Otto Group Product Classification Challenge\nAll Participant Scores as of",last.submission.date)) +
     theme()
 
 # plot leader score for the first 24 hours of competition
@@ -113,7 +113,7 @@ p3 <- ggplot(data=ranking.df) +
     geom_line(aes(x=report.date, y=team.score), color="red",size=1.25) +
     # identify selected team
     geom_text(data=head(ranking.df[!is.na(ranking.df$team.score),],1),aes(x=report.date, y=team.score,
-                                                                   vjust=2, hjust=0.5, lineheight=0.8,
+                                                                   vjust=2, hjust=-0.4, lineheight=0.8,
                                                                    label=paste(TEAM.NAME))) +
     xlab("Submission Date") +
     ylab("(Better)  Log Loss Error Function  (Worse)") +
@@ -123,8 +123,8 @@ p4 <- ggplot(ranking.df) +
     geom_bar(aes(x=report.date, y=team.percentile),color="red", fill="red",stat="identity") +
     ylim(0,100) +
     xlab("SubmissionDate") +
-    ylab("Percentile") +
-    ggtitle(paste("Relative Percentile Ranking\nfor",TEAM.NAME))
+    ylab("Percent") +
+    ggtitle(paste("Percent of Teams\nRanked Below",TEAM.NAME))
     
 # display 4 charts on one page
 png(filename="leaderboard_analysis.png",width=8.5, height=11,units="in",res=300)
