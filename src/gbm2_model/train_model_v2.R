@@ -31,15 +31,15 @@ CARET.TRAIN.CTRL <- trainControl(method="none",
                                  summaryFunction=twoClassSummary)
 
 FINAL.MODEL.TUNE <- list(
-    Class_1=expand.grid(n.trees=700, interaction.depth=13, shrinkage=0.1),
-    Class_2=expand.grid(n.trees=700, interaction.depth=13, shrinkage=0.1),
-    Class_3=expand.grid(n.trees=700, interaction.depth=13, shrinkage=0.1),
-    Class_4=expand.grid(n.trees=700, interaction.depth=13, shrinkage=0.1),
+    Class_1=expand.grid(n.trees=800, interaction.depth=15, shrinkage=0.1),
+    Class_2=expand.grid(n.trees=800, interaction.depth=15, shrinkage=0.1),
+    Class_3=expand.grid(n.trees=800, interaction.depth=15, shrinkage=0.1),
+    Class_4=expand.grid(n.trees=800, interaction.depth=15, shrinkage=0.1),
     Class_5=expand.grid(n.trees=300, interaction.depth=3, shrinkage=0.1),
-    Class_6=expand.grid(n.trees=700, interaction.depth=13, shrinkage=0.1),
-    Class_7=expand.grid(n.trees=700, interaction.depth=13, shrinkage=0.1),
-    Class_8=expand.grid(n.trees=700, interaction.depth=13, shrinkage=0.1),
-    Class_9=data.frame(n.trees=700, interaction.depth=13, shrinkage=0.1)
+    Class_6=expand.grid(n.trees=800, interaction.depth=15, shrinkage=0.1),
+    Class_7=expand.grid(n.trees=800, interaction.depth=15, shrinkage=0.1),
+    Class_8=expand.grid(n.trees=800, interaction.depth=15, shrinkage=0.1),
+    Class_9=data.frame(n.trees=800, interaction.depth=15, shrinkage=0.1)
 )
 
 CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
@@ -48,7 +48,7 @@ CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
 
 MODEL.SPECIFIC.PARMS <- list(verbose=FALSE)
 
-MODEL.COMMENT <- "AWS(8) tuning run(train,calib,test data,test.raw) gbm one vs all with new features with non-zero count"
+MODEL.COMMENT <- "AWS(9) tuning run(train,calib,test data,test.raw) gbm one vs all with new features with non-zero count"
 
 # amount of data to train
 FRACTION.TRAIN.DATA <- 1.0
@@ -62,7 +62,7 @@ load(paste0(DATA.DIR,"/train_calib_test.RData"))
 train.raw <- rbind(train.raw,calib.raw,test.raw)
 
 library(doMC)
-registerDoMC(cores = 8)
+registerDoMC(cores = 9)
 
 # extract subset for inital training
 set.seed(29)
