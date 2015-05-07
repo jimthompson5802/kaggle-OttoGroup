@@ -94,11 +94,19 @@ p1 <- ggplot() +
     theme()
 
 # plot leader score for the first 24 hours of competition
-p2 <- ggplot(data=lb.df[lb.df$SubmissionDate < (lb.df$SubmissionDate[1]+hms("24:00:00")),]) +
+lb24.df <- lb.df[lb.df$SubmissionDate < (lb.df$SubmissionDate[1]+hms("24:00:00")),]
+p2 <- ggplot(data=lb24.df) +
     geom_line(aes(x=SubmissionDate,y=leader.score),color="blue", size=1.25) +
+    geom_text(data=head(lb24.df,1),aes(x=SubmissionDate, y=leader.score,
+                                       vjust=1.0, hjust=-0.2, linegeight=0.8,
+                                       label=Score)) +
+    geom_text(data=tail(lb24.df,1), aes(x=SubmissionDate, y=Score,
+                                        vjust=1.5, hjust=1.0, linegeight=0.8,
+                                        angle=-45,
+                                        label=leader.score)) +
     ylab("(Better)  Log Loss Error Function  (Worse)") +
     xlab("Submission Date") +
-    ggtitle("Otto Group Competition\nLeader Score During First 24 Hours")
+    ggtitle("Leader Score During First 24 Hours of Competition")
     
     
 # plot selected team vs leader score
@@ -124,7 +132,8 @@ p4 <- ggplot(ranking.df) +
     ylim(0,100) +
     xlab("SubmissionDate") +
     ylab("Percent") +
-    ggtitle(paste("Percent of Teams\nRanked Below",TEAM.NAME))
+    ggtitle(paste("Percent of Teams Trailing",TEAM.NAME)) +
+    theme(panel.grid.major.y=element_line(color="black", linetype="dashed"))
     
 # display 4 charts on one page
 png(filename="leaderboard_analysis.png",width=8.5, height=11,units="in",res=300)
@@ -136,4 +145,13 @@ print(p1, vp=viewport(layout.pos.row=1, layout.pos.col = 1:2))
 print(p3, vp=viewport(layout.pos.row=2, layout.pos.col = 1))
 print(p4, vp=viewport(layout.pos.row=2, layout.pos.col = 2))
 dev.off()
+
+# for Presentation
+png(filename="score_overview.png", width=14, height=8.5, units="in", res=300)
+grid.newpage()
+pushViewport(viewport(layout=grid.layout(2,4)))
+print(p1, vp=viewport(layout.pos.row=1, layout.pos.col = 1:4))
+print(p2, vp=viewport(layout.pos.row=2, layout.pos.col = 2:3))
+dev.off()
+
 
