@@ -154,4 +154,10 @@ print(p1, vp=viewport(layout.pos.row=1, layout.pos.col = 1:4))
 print(p2, vp=viewport(layout.pos.row=2, layout.pos.col = 2:3))
 dev.off()
 
-
+# for Presentation
+png(filename="score_overview2.png", width=14, height=8.5, units="in", res=300)
+grid.newpage()
+pushViewport(viewport(layout=grid.layout(1,2)))
+print(p3, vp=viewport(layout.pos.row=1, layout.pos.col = 1))
+print(p4, vp=viewport(layout.pos.row=1, layout.pos.col = 2))
+dev.off()
