@@ -25,6 +25,6 @@ df$class.id <- do.call(rbind,strsplit(df$target,"_"))[,2]
 png("./eda/feature_density.png",height=17, width=11, units="in",res=100)
 ggplot(df) + 
     geom_density(aes(x=value, colour=target)) +
-    facet_wrap(~feature,ncol=8,scales="free_y") 
+    facet_wrap(~feature,ncol=8,scales="free") 
 dev.off()
 
