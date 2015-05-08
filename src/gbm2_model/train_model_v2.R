@@ -31,15 +31,15 @@ CARET.TRAIN.CTRL <- trainControl(method="none",
                                  summaryFunction=twoClassSummary)
 
 FINAL.MODEL.TUNE <- list(
-    Class_1=expand.grid(n.trees=1300, interaction.depth=25, shrinkage=0.1),
-    Class_2=expand.grid(n.trees=1300, interaction.depth=25, shrinkage=0.1),
-    Class_3=expand.grid(n.trees=1300, interaction.depth=25, shrinkage=0.1),
-    Class_4=expand.grid(n.trees=1300, interaction.depth=25, shrinkage=0.1),
+    Class_1=expand.grid(n.trees=1400, interaction.depth=27, shrinkage=0.1),
+    Class_2=expand.grid(n.trees=1400, interaction.depth=27, shrinkage=0.1),
+    Class_3=expand.grid(n.trees=1400, interaction.depth=27, shrinkage=0.1),
+    Class_4=expand.grid(n.trees=1400, interaction.depth=27, shrinkage=0.1),
     Class_5=expand.grid(n.trees=300, interaction.depth=3, shrinkage=0.1),
-    Class_6=expand.grid(n.trees=1300, interaction.depth=25, shrinkage=0.1),
-    Class_7=expand.grid(n.trees=1300, interaction.depth=25, shrinkage=0.1),
-    Class_8=expand.grid(n.trees=1300, interaction.depth=25, shrinkage=0.1),
-    Class_9=data.frame(n.trees=1300, interaction.depth=25, shrinkage=0.1)
+    Class_6=expand.grid(n.trees=1400, interaction.depth=27, shrinkage=0.1),
+    Class_7=expand.grid(n.trees=1400, interaction.depth=27, shrinkage=0.1),
+    Class_8=expand.grid(n.trees=1400, interaction.depth=27, shrinkage=0.1),
+    Class_9=data.frame(n.trees=1400, interaction.depth=27, shrinkage=0.1)
 )
 
 CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
@@ -160,4 +160,3 @@ if (last.idx == 1 || improved == "Yes") {
     cat("no improvement!!!\n")
     flush.console()
 }
-

@@ -100,7 +100,7 @@ source("./src/gbm2_model/ModelCommonFunctions.R")
 new.df <- prepModelData(new.df,only.predictors=TRUE)
 
 # retrive one versus all gbm model
-load("./src/gbm2_model/model_gbm_one_vs_all_2015-05-08_02_42_01.RData")
+load("./src/gbm2_model/model_gbm_one_vs_all_2015-05-08_22_59_43.RData")
 
 # predict class probabilities
 classes <- paste("Class_",1:9,sep="")  # generate list of classes to model
