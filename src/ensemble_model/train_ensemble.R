@@ -13,6 +13,8 @@ source("./src/CommonFunctions.R")
 source("./src/CommonFunctions.R")
 WORK.DIR <- "./src/ensemble_model"
 
+MODEL.METHOD <- "ensemble"
+
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
 
 #
@@ -23,7 +25,7 @@ source("./src/rf2_model/ModelCommonFunctions.R")
 new.df <- prepModelData(calib.raw)
 
 # retrive rf model with expanded features
-load("./src/rf2_model/model_rf_all_data_ntree_5000.RData")
+load("./src/rf2_model/model_rf_all_data_ntree_4000.RData")
 
 # predict class probabilities
 system.time(rf2.probs <- predictInParallel(mdl.fit,new.df$predictors,5,only.predictors = TRUE))
@@ -42,7 +44,7 @@ source("./src/gbm2_model/ModelCommonFunctions.R")
 new.df <- prepModelData(calib.raw)
 
 # retrive one versus all gbm model
-load(paste0("./src/gbm2_model/model_gbm_one_vs_all_2015-05-03_21_24_50.RData"))
+load(paste0("./src/gbm2_model/model_gbm_one_vs_all_2015-05-08_00_16_50.RData"))
 
 # predict class probabilities
 classes <- paste("Class_",1:9,sep="")  # generate list of classes to model
@@ -75,8 +77,9 @@ score <- opt.wts$value
 #
 
 ensemble.weights <- c(opt.wts$par,1-opt.wts$par)
+names(ensemble.weights) <- c("gbm_one_vs_all","rf")
 
-model.weights <- paste(c("gbmFit1_2015-04-07_21_12_42.RData","rfFit1_2015-04-09_23_06_33.RData"),ensemble.weights,sep="=",collapse=",")
+model.weights <- paste(c("gbm_one_vs_all","rf"),ensemble.weights,sep="=",collapse=",")
 bestTune <- data.frame(model.weights, stringsAsFactors=FALSE)
 
 # set up dummy data structures to account for recrodModelPerf() function
@@ -98,7 +101,7 @@ if (last.idx == 1 ||
     cat("found improved model, saving...\n")
     flush.console()
     #yes we have improvement or first score, save generated model
-    file.name <- paste0("/ensembleWeights_",modPerf.df$date.time[last.idx],".RData")
+    file.name <- paste0("/ensembleWeights_",Sys.time(),".RData")
     file.name <- gsub(" ","_",file.name)
     file.name <- gsub(":","_",file.name)
     

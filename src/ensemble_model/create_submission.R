@@ -13,7 +13,7 @@ source("./src/CommonFunctions.R")
 WORK.DIR <- "./src/ensemble_model"
 
 # load optimal weighting factors
-load(paste0(WORK.DIR,"/ensembleWeights_2015-04-11_17_29_18.RData"))
+load(paste0(WORK.DIR,"/ensembleWeights_2015-05-07_21_42_30.RData"))
 
 # get near zero Vars to eliminate
 load(paste0(DATA.DIR,"/near_zero_vars.RData"))
@@ -114,8 +114,8 @@ gbm2.probs <- do.call(cbind,ll)
 # Average the individual probablities
 #
 
-pred.probs <- ((1/2)*rf2.probs) + 
-    ((1/2)*gbm2.probs)
+pred.probs <- (ensemble.weights["rf"]*rf2.probs) + 
+    (ensemble.weights["gbm_one_vs_all"]*gbm2.probs)
 
 
 #create kaggle submission file
