@@ -131,8 +131,8 @@ p4 <- ggplot(ranking.df) +
     geom_bar(aes(x=report.date, y=team.percentile),color="red", fill="red",stat="identity") +
     ylim(0,100) +
     xlab("SubmissionDate") +
-    ylab("Percent") +
-    ggtitle(paste("Percent of Teams Trailing",TEAM.NAME)) +
+    ylab("(Lower)  Percentile  (Higher)") +
+    ggtitle(paste("Team Standing for",TEAM.NAME)) +
     theme(panel.grid.major.y=element_line(color="black", linetype="dashed"))
     
 # display 4 charts on one page
