@@ -100,7 +100,7 @@ source("./src/gbm2_model/ModelCommonFunctions.R")
 new.df <- prepModelData(new.df,only.predictors=TRUE)
 
 # retrive one versus all gbm model
-load("./src/gbm2_model/model_gbm_one_vs_all_2015-05-08_00_16_50.RData")
+load("./src/gbm2_model/model_gbm_one_vs_all_2015-05-08_02_42_01.RData")
 
 # predict class probabilities
 classes <- paste("Class_",1:9,sep="")  # generate list of classes to model
@@ -114,8 +114,8 @@ gbm2.probs <- do.call(cbind,ll)
 # Average the individual probablities
 #
 
-pred.probs <- (ensemble.weights["rf"]*rf2.probs) + 
-    (ensemble.weights["gbm_one_vs_all"]*gbm2.probs)
+pred.probs <- ((0.5)*rf2.probs) + 
+    ((0.5)*gbm2.probs)
 
 
 #create kaggle submission file
