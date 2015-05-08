@@ -12,6 +12,6 @@ registerDoMC(5)
 myfunc <- function(i){return(runif(10))}
 
 
-set.seed(13)
+# set.seed(13)
 ll <- foreach(i=1:5) %dopar% myfunc(i)
 
