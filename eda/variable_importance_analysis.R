@@ -20,3 +20,5 @@ ll <- lapply(paste0("Class_",1:9),function(cls){data.frame(Class=cls,
                                                            stringsAsFactors=FALSE)})
 
 gbm.varImp <- do.call(rbind,ll)
+
+gbm.varImp <- gbm.varImp[order(gbm.varImp$Class,gbm.varImp$Overall),]
