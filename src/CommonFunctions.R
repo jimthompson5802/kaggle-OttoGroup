@@ -116,7 +116,11 @@ calcPairwiseDiff <- function(selected.features,predictors) {
                  feature.pairs,predictors)
     
     # generate feature names
-    names(ll) <- apply(feature.pairs,2,function(x){paste("diff",x[1],x[2],sep=".")})
+    names(ll) <- apply(feature.pairs,2,
+                       function(x){
+                           var1 <- unlist(strsplit(x[1],"_"))[2]
+                           var2 <- unlist(strsplit(x[2],"_"))[2]
+                           paste("diff",var1,var2,sep="_")})
     
     # return pairwise differences
     return(do.call(cbind,ll))
@@ -137,7 +141,11 @@ calcPairwiseSum <- function(selected.features,predictors) {
                  feature.pairs,predictors)
     
     # generate feature names
-    names(ll) <- apply(feature.pairs,2,function(x){paste("sum",x[1],x[2],sep=".")})
+    names(ll) <- apply(feature.pairs,2,
+                       function(x){
+                           var1 <- unlist(strsplit(x[1],"_"))[2]
+                           var2 <- unlist(strsplit(x[2],"_"))[2]
+                           paste("sum",var1,var2,sep="_")})
     
     # return pairwise differences
     return(do.call(cbind,ll))
