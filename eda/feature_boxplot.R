@@ -11,8 +11,13 @@ load(paste0(DATA.DIR,"/train_calib_test.RData"))
 
 predictor.vars <- setdiff(names(train.raw), c("id","target"))
 
+train.raw$non.zero.count <- apply(train.raw[,predictor.vars], 1, function(row){sum(row>0)})
+
+predictor.vars <- c(predictor.vars,"non.zero.count")
+
+
 # convert to long format 
-df <- gather(train.raw, feature, value, feat_1:feat_93)
+df <- gather(train.raw, feature, value, one_of(predictor.vars))
 
 df$feature.id <- do.call(rbind,strsplit(as.character(df$feature),"_"))[,2]
 df$class.id <- do.call(rbind,strsplit(df$target,"_"))[,2]
