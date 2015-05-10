@@ -120,7 +120,7 @@ calcPairwiseDiff <- function(selected.features,predictors) {
                        function(x){
                            var1 <- unlist(strsplit(x[1],"_"))[2]
                            var2 <- unlist(strsplit(x[2],"_"))[2]
-                           paste("diff",var1,var2,sep="_")})
+                           paste("diff",paste(var1,var2,sep="-"),sep="_")})
     
     # return pairwise differences
     return(do.call(cbind,ll))
@@ -145,7 +145,7 @@ calcPairwiseSum <- function(selected.features,predictors) {
                        function(x){
                            var1 <- unlist(strsplit(x[1],"_"))[2]
                            var2 <- unlist(strsplit(x[2],"_"))[2]
-                           paste("sum",var1,var2,sep="_")})
+                           paste("sum",paste(var1,var2,sep="-"),sep="_")})
     
     # return pairwise differences
     return(do.call(cbind,ll))
