@@ -4,6 +4,7 @@
 
 library(caret)
 library(dplyr)
+library(plyr)
 library(doMC)
 
 source("./src/CommonFunctions.R")
@@ -76,8 +77,11 @@ anova.combined <- rbind(df,diff.df)
 anova.combined <- anova.combined[order(anova.combined$class,anova.combined$anova.score),]
 
 # eliminate features whose scores do not pass Bonfferoni criteria, 2766 is the number of features in each classs
-anova.combined <- anova.combined[anova.combined$anova.score < 0.01/2766,]
+anova.combined <- anova.combined[anova.combined$anova.score < 0.005/2766,]
+
+class.feature.list <- dlply(anova.combined,.(class),function(df){return(df$feature)})
 
 save(df,diff.df,anova.combined,file="./eda/anovaScores.RData")
+save(class.feature.list,file="./eda/selected_features_for_each_class.RData")
 
 
