@@ -41,7 +41,7 @@ df <- do.call(rbind,lapply(paste0("Class_",1:9),scoreEachFeature,predictors,trai
 predictor.vars <- setdiff(names(d.train.raw),c("id","target"))
 predictors <- select(d.train.raw,one_of(predictor.vars))
 set.seed(21)
-idx <- createDataPartition(d.train.raw$target,p=0.5,list=FALSE)
+idx <- createDataPartition(d.train.raw$target,p=1,list=FALSE)
 predictors <- predictors[idx,]
 target <- d.train.raw[idx,"target"]
 
