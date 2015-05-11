@@ -35,19 +35,49 @@ scoreEachFeature <- function (cls,predictors,target) {
     df <- df[order(df$anova.score),]
 }
 
+# eliminate near zero/zero variance and correlated features
+nz.idx <- nearZeroVar(predictors)
+if (length(nz.idx) != 0) {
+    predictors <- predictors[,-nz.idx]
+}
+
+cor.idx <- findCorrelation(cor(predictors))
+if (length(cor.idx) != 0) {
+    predictors <- predictors[,-cor.idx]
+}
+
+
 df <- do.call(rbind,lapply(paste0("Class_",1:9),scoreEachFeature,predictors,train.raw$target))
 
 # univariate for difference
 predictor.vars <- setdiff(names(d.train.raw),c("id","target"))
 predictors <- select(d.train.raw,one_of(predictor.vars))
-set.seed(21)
-idx <- createDataPartition(d.train.raw$target,p=1,list=FALSE)
-predictors <- predictors[idx,]
-target <- d.train.raw[idx,"target"]
+# set.seed(21)
+# idx <- createDataPartition(d.train.raw$target,p=1,list=FALSE)
+# predictors <- predictors[idx,]
+
+# eliminate near zero/zero variance and correlated features
+nz.idx <- nearZeroVar(predictors)
+if (length(nz.idx) != 0) {
+    predictors <- predictors[,-nz.idx]
+}
+
+cor.idx <- findCorrelation(cor(predictors))
+if (length(cor.idx) != 0) {
+    predictors <- predictors[,-cor.idx]
+}
+target <- d.train.raw[,"target"]
 
 registerDoMC(5)
 diff.df <- do.call(rbind,mclapply(paste0("Class_",1:9),scoreEachFeature,predictors,target,
                                    mc.cores=5))
 
-save(df,diff.df,file="./eda/anovaScores.RData")
+anova.combined <- rbind(df,diff.df)
+anova.combined <- anova.combined[order(anova.combined$class,anova.combined$anova.score),]
+
+# eliminate features whose scores do not pass Bonfferoni criteria, 2766 is the number of features in each classs
+anova.combined <- anova.combined[anova.combined$anova.score < 0.01/2766,]
+
+save(df,diff.df,anova.combined,file="./eda/anovaScores.RData")
+
 
