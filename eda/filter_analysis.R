@@ -79,7 +79,7 @@ anova.combined <- anova.combined[order(anova.combined$class,anova.combined$anova
 # eliminate features whose scores do not pass Bonfferoni criteria, 2766 is the number of features in each classs
 anova.combined <- anova.combined[anova.combined$anova.score < 0.005/2766,]
 
-class.feature.list <- dlply(anova.combined,.(class),function(df){return(df$feature)})
+class.feature.list <- dlply(anova.combined,.(class),function(df){return(df$feature[1:min(150,nrow(df))])})
 
 save(df,diff.df,anova.combined,file="./eda/anovaScores.RData")
 save(class.feature.list,file="./eda/selected_features_for_each_class.RData")
