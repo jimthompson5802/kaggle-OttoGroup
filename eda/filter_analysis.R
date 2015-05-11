@@ -10,28 +10,17 @@ source("./src/CommonFunctions.R")
 
 # get training data
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
-rm(test.raw)
+load(paste0(DATA.DIR,"/diff_train_calib_test.RData"))
+rm(test.raw,calib.raw,d.calib.raw,d.test.raw)
 
-idx <- createDataPartition(train.raw$target,p=0.1,list=FALSE)
-train.raw <- train.raw[idx,]
+# idx <- createDataPartition(train.raw$target,p=0.1,list=FALSE)
+# train.raw <- train.raw[idx,]
 
 predictor.vars <- setdiff(names(train.raw),c("id","target"))
 
 predictors <- select(train.raw,one_of(predictor.vars))
+non.zero.count <- apply(predictors,1,function(x){sum(x>0)})
 predictors <- data.frame(predictors,non.zero.count)
-
-response <- factor(ifelse(train.raw$target == "Class_3","Class_3","Not_Class_3"))
-
-non.zero.count <- apply(predictors,1,function(row){sum(row>0)})
-
-
-filterCtrl <- sbfControl(functions = rfSBF,
-                         method = "repeatedcv", repeats = 5)
-
-set.seed(10)
-rfWithFilter <- sbf(predictors, response, sbfControl = filterCtrl)
-rfWithFilter
-
 
 
 scoreEachFeature <- function (cls,predictors,target) {
@@ -47,4 +36,18 @@ scoreEachFeature <- function (cls,predictors,target) {
 }
 
 df <- do.call(rbind,lapply(paste0("Class_",1:9),scoreEachFeature,predictors,train.raw$target))
+
+# univariate for difference
+predictor.vars <- setdiff(names(d.train.raw),c("id","target"))
+predictors <- select(d.train.raw,one_of(predictor.vars))
+set.seed(21)
+idx <- createDataPartition(d.train.raw$target,p=0.5,list=FALSE)
+predictors <- predictors[idx,]
+target <- d.train.raw[idx,"target"]
+
+registerDoMC(5)
+diff.df <- do.call(rbind,mclapply(paste0("Class_",1:9),scoreEachFeature,predictors,target,
+                                   mc.cores=5))
+
+save(df,diff.df,file="./eda/anovaScores.RData")
 
