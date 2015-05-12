@@ -1,5 +1,6 @@
 ###
 # generate submission for one vs all model using gbm
+# with class specific synthetic features
 ###
 
 library(caret)
