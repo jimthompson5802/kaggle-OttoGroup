@@ -111,11 +111,46 @@ gbm2.probs <- do.call(cbind,ll)
 
 
 #
+# gbm one vs all model
+# with class specific synthetic features
+#
+
+# import global variabels and common functions
+source("./src/CommonFunctions.R")
+source("./src/gbm4_model/ModelCommonFunctions.R")
+
+# get class specific feature set
+load("./eda/selected_features_for_each_class.RData")
+
+# read kaggle submission data
+new.df <- read.csv(unz(paste0(DATA.DIR,"/test.csv.zip"),"test.csv"),stringsAsFactors=FALSE)
+
+d.new.df <- data.frame(calcPairwiseDiff(setdiff(names(new.df),c("id","target")),new.df))
+
+#save id vector
+id <- new.df$id
+
+# prep the data for submission
+submission <- prepModelData(new.df,d.new.df,only.predictors=TRUE)
+
+# retrive one versus all gbm model
+load("src/gbm4_model/model_gbm_one_vs_all_2015-05-12_16_28_54.RData")
+
+# predict class probabilities
+ll <- lapply(PRODUCT.CLASSES,predictForOneClass,gbm.mdls,submission$predictors,
+             class.feature.list)
+names(ll) <- PRODUCT.CLASSES
+
+gbm4.probs <- do.call(cbind,ll)
+
+
+#
 # Average the individual probablities
 #
 
-pred.probs <- ((0.5)*rf2.probs) + 
-    ((0.5)*gbm2.probs)
+pred.probs <- ((1/3)*rf2.probs) + 
+                ((1/3)*gbm2.probs) +
+                ((1/3)*gbm4.probs)
 
 
 #create kaggle submission file
