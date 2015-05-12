@@ -28,19 +28,19 @@ CARET.TRAIN.CTRL <- trainControl(method="repeatedcv",
                                  repeats=1,
                                  verboseIter=TRUE,
                                  classProbs=TRUE,
-                                 allowParallel=FALSE,
+                                 #                                  allowParallel=FALSE,
                                  summaryFunction=twoClassSummary)
 
 MODEL.TUNE <- list(
-    Class_1=expand.grid(n.trees=seq(500,1000,100), interaction.depth=c(9,11,13), shrinkage=0.1),
-    Class_2=expand.grid(n.trees=seq(500,1000,100), interaction.depth=c(9,11,13), shrinkage=0.1),
-    Class_3=expand.grid(n.trees=seq(500,1000,100), interaction.depth=c(9,11,13), shrinkage=0.1),
-    Class_4=expand.grid(n.trees=seq(500,1000,100), interaction.depth=c(9,11,13), shrinkage=0.1),
-    Class_5=expand.grid(n.trees=seq(100,500,100), interaction.depth=c(3,5,7), shrinkage=0.1),
-    Class_6=expand.grid(n.trees=seq(500,1000,100), interaction.depth=c(9,11,13), shrinkage=0.1),
-    Class_7=expand.grid(n.trees=seq(500,1000,100), interaction.depth=c(9,11,13), shrinkage=0.1),
-    Class_8=expand.grid(n.trees=seq(500,1000,100), interaction.depth=c(9,11,13), shrinkage=0.1),
-    Class_9=expand.grid(n.trees=seq(500,1000,100), interaction.depth=c(9,11,13), shrinkage=0.1)
+    Class_1=expand.grid(n.trees=seq(100,1000,100), interaction.depth=c(7,9,11,13,15), shrinkage=0.1),
+    Class_2=expand.grid(n.trees=seq(100,1000,100), interaction.depth=c(7,9,11,13,15), shrinkage=0.1),
+    Class_3=expand.grid(n.trees=seq(100,1000,100), interaction.depth=c(7,9,11,13,15), shrinkage=0.1),
+    Class_4=expand.grid(n.trees=seq(100,1000,100), interaction.depth=c(7,9,11,13,15), shrinkage=0.1),
+    Class_5=expand.grid(n.trees=seq(100,1000,100), interaction.depth=c(1,3,5,7), shrinkage=0.1),
+    Class_6=expand.grid(n.trees=seq(100,1000,100), interaction.depth=c(7,9,11,13,15), shrinkage=0.1),
+    Class_7=expand.grid(n.trees=seq(100,1000,100), interaction.depth=c(7,9,11,13,15), shrinkage=0.1),
+    Class_8=expand.grid(n.trees=seq(100,1000,100), interaction.depth=c(7,9,11,13,15), shrinkage=0.1),
+    Class_9=expand.grid(n.trees=seq(100,1000,100), interaction.depth=c(7,9,11,13,15), shrinkage=0.1)
 )
 
 CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
@@ -49,10 +49,10 @@ CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
 
 MODEL.SPECIFIC.PARMS <- list(verbose=FALSE)
 
-MODEL.COMMENT <- "synthetic features gbm one vs all - top 150 class specific features"
+MODEL.COMMENT <- "aws(9) synthetic features gbm one vs all - top 150 class specific features"
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 0.2
+FRACTION.TRAIN.DATA <- 1
 
 
 # load model performance data
@@ -65,7 +65,7 @@ load("./eda/selected_features_for_each_class.RData")
 
 
 library(doMC)
-registerDoMC(cores = 5)
+registerDoMC(cores = 9)
 
 # extract subset for inital training
 set.seed(29)
@@ -97,9 +97,11 @@ trainOneClass <- function(this.class) {
 
 PREDICTORS <- train.data$predictors
 RESPONSE <-train.data$response
+
+
 Sys.time()
 
-time.data <- system.time(gbm.mdls <- foreach(this.class=PRODUCT.CLASSES) %dopar%
+time.data <- system.time(gbm.mdls <- foreach(this.class=PRODUCT.CLASSES) %do%
                              trainOneClass(this.class))
 
 time.data
