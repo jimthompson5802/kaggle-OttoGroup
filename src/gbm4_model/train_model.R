@@ -77,14 +77,14 @@ d.train.df <- d.train.raw[idx,]
 train.data <- prepModelData(train.df,d.train.df)
 
 # function to do final model training
-trainOneClass <- function(this.class) {
+trainOneClass <- function(this.class, train.data) {
     
-    response <- factor(ifelse(RESPONSE == this.class,this.class,
+    response <- factor(ifelse(train.data$response == this.class,this.class,
                               paste0("Not_",this.class)))
     
     # get class specific features
     use.these.features <- class.feature.list[[this.class]][1:min(150,length(class.feature.list[[this.class]]))]
-    class.predictors <- PREDICTORS[,use.these.features]
+    class.predictors <- train.data$predictors[,use.these.features]
     set.seed(825)
     mdl.fit <- do.call(train, c(list(class.predictors,response),
                                 CARET.TRAIN.PARMS,
@@ -94,9 +94,6 @@ trainOneClass <- function(this.class) {
     
     return(mdl.fit)
 }
-
-PREDICTORS <- train.data$predictors
-RESPONSE <-train.data$response
 
 
 Sys.time()
