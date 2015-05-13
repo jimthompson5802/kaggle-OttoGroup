@@ -32,15 +32,15 @@ CARET.TRAIN.CTRL <- trainControl(method="repeatedcv",
                                  summaryFunction=twoClassSummary)
 
 MODEL.TUNE <- list(
-    Class_1=expand.grid(n.trees=seq(100,1000,100), interaction.depth=c(7,9,11,13,15), shrinkage=0.1),
-    Class_2=expand.grid(n.trees=seq(100,1000,100), interaction.depth=c(7,9,11,13,15), shrinkage=0.1),
-    Class_3=expand.grid(n.trees=seq(100,1000,100), interaction.depth=c(7,9,11,13,15), shrinkage=0.1),
-    Class_4=expand.grid(n.trees=seq(100,1000,100), interaction.depth=c(7,9,11,13,15), shrinkage=0.1),
-    Class_5=expand.grid(n.trees=seq(100,1000,100), interaction.depth=c(1,3,5,7), shrinkage=0.1),
-    Class_6=expand.grid(n.trees=seq(100,1000,100), interaction.depth=c(7,9,11,13,15), shrinkage=0.1),
-    Class_7=expand.grid(n.trees=seq(100,1000,100), interaction.depth=c(7,9,11,13,15), shrinkage=0.1),
-    Class_8=expand.grid(n.trees=seq(100,1000,100), interaction.depth=c(7,9,11,13,15), shrinkage=0.1),
-    Class_9=expand.grid(n.trees=seq(100,1000,100), interaction.depth=c(7,9,11,13,15), shrinkage=0.1)
+    Class_1=expand.grid(n.trees=c(100,1500,100), interaction.depth=c(9,11,13), shrinkage=0.1),
+    Class_2=expand.grid(n.trees=c(100,1500,100), interaction.depth=c(15,17,19), shrinkage=0.1),
+    Class_3=expand.grid(n.trees=c(100,1500,100), interaction.depth=c(11,13,15), shrinkage=0.1),
+    Class_4=expand.grid(n.trees=c(100,1500,100), interaction.depth=c(11,13,15), shrinkage=0.1),
+    Class_5=expand.grid(n.trees=c(100,1500,100), interaction.depth=c(1,2,3), shrinkage=0.1),
+    Class_6=expand.grid(n.trees=c(100,1500,100), interaction.depth=c(15,17,19), shrinkage=0.1),
+    Class_7=expand.grid(n.trees=c(100,1500,100), interaction.depth=c(15,17,19), shrinkage=0.1),
+    Class_8=expand.grid(n.trees=c(100,1500,100), interaction.depth=c(11,13,15), shrinkage=0.1),
+    Class_9=expand.grid(n.trees=c(100,1500,100), interaction.depth=c(9,11,13), shrinkage=0.1)
 )
 
 CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
@@ -49,7 +49,7 @@ CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
 
 MODEL.SPECIFIC.PARMS <- list(verbose=FALSE)
 
-MODEL.COMMENT <- "aws(9) synthetic features gbm one vs all - top 150 class specific features"
+MODEL.COMMENT <- "aws(5) synthetic features gbm one vs all - top 150 class specific features"
 
 # amount of data to train
 FRACTION.TRAIN.DATA <- 1
@@ -63,21 +63,30 @@ load(paste0(DATA.DIR,"/train_calib_test.RData"))
 load(paste0(DATA.DIR,"/diff_train_calib_test.RData"))
 load("./eda/selected_features_for_each_class.RData")
 
+#combine original and synthetic features for train and calib
+train.raw <- rbind(train.raw,calib.raw,test.raw)
+d.train.raw <- rbind(d.train.raw,d.calib.raw,d.test.raw)
 
-library(doMC)
-registerDoMC(cores = 9)
 
-# extract subset for inital training
-set.seed(29)
-idx <- createDataPartition(train.raw$target, p = FRACTION.TRAIN.DATA, list=FALSE)
-train.df <- train.raw[idx,]
-d.train.df <- d.train.raw[idx,]
+
+
+# extract subset for inital trainin
+# set.seed(29)
+# idx <- createDataPartition(train.raw$target, p = FRACTION.TRAIN.DATA, list=FALSE)
+train.df <- train.raw
+d.train.df <- d.train.raw
+
+# clean up some memory
+rm(train.raw,d.train.raw)
 
 # prepare data for modeling
 train.data <- prepModelData(train.df,d.train.df)
 
+#clean up memory
+rm(train.df,d.train.df)
+
 # function to do final model training
-trainOneClass <- function(this.class, train.data) {
+trainOneClass <- function(this.class,train.data) {
     
     response <- factor(ifelse(train.data$response == this.class,this.class,
                               paste0("Not_",this.class)))
@@ -96,15 +105,23 @@ trainOneClass <- function(this.class, train.data) {
 }
 
 
-Sys.time()
+library(doMC)
+registerDoMC(8)
+# library(doSNOW)
+# cl <- makeCluster(8)
+# registerDoSNOW(cl)
+# clusterExport(cl,list("logLossEval"))
 
+Sys.time()
 time.data <- system.time(gbm.mdls <- foreach(this.class=PRODUCT.CLASSES) %do%
-                             trainOneClass(this.class))
+                             trainOneClass(this.class,train.data))
 
 time.data
 
 names(gbm.mdls) <- PRODUCT.CLASSES
 comment(gbm.mdls) <- MODEL.COMMENT
+
+# stopCluster(cl)
 
 
 # prepare data for testing
