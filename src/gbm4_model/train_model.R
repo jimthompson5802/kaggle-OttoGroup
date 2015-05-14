@@ -32,15 +32,15 @@ CARET.TRAIN.CTRL <- trainControl(method="none",
                                  summaryFunction=twoClassSummary)
 
 MODEL.TUNE <- list(
-    Class_1=expand.grid(n.trees=1700, interaction.depth=13, shrinkage=0.1),
-    Class_2=expand.grid(n.trees=1700, interaction.depth=19, shrinkage=0.1),
-    Class_3=expand.grid(n.trees=1700, interaction.depth=15, shrinkage=0.1),
-    Class_4=expand.grid(n.trees=1700, interaction.depth=13, shrinkage=0.1),
-    Class_5=expand.grid(n.trees=1700, interaction.depth=1, shrinkage=0.1),
-    Class_6=expand.grid(n.trees=1700, interaction.depth=19, shrinkage=0.1),
-    Class_7=expand.grid(n.trees=1700, interaction.depth=17, shrinkage=0.1),
-    Class_8=expand.grid(n.trees=1700, interaction.depth=11, shrinkage=0.1),
-    Class_9=expand.grid(n.trees=1700, interaction.depth=9, shrinkage=0.1)
+    Class_1=expand.grid(n.trees=1900, interaction.depth=15, shrinkage=0.1),
+    Class_2=expand.grid(n.trees=1900, interaction.depth=21, shrinkage=0.1),
+    Class_3=expand.grid(n.trees=1900, interaction.depth=17, shrinkage=0.1),
+    Class_4=expand.grid(n.trees=1900, interaction.depth=13, shrinkage=0.1),
+    Class_5=expand.grid(n.trees=1900, interaction.depth=1, shrinkage=0.1),
+    Class_6=expand.grid(n.trees=1900, interaction.depth=21, shrinkage=0.1),
+    Class_7=expand.grid(n.trees=1900, interaction.depth=17, shrinkage=0.1),
+    Class_8=expand.grid(n.trees=1900, interaction.depth=13, shrinkage=0.1),
+    Class_9=expand.grid(n.trees=1900, interaction.depth=11, shrinkage=0.1)
 )
 
 CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
