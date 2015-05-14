@@ -134,7 +134,7 @@ id <- new.df$id
 submission <- prepModelData(new.df,d.new.df,only.predictors=TRUE)
 
 # retrive one versus all gbm model
-load("src/gbm4_model/model_gbm_one_vs_all_2015-05-14_01_30_49.RData")
+load("src/gbm4_model/model_gbm_one_vs_all_2015-05-14_12_00_38.RData")
 
 # predict class probabilities
 ll <- lapply(PRODUCT.CLASSES,predictForOneClass,gbm.mdls,submission$predictors,
