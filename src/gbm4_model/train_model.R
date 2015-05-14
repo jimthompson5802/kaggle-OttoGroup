@@ -23,7 +23,7 @@ CARET.TUNE.GRID <-  NULL #expand.grid(C=c(0.1,0.01))
 #                                n.trees = c(100,200,300,400,500,600),
 #                                shrinkage = 0.1)
 
-CARET.TRAIN.CTRL <- trainControl(method="repeatedcv",
+CARET.TRAIN.CTRL <- trainControl(method="none",
                                  number=5,
                                  repeats=1,
                                  verboseIter=TRUE,
@@ -32,15 +32,15 @@ CARET.TRAIN.CTRL <- trainControl(method="repeatedcv",
                                  summaryFunction=twoClassSummary)
 
 MODEL.TUNE <- list(
-    Class_1=expand.grid(n.trees=c(100,1500,100), interaction.depth=c(9,11,13), shrinkage=0.1),
-    Class_2=expand.grid(n.trees=c(100,1500,100), interaction.depth=c(15,17,19), shrinkage=0.1),
-    Class_3=expand.grid(n.trees=c(100,1500,100), interaction.depth=c(11,13,15), shrinkage=0.1),
-    Class_4=expand.grid(n.trees=c(100,1500,100), interaction.depth=c(11,13,15), shrinkage=0.1),
-    Class_5=expand.grid(n.trees=c(100,1500,100), interaction.depth=c(1,2,3), shrinkage=0.1),
-    Class_6=expand.grid(n.trees=c(100,1500,100), interaction.depth=c(15,17,19), shrinkage=0.1),
-    Class_7=expand.grid(n.trees=c(100,1500,100), interaction.depth=c(15,17,19), shrinkage=0.1),
-    Class_8=expand.grid(n.trees=c(100,1500,100), interaction.depth=c(11,13,15), shrinkage=0.1),
-    Class_9=expand.grid(n.trees=c(100,1500,100), interaction.depth=c(9,11,13), shrinkage=0.1)
+    Class_1=expand.grid(n.trees=1700, interaction.depth=13, shrinkage=0.1),
+    Class_2=expand.grid(n.trees=1700, interaction.depth=19, shrinkage=0.1),
+    Class_3=expand.grid(n.trees=1700, interaction.depth=15, shrinkage=0.1),
+    Class_4=expand.grid(n.trees=1700, interaction.depth=13, shrinkage=0.1),
+    Class_5=expand.grid(n.trees=1700, interaction.depth=1, shrinkage=0.1),
+    Class_6=expand.grid(n.trees=1700, interaction.depth=19, shrinkage=0.1),
+    Class_7=expand.grid(n.trees=1700, interaction.depth=17, shrinkage=0.1),
+    Class_8=expand.grid(n.trees=1700, interaction.depth=11, shrinkage=0.1),
+    Class_9=expand.grid(n.trees=1700, interaction.depth=9, shrinkage=0.1)
 )
 
 CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
@@ -113,7 +113,7 @@ registerDoMC(8)
 # clusterExport(cl,list("logLossEval"))
 
 Sys.time()
-time.data <- system.time(gbm.mdls <- foreach(this.class=PRODUCT.CLASSES) %do%
+time.data <- system.time(gbm.mdls <- foreach(this.class=PRODUCT.CLASSES) %dopar%
                              trainOneClass(this.class,train.data))
 
 time.data
