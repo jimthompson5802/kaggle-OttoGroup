@@ -6,6 +6,7 @@
 library(caret)
 library(gbm)
 library(randomForest)
+library(alabama)
 
 source("./src/CommonFunctions.R")
 
@@ -97,7 +98,7 @@ cat("gbm4",logLossEval(gbm4.probs,calib.raw$target),"\n")
 #
 #  simple average
 #
-avg.probs <- (rf2.probs + gbm2.probs) / 2.0
+avg.probs <- (rf2.probs + gbm2.probs + gbm4.probs) / 3.0
 
 cat("simple avg",logLossEval(avg.probs,calib.raw$target),"\n")
 
@@ -107,21 +108,42 @@ cat("simple avg",logLossEval(avg.probs,calib.raw$target),"\n")
 #
 # determine optimal weighting factor for combining model estimates
 #
-makeEnsembleFunction <- function(target,rf2.probs, gbm2.probs) {
+makeEnsembleFunction <- function(target,rf2.probs, gbm2.probs,gbm4.probs) {
     function(w) {
-        pred.probs <- w*rf2.probs + (1-w)*gbm2.probs
+        pred.probs <- w[1]*rf2.probs + w[2]*gbm2.probs + w[3]*gbm4.probs
         logLossEval(pred.probs,target)
     }
 }
 
-ensFunc <- makeEnsembleFunction(calib.raw$target,rf2.probs,gbm2.probs)
+ensFunc <- makeEnsembleFunction(calib.raw$target,rf2.probs,gbm2.probs,gbm4.probs)
 
+# define equality constraints
+heq <- function(w) {
+    h <- rep(NA,1)
+    
+    h[1] <- sum(w) - 1
+    
+    return(h)
+}
 
-opt.wts <- optim(0.5,ensFunc,method="L-BFGS-B",lower=0,upper=1)
+# define inequality constraints
+hin <- function(w) {
+    h <- rep(NA,6)
+    
+    for (i in 1:3) {
+        h[i] <- w[i]
+        h[i+3] <- 1 - w[i]
+    }
+    
+    return(h)
+    
+}
+
+opt.wts <- constrOptim.nl(c(0.25,0.25,0.50),fn=ensFunc, hin=hin, heq=heq)
 
 score <- opt.wts$value
 
-opt.probs <- opt.wts$par * rf2.probs + (1-opt.wts$par) * gbm2.probs
+opt.probs <- opt.wts$par[1] * rf2.probs + opt.wts$par[2] * gbm2.probs + opt.wts$par[3] * gbm4.probs
 
 cat("optimaal weights",logLossEval(opt.probs,calib.raw$target),"\n")
 
@@ -129,10 +151,10 @@ cat("optimaal weights",logLossEval(opt.probs,calib.raw$target),"\n")
 # record Model performance
 #
 
-ensemble.weights <- c(opt.wts$par,1-opt.wts$par)
-names(ensemble.weights) <- c("gbm_one_vs_all","rf")
+ensemble.weights <- c(opt.wts$par[1],opt.wts$par[2], opt.wts$par[3])
+names(ensemble.weights) <- c("rf", "gbm_one_vs_all","gbm_one_vs_all_synth")
 
-model.weights <- paste(c("gbm_one_vs_all","rf"),ensemble.weights,sep="=",collapse=",")
+model.weights <- paste(c("rf", "gbm_one_vs_all","gbm_one_vs_all_syth"),ensemble.weights,sep="=",collapse=",")
 bestTune <- data.frame(model.weights, stringsAsFactors=FALSE)
 
 # set up dummy data structures to account for recrodModelPerf() function
