@@ -16,7 +16,7 @@ WORK.DIR <- "./src/ensemble_model"
 MODEL.METHOD <- "ensemble"
 
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
-
+load(paste0(DATA.DIR,"/diff_train_calib_test.RData"))
 #
 # make rf prediction with expanded feature set
 #
@@ -44,7 +44,7 @@ source("./src/gbm2_model/ModelCommonFunctions.R")
 new.df <- prepModelData(calib.raw)
 
 # retrive one versus all gbm model
-load(paste0("./src/gbm2_model/model_gbm_one_vs_all_2015-05-08_00_16_50.RData"))
+load(paste0("./src/gbm2_model/model_gbm_one_vs_all_2015-05-08_22_59_43.RData"))
 
 # predict class probabilities
 classes <- paste("Class_",1:9,sep="")  # generate list of classes to model
@@ -55,22 +55,75 @@ gbm2.probs <- do.call(cbind,ll)
 
 
 #
+# gbm one vs all model
+# with class specific synthetic features
+#
+
+# import global variabels and common functions
+source("./src/gbm4_model/ModelCommonFunctions.R")
+
+# get class specific feature set
+load("./eda/selected_features_for_each_class.RData")
+
+# read kaggle submission data
+new.df <- calib.raw
+
+d.new.df <- d.calib.raw
+
+#save id vector
+id <- new.df$id
+
+# prep the data for submission
+new.df <- prepModelData(new.df,d.new.df)
+
+# retrive one versus all gbm model
+load("src/gbm4_model/model_gbm_one_vs_all_2015-05-14_12_00_38.RData")
+
+# predict class probabilities
+ll <- lapply(PRODUCT.CLASSES,predictForOneClass,gbm.mdls,new.df$predictors,
+             class.feature.list)
+names(ll) <- PRODUCT.CLASSES
+
+gbm4.probs <- do.call(cbind,ll)
+
+#
+# individual model Log Loss
+#
+cat("rf2",logLossEval(rf2.probs,calib.raw$target),"\n")
+cat("gbm2",logLossEval(gbm2.probs,calib.raw$target),"\n")
+cat("gbm4",logLossEval(gbm4.probs,calib.raw$target),"\n")
+
+
+#
+#  simple average
+#
+avg.probs <- (rf2.probs + gbm2.probs) / 2.0
+
+cat("simple avg",logLossEval(avg.probs,calib.raw$target),"\n")
+
+
+
+
+#
 # determine optimal weighting factor for combining model estimates
 #
-makeEnsembleFunction <- function(target,gbm.probs, rf.probs) {
+makeEnsembleFunction <- function(target,rf2.probs, gbm2.probs) {
     function(w) {
-        pred.probs <- w*gbm.probs + (1-w)*rf.probs
+        pred.probs <- w*rf2.probs + (1-w)*gbm2.probs
         logLossEval(pred.probs,target)
     }
 }
 
-ensFunc <- makeEnsembleFunction(calib.raw$target,gbm2.probs,rf2.probs)
+ensFunc <- makeEnsembleFunction(calib.raw$target,rf2.probs,gbm2.probs)
 
-wt <- 0.5
 
 opt.wts <- optim(0.5,ensFunc,method="L-BFGS-B",lower=0,upper=1)
 
 score <- opt.wts$value
+
+opt.probs <- opt.wts$par * rf2.probs + (1-opt.wts$par) * gbm2.probs
+
+cat("optimaal weights",logLossEval(opt.probs,calib.raw$target),"\n")
 
 #
 # record Model performance
