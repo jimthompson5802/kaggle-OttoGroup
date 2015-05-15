@@ -55,7 +55,7 @@ teamRanking <- function(this.date,lb.df) {
     team.score <- standings[standings$TeamName == TEAM.NAME,"Score"]
     
     if (length(team.rank) > 0 ) {
-        team.percentile <- 100*(1-team.rank/number.teams + 1/number.teams)
+        team.percentile <- 100*(1-team.rank/number.teams)
     } else {
         team.percentile <- NA
         team.rank <- NA
@@ -130,13 +130,14 @@ p3 <- ggplot(data=ranking.df) +
 p4 <- ggplot(ranking.df) +
     geom_bar(aes(x=report.date, y=team.percentile),color="red", fill="red",stat="identity") +
     ylim(0,100) +
+    xlim(min(ranking.df$report.date),max(ranking.df$report.date)) +
     xlab("SubmissionDate") +
     ylab("(Lower)  Percentile  (Higher)") +
     ggtitle(paste("Team Standing for",TEAM.NAME)) +
     theme(panel.grid.major.y=element_line(color="black", linetype="dashed"))
     
 # display 4 charts on one page
-png(filename="./model_results/leaderboard_analysis.png",width=8.5, height=11,units="in",res=300)
+png(filename="./model_results/leaderboard_analysis.png",width=8.5, height=11,units="in",res=600)
 grid.newpage()
 pushViewport(viewport(layout=grid.layout(2,2)))
 
@@ -147,7 +148,7 @@ print(p4, vp=viewport(layout.pos.row=2, layout.pos.col = 2))
 dev.off()
 
 # for Presentation
-png(filename="./model_results/score_overview.png", width=14, height=8.5, units="in", res=300)
+png(filename="./model_results/score_overview.png", width=11, height=8.5, units="in", res=600)
 grid.newpage()
 pushViewport(viewport(layout=grid.layout(2,4)))
 print(p1, vp=viewport(layout.pos.row=1, layout.pos.col = 1:4))
@@ -155,9 +156,9 @@ print(p2, vp=viewport(layout.pos.row=2, layout.pos.col = 2:3))
 dev.off()
 
 # for Presentation
-png(filename="./model_results/score_overview2.png", width=14, height=8.5, units="in", res=300)
+png(filename="./model_results/score_overview2.png", width=11, height=8.5, units="in", res=600)
 grid.newpage()
-pushViewport(viewport(layout=grid.layout(1,2)))
+pushViewport(viewport(layout=grid.layout(2,1)))
 print(p3, vp=viewport(layout.pos.row=1, layout.pos.col = 1))
-print(p4, vp=viewport(layout.pos.row=1, layout.pos.col = 2))
+print(p4, vp=viewport(layout.pos.row=2, layout.pos.col = 1))
 dev.off()
