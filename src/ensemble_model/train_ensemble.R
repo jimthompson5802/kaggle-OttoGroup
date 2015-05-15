@@ -117,6 +117,25 @@ makeEnsembleFunction <- function(target,rf2.probs, gbm2.probs,gbm4.probs) {
 
 ensFunc <- makeEnsembleFunction(calib.raw$target,rf2.probs,gbm2.probs,gbm4.probs)
 
+makeGradientFunction <- function(target,rf2.probs, gbm2.probs,gbm4.probs) {
+    function(w) {
+        gr <- rep(NA,3)
+        
+        pred.probs <- rf2.probs
+        gr[1] <- logLossEval(pred.probs,target)
+        
+        pred.probs <-  gbm2.probs
+        gr[2] <- logLossEval(pred.probs,target)
+        
+        pred.probs <-  gbm4.probs
+        gr[3] <- logLossEval(pred.probs,target)
+        
+        return(gr)
+    }
+}
+
+grFunc <- makeGradientFunction(calib.raw$target,rf2.probs,gbm2.probs,gbm4.probs)
+
 # define equality constraints
 heq <- function(w) {
     h <- rep(NA,1)
@@ -124,6 +143,14 @@ heq <- function(w) {
     h[1] <- sum(w) - 1
     
     return(h)
+}
+
+heq.jac <- function(w){
+    j <- matrix(NA,1,length(w))
+    
+    j[1,] <- c(1,1,1)
+    
+    return(j)
 }
 
 # define inequality constraints
@@ -139,13 +166,80 @@ hin <- function(w) {
     
 }
 
-opt.wts <- constrOptim.nl(c(0.25,0.25,0.50),fn=ensFunc, hin=hin, heq=heq)
+hin.jac <- function(w) {
+    j <- matrix(NA,6,length(w))
+    
+    j[1,] <- c(1,0,0)
+    j[2,] <- c(-1,0,0)
+    
+    j[3,] <- c(0,1,0)
+    j[4,] <- c(0,-1,0)
+    
+    j[5,] <- c(0,0,1)
+    j[6,] <- c(0,0,-1)
+    
+    return(j)
+}
+
+system.time(opt.wts <- constrOptim.nl(c(0.25,0.25,0.50),fn=ensFunc, 
+                                      hin=hin, hin.jac=hin.jac,
+                                      heq=heq, heq.jac=heq.jac,
+                                      control.optim=list(trace=2)))
 
 score <- opt.wts$value
 
 opt.probs <- opt.wts$par[1] * rf2.probs + opt.wts$par[2] * gbm2.probs + opt.wts$par[3] * gbm4.probs
 
 cat("optimaal weights",logLossEval(opt.probs,calib.raw$target),"\n")
+
+#
+# 2nd version for optimal weights determine weights for each class
+#
+
+makeEnsembleFunction2 <- function(target,rf2.probs, gbm2.probs,gbm4.probs) {
+    function(w) {
+        
+        ll <- lapply(1:9, function(i){w[3*(i-1)+1]*rf2.probs[,i] +
+                                          w[3*(i-1)+2]*gbm2.probs[,i] +
+                                          w[3*(i-1)+3]*gbm4.probs[,i]})
+                
+        
+        pred.probs <- do.call(cbind,ll)
+        
+        colnames(pred.probs) <- paste0("Class_",1:9)
+        
+        logLossEval(pred.probs,target)
+    }
+}
+
+ensFunc2 <- makeEnsembleFunction2(calib.raw$target,rf2.probs,gbm2.probs,gbm4.probs)
+
+# define equality constraints
+heq2 <- function(w) {
+    
+    h <- sapply(1:9,function(i){sum(w[(3*(i-1)+1):(3*(i-1)+3)])})
+    
+    return(h)
+}
+
+# define inequality constraints
+hin2 <- function(w) {
+    h <- rep(NA,2*length(w))
+    
+    for (i in 1:length(w)) {
+        h[2*(i-1)+1] <- w[i]
+        h[2*(i-1)+2] <- 1 - w[i]
+    }
+    
+    return(h)
+    
+}
+
+
+system.time(opt2.wts <- constrOptim.nl(rep(1/3,27),fn=ensFunc2, hin=hin2, heq=heq2,
+                                       control.optim=list(trace=2)))
+
+opt2.wts
 
 #
 # record Model performance
