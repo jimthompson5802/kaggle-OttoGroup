@@ -196,7 +196,7 @@ hin.jac <- function(w) {
     return(j)
 }
 
-system.time(opt.wts <- constrOptim.nl(c(0.25,0.25,0.50),fn=ensFunc, gr=grFunc,
+system.time(opt.wts <- constrOptim.nl(c(1/3,1/3,1/3),fn=ensFunc,
                                       hin=hin, hin.jac=hin.jac,
                                       heq=heq, heq.jac=heq.jac,
                                       control.optim=list(trace=2)))
