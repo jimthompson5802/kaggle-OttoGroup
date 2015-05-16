@@ -1,0 +1,23 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 13.04.0 ] */
+
+/* [wxMaxima: comment start ]
+Log loss function
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+LL(w1,w2,w3) := -(1/N)*sum(sum(y[j]*log(w1*p[i,j] + w2*q[i,j] + w3*r[i,j]),j,1,9),i,1,N);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+Calculate graident of Log Loss function
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+diff(LL(w1,w2,w3),w1);
+diff(LL(w1,w2,w3),w2);
+diff(LL(w1,w2,w3),w3);
+/* [wxMaxima: input   end   ] */
+
+/* Maxima can't load/batch files which end with a comment! */
+"Created with wxMaxima"$
