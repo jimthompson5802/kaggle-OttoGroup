@@ -121,14 +121,29 @@ makeGradientFunction <- function(target,rf2.probs, gbm2.probs,gbm4.probs) {
     function(w) {
         gr <- rep(NA,3)
         
-        pred.probs <- rf2.probs
-        gr[1] <- logLossEval(pred.probs,target)
+        # adjust probabilities to avoid numerical issues with log() function
+        rf2.probs <- apply(rf2.probs,c(1,2),function(elem){max(min(elem,(1-1e-15)),1e-15)})
+        rf2.probs <- rf2.probs/apply(rf2.probs,1,sum)
         
-        pred.probs <-  gbm2.probs
-        gr[2] <- logLossEval(pred.probs,target)
+        gbm2.probs <- apply(gbm2.probs,c(1,2),function(elem){max(min(elem,(1-1e-15)),1e-15)})
+        gbm2.probs <- gbm2.probs/apply(rf2.probs,1,sum)
         
-        pred.probs <-  gbm4.probs
-        gr[3] <- logLossEval(pred.probs,target)
+        gbm4.probs <- apply(gbm4.probs,c(1,2),function(elem){max(min(elem,(1-1e-15)),1e-15)})
+        gbm4.probs <- gbm4.probs/apply(rf2.probs,1,sum)
+        
+        # create indicator matrix
+        ll <- lapply(target,function(class){as.integer(colnames(rf2.probs)==class)})
+        y <- do.call(rbind,ll)
+        colnames(y) <- paste0("Class_",1:9)
+        
+        pred.probs <- rf2.probs/(w[1]*rf2.probs + w[2]*gbm2.probs + w[3]*gbm4.probs)
+        gr[1] <- -sum(pred.probs*y)/nrow(pred.probs)
+        
+        pred.probs <- gbm2.probs/(w[1]*rf2.probs + w[2]*gbm2.probs + w[3]*gbm4.probs)
+        gr[2] <- -sum(pred.probs*y)/nrow(pred.probs)
+        
+        pred.probs <- gbm4.probs/(w[1]*rf2.probs + w[2]*gbm2.probs + w[3]*gbm4.probs)
+        gr[3] <- -sum(pred.probs*y)/nrow(pred.probs)
         
         return(gr)
     }
@@ -181,7 +196,7 @@ hin.jac <- function(w) {
     return(j)
 }
 
-system.time(opt.wts <- constrOptim.nl(c(0.25,0.25,0.50),fn=ensFunc, 
+system.time(opt.wts <- constrOptim.nl(c(0.25,0.25,0.50),fn=ensFunc, gr=grFunc,
                                       hin=hin, hin.jac=hin.jac,
                                       heq=heq, heq.jac=heq.jac,
                                       control.optim=list(trace=2)))
