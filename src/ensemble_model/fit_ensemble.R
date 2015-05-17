@@ -117,39 +117,9 @@ makeEnsembleFunction <- function(target,rf2.probs, gbm2.probs,gbm4.probs) {
 
 ensFunc <- makeEnsembleFunction(calib.raw$target,rf2.probs,gbm2.probs,gbm4.probs)
 
-makeGradientFunction <- function(target,rf2.probs, gbm2.probs,gbm4.probs) {
-    function(w) {
-        gr <- rep(NA,3)
-        
-        # adjust probabilities to avoid numerical issues with log() function
-        rf2.probs <- apply(rf2.probs,c(1,2),function(elem){max(min(elem,(1-1e-15)),1e-15)})
-        rf2.probs <- rf2.probs/apply(rf2.probs,1,sum)
-        
-        gbm2.probs <- apply(gbm2.probs,c(1,2),function(elem){max(min(elem,(1-1e-15)),1e-15)})
-        gbm2.probs <- gbm2.probs/apply(rf2.probs,1,sum)
-        
-        gbm4.probs <- apply(gbm4.probs,c(1,2),function(elem){max(min(elem,(1-1e-15)),1e-15)})
-        gbm4.probs <- gbm4.probs/apply(rf2.probs,1,sum)
-        
-        # create indicator matrix
-        ll <- lapply(target,function(class){as.integer(colnames(rf2.probs)==class)})
-        y <- do.call(rbind,ll)
-        colnames(y) <- paste0("Class_",1:9)
-        
-        pred.probs <- rf2.probs/(w[1]*rf2.probs + w[2]*gbm2.probs + w[3]*gbm4.probs)
-        gr[1] <- -sum(pred.probs*y)/nrow(pred.probs)
-        
-        pred.probs <- gbm2.probs/(w[1]*rf2.probs + w[2]*gbm2.probs + w[3]*gbm4.probs)
-        gr[2] <- -sum(pred.probs*y)/nrow(pred.probs)
-        
-        pred.probs <- gbm4.probs/(w[1]*rf2.probs + w[2]*gbm2.probs + w[3]*gbm4.probs)
-        gr[3] <- -sum(pred.probs*y)/nrow(pred.probs)
-        
-        return(gr)
-    }
-}
 
-grFunc <- makeGradientFunction(calib.raw$target,rf2.probs,gbm2.probs,gbm4.probs)
+
+# grFunc <- makeGradientFunction(calib.raw$target,rf2.probs,gbm2.probs,gbm4.probs)
 
 # define equality constraints
 heq <- function(w) {
@@ -196,12 +166,13 @@ hin.jac <- function(w) {
     return(j)
 }
 
-system.time(opt.wts <- constrOptim.nl(c(1/3,1/3,1/3),fn=ensFunc,
+system.time(opt.wts <- constrOptim.nl(c(.2,.6,.2),fn=ensFunc,  #gr=grFunc,
                                       hin=hin, hin.jac=hin.jac,
                                       heq=heq, heq.jac=heq.jac,
                                       control.optim=list(trace=2)))
 
 score <- opt.wts$value
+
 
 opt.probs <- opt.wts$par[1] * rf2.probs + opt.wts$par[2] * gbm2.probs + opt.wts$par[3] * gbm4.probs
 
@@ -214,9 +185,9 @@ cat("optimaal weights",logLossEval(opt.probs,calib.raw$target),"\n")
 makeEnsembleFunction2 <- function(target,rf2.probs, gbm2.probs,gbm4.probs) {
     function(w) {
         
-        ll <- lapply(1:9, function(i){w[3*(i-1)+1]*rf2.probs[,i] +
-                                          w[3*(i-1)+2]*gbm2.probs[,i] +
-                                          w[3*(i-1)+3]*gbm4.probs[,i]})
+        ll <- lapply(1:9, function(i){w[i]*rf2.probs[,i] +
+                                          w[9+i]*gbm2.probs[,i] +
+                                          w[18+i]*gbm4.probs[,i]})
                 
         
         pred.probs <- do.call(cbind,ll)
@@ -232,9 +203,27 @@ ensFunc2 <- makeEnsembleFunction2(calib.raw$target,rf2.probs,gbm2.probs,gbm4.pro
 # define equality constraints
 heq2 <- function(w) {
     
-    h <- sapply(1:9,function(i){sum(w[(3*(i-1)+1):(3*(i-1)+3)])})
+    h <- t(sapply(1:9,function(i){ans<-rep(0,27);ans[i]<-1;ans[9+i]<-1;ans[18+i]<-1;return(ans)}))
     
-    return(h)
+    h <- w*h
+
+    return(apply(h,1,sum)-1)
+}
+
+heq2.jac <- function(w){
+    j <- matrix(NA,9,length(w))
+    
+    j[1,] <- rep(c(1,0,0,0,0,0,0,0,0),3)
+    j[2,] <- rep(c(0,1,0,0,0,0,0,0,0),3)
+    j[3,] <- rep(c(0,0,1,0,0,0,0,0,0),3)
+    j[4,] <- rep(c(0,0,0,1,0,0,0,0,0),3)
+    j[5,] <- rep(c(0,0,0,0,1,0,0,0,0),3)
+    j[6,] <- rep(c(0,0,0,0,0,1,0,0,0),3)
+    j[7,] <- rep(c(0,0,0,0,0,0,1,0,0),3)
+    j[8,] <- rep(c(0,0,0,0,0,0,0,1,0),3)
+    j[9,] <- rep(c(0,0,0,0,0,0,0,0,1),3)
+    
+    return(j)
 }
 
 # define inequality constraints
@@ -251,7 +240,23 @@ hin2 <- function(w) {
 }
 
 
-system.time(opt2.wts <- constrOptim.nl(rep(1/3,27),fn=ensFunc2, hin=hin2, heq=heq2,
+hin2.jac <- function(w) {
+    j <- matrix(0,2*length(w),length(w))
+    
+    
+    for (i in 1:length(w)) {
+        j[2*(i-1)+1,i] <- 1
+        j[2*(i-1)+2,i] <- -1
+    }
+    
+    return(j)
+}
+
+Sys.time()
+system.time(opt2.wts <- constrOptim.nl(rep(1/3,27),fn=ensFunc2, 
+                                       hin=hin2, hin.jac=hin2.jac,
+                                       heq=heq2, heq.jac=heq2.jac,
+                                       control.outer=list(trace=TRUE,itmax=10),
                                        control.optim=list(trace=2)))
 
 opt2.wts
