@@ -109,8 +109,15 @@ cat("simple avg",logLossEval(avg.probs,calib.raw$target),"\n")
 # determine optimal weighting factor for combining model estimates
 #
 makeEnsembleFunction <- function(target,rf2.probs, gbm2.probs,gbm4.probs) {
+    
+    probs.mat <- cbind(rf2.probs,gbm2.probs,gbm4.probs)
+    
     function(w) {
-        pred.probs <- w[1]*rf2.probs + w[2]*gbm2.probs + w[3]*gbm4.probs
+        wmat <- rbind(diag(w[1],9),diag(w[2],9),diag(w[3],9))
+        
+        pred.probs <- probs.mat %*% wmat
+        
+        colnames(pred.probs) <- paste0("Class_",1:9)
         logLossEval(pred.probs,target)
     }
 }
@@ -166,7 +173,7 @@ hin.jac <- function(w) {
     return(j)
 }
 
-system.time(opt.wts <- constrOptim.nl(c(.2,.6,.2),fn=ensFunc,  #gr=grFunc,
+system.time(opt.wts <- constrOptim.nl(c(1/3,1/3,1/3),fn=ensFunc,  #gr=grFunc,
                                       hin=hin, hin.jac=hin.jac,
                                       heq=heq, heq.jac=heq.jac,
                                       control.optim=list(trace=2)))
@@ -178,88 +185,7 @@ opt.probs <- opt.wts$par[1] * rf2.probs + opt.wts$par[2] * gbm2.probs + opt.wts$
 
 cat("optimaal weights",logLossEval(opt.probs,calib.raw$target),"\n")
 
-#
-# 2nd version for optimal weights determine weights for each class
-#
 
-makeEnsembleFunction2 <- function(target,rf2.probs, gbm2.probs,gbm4.probs) {
-    function(w) {
-        
-        ll <- lapply(1:9, function(i){w[i]*rf2.probs[,i] +
-                                          w[9+i]*gbm2.probs[,i] +
-                                          w[18+i]*gbm4.probs[,i]})
-                
-        
-        pred.probs <- do.call(cbind,ll)
-        
-        colnames(pred.probs) <- paste0("Class_",1:9)
-        
-        logLossEval(pred.probs,target)
-    }
-}
-
-ensFunc2 <- makeEnsembleFunction2(calib.raw$target,rf2.probs,gbm2.probs,gbm4.probs)
-
-# define equality constraints
-heq2 <- function(w) {
-    
-    h <- t(sapply(1:9,function(i){ans<-rep(0,27);ans[i]<-1;ans[9+i]<-1;ans[18+i]<-1;return(ans)}))
-    
-    h <- w*h
-
-    return(apply(h,1,sum)-1)
-}
-
-heq2.jac <- function(w){
-    j <- matrix(NA,9,length(w))
-    
-    j[1,] <- rep(c(1,0,0,0,0,0,0,0,0),3)
-    j[2,] <- rep(c(0,1,0,0,0,0,0,0,0),3)
-    j[3,] <- rep(c(0,0,1,0,0,0,0,0,0),3)
-    j[4,] <- rep(c(0,0,0,1,0,0,0,0,0),3)
-    j[5,] <- rep(c(0,0,0,0,1,0,0,0,0),3)
-    j[6,] <- rep(c(0,0,0,0,0,1,0,0,0),3)
-    j[7,] <- rep(c(0,0,0,0,0,0,1,0,0),3)
-    j[8,] <- rep(c(0,0,0,0,0,0,0,1,0),3)
-    j[9,] <- rep(c(0,0,0,0,0,0,0,0,1),3)
-    
-    return(j)
-}
-
-# define inequality constraints
-hin2 <- function(w) {
-    h <- rep(NA,2*length(w))
-    
-    for (i in 1:length(w)) {
-        h[2*(i-1)+1] <- w[i]
-        h[2*(i-1)+2] <- 1 - w[i]
-    }
-    
-    return(h)
-    
-}
-
-
-hin2.jac <- function(w) {
-    j <- matrix(0,2*length(w),length(w))
-    
-    
-    for (i in 1:length(w)) {
-        j[2*(i-1)+1,i] <- 1
-        j[2*(i-1)+2,i] <- -1
-    }
-    
-    return(j)
-}
-
-Sys.time()
-system.time(opt2.wts <- constrOptim.nl(rep(1/3,27),fn=ensFunc2, 
-                                       hin=hin2, hin.jac=hin2.jac,
-                                       heq=heq2, heq.jac=heq2.jac,
-                                       control.outer=list(trace=TRUE,itmax=10),
-                                       control.optim=list(trace=2)))
-
-opt2.wts
 
 #
 # record Model performance
