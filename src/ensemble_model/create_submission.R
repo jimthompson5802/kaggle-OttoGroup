@@ -13,7 +13,7 @@ source("./src/CommonFunctions.R")
 WORK.DIR <- "./src/ensemble_model"
 
 # load optimal weighting factors
-load(paste0(WORK.DIR,"/ensembleWeights_2015-05-17_11_20_33.RData"))
+load(paste0(WORK.DIR,"/opt_wts_2015-05-19_21_25_00.RData"))
 
 # get near zero Vars to eliminate
 load(paste0(DATA.DIR,"/near_zero_vars.RData"))
@@ -156,9 +156,16 @@ gbm4.probs <- do.call(cbind,ll)
 # 
 # use optimal weights calculated
 #
-pred.probs <- ensemble.weights["rf"] * rf2.probs +
-                ensemble.weights["gbm_one_vs_all"] * gbm2.probs +
-                ensemble.weights["gbm_one_vs_all_synth"] * gbm4.probs
+
+# combine three models probabilities into a single matrix
+probs.mat <- cbind(rf2.probs,gbm2.probs,gbm4.probs)
+
+#set up weight matrix to combine the individual weights
+wmat <- rbind(diag(opt.wts$par[1:9]),diag(opt.wts$par[10:18]),diag(opt.wts$par[19:27]))
+
+# compute overall probablities using invidual model class weights
+pred.probs <- probs.mat %*% wmat
+colnames(pred.probs) <- paste0("Class_",1:9)
     
 
 #create kaggle submission file
