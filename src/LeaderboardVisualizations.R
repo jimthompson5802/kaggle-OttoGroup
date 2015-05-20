@@ -118,7 +118,7 @@ p3 <- ggplot(data=ranking.df) +
                                           vjust=-0.2, hjust=0, lineheight=0.8,
                                           label=paste("Leader"))) +
     # plot slected team score
-    geom_line(aes(x=report.date, y=team.score), color="red",size=1.25) +
+    geom_line(aes(x=report.date, y=team.score), color="orange",size=1.25) +
     # identify selected team
     geom_text(data=head(ranking.df[!is.na(ranking.df$team.score),],1),aes(x=report.date, y=team.score,
                                                                    vjust=2, hjust=-0.4, lineheight=0.8,
@@ -128,13 +128,14 @@ p3 <- ggplot(data=ranking.df) +
     ggtitle(paste("Comparision of\nLeader Score vs. Team:",TEAM.NAME))
 
 p4 <- ggplot(ranking.df) +
-    geom_bar(aes(x=report.date, y=team.percentile),color="red", fill="red",stat="identity") +
-    ylim(0,100) +
+    geom_bar(aes(x=report.date, y=team.percentile),color="orange", fill="orange",stat="identity") +
+    scale_y_continuous(limits=c(0,100),minor_breaks = seq(0 , 100, 5), breaks = seq(0, 100, 10)) +
     xlim(min(ranking.df$report.date),max(ranking.df$report.date)) +
     xlab("SubmissionDate") +
     ylab("(Lower)  Percentile  (Higher)") +
     ggtitle(paste("Team Standing for",TEAM.NAME)) +
-    theme(panel.grid.major.y=element_line(color="black", linetype="dashed"))
+    theme(panel.grid.major.y=element_line(color="black", linetype="dashed")) 
+
     
 # display 4 charts on one page
 png(filename="./model_results/leaderboard_analysis.png",width=8.5, height=11,units="in",res=600)
@@ -158,7 +159,7 @@ dev.off()
 # for Presentation
 png(filename="./model_results/score_overview2.png", width=11, height=8.5, units="in", res=600)
 grid.newpage()
-pushViewport(viewport(layout=grid.layout(2,1)))
+pushViewport(viewport(layout=grid.layout(1,2)))
 print(p3, vp=viewport(layout.pos.row=1, layout.pos.col = 1))
-print(p4, vp=viewport(layout.pos.row=2, layout.pos.col = 1))
+print(p4, vp=viewport(layout.pos.row=1, layout.pos.col = 2))
 dev.off()
