@@ -87,7 +87,8 @@ p1 <- ggplot() +
     # identify selected team
     geom_text(data=head(lb.df[lb.df$TeamName == TEAM.NAME,],1),aes(x=SubmissionDate, y=Score,
                                                                    vjust=-0.2, hjust=0.5, lineheight=0.8,
-                                                                   label=paste("Team:\n",TEAM.NAME))) +
+                                                                   label=paste("Team:\n",TEAM.NAME)),
+                        color="black") +
     ylab("(Better)  Log Loss Error Function  (Worse)") +
     xlab("Submission Date") +
     ggtitle(paste("Kaggle: Otto Group Product Classification Challenge\nAll Participant Scores as of",last.submission.date)) +
@@ -96,7 +97,7 @@ p1 <- ggplot() +
 # plot leader score for the first 24 hours of competition
 lb24.df <- lb.df[lb.df$SubmissionDate < (lb.df$SubmissionDate[1]+hms("24:00:00")),]
 p2 <- ggplot(data=lb24.df) +
-    geom_line(aes(x=SubmissionDate,y=leader.score),color="blue", size=1.25) +
+    geom_line(aes(x=SubmissionDate,y=leader.score),color="grey60", size=1.25) +
     geom_text(data=head(lb24.df,1),aes(x=SubmissionDate, y=leader.score,
                                        vjust=1.0, hjust=-0.2, linegeight=0.8,
                                        label=Score)) +
@@ -112,13 +113,13 @@ p2 <- ggplot(data=lb24.df) +
 # plot selected team vs leader score
 p3 <- ggplot(data=ranking.df) +
     #plot leader score
-    geom_line(aes(x=report.date,y=leader.score),color="blue",size=1.25) +
+    geom_line(aes(x=report.date,y=leader.score),color="grey60",size=1.25) +
     # identify leader
     geom_text(data=head(ranking.df,1),aes(x=report.date, y=leader.score,
                                           vjust=-0.2, hjust=0, lineheight=0.8,
                                           label=paste("Leader"))) +
     # plot slected team score
-    geom_line(aes(x=report.date, y=team.score), color="orange",size=1.25) +
+    geom_line(aes(x=report.date, y=team.score), color="red",size=1.25) +
     # identify selected team
     geom_text(data=head(ranking.df[!is.na(ranking.df$team.score),],1),aes(x=report.date, y=team.score,
                                                                    vjust=2, hjust=-0.4, lineheight=0.8,
@@ -128,7 +129,7 @@ p3 <- ggplot(data=ranking.df) +
     ggtitle(paste("Comparision of\nLeader Score vs. Team:",TEAM.NAME))
 
 p4 <- ggplot(ranking.df) +
-    geom_bar(aes(x=report.date, y=team.percentile),color="orange", fill="orange",stat="identity") +
+    geom_bar(aes(x=report.date, y=team.percentile),color="red", fill="red",stat="identity") +
     scale_y_continuous(limits=c(0,100),minor_breaks = seq(0 , 100, 5), breaks = seq(0, 100, 10)) +
     xlim(min(ranking.df$report.date),max(ranking.df$report.date)) +
     xlab("SubmissionDate") +
@@ -157,7 +158,7 @@ print(p2, vp=viewport(layout.pos.row=2, layout.pos.col = 2:3))
 dev.off()
 
 # for Presentation
-png(filename="./model_results/score_overview2.png", width=11, height=8.5, units="in", res=600)
+png(filename="./model_results/score_overview2.png", width=9, height=5.5, units="in", res=600)
 grid.newpage()
 pushViewport(viewport(layout=grid.layout(1,2)))
 print(p3, vp=viewport(layout.pos.row=1, layout.pos.col = 1))
