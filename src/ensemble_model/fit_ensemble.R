@@ -113,7 +113,7 @@ makeEnsembleFunction <- function(target,rf2.probs, gbm2.probs,gbm4.probs) {
     probs.mat <- cbind(rf2.probs,gbm2.probs,gbm4.probs)
     
     function(w) {
-        wmat <- rbind(diag(w[1],9),diag(w[2],9),diag(w[3],9))
+        wmat <- rbind(diag(w[1:9]),diag(w[10:18]),diag(w[19:27]))
         
         pred.probs <- probs.mat %*% wmat
         
@@ -130,52 +130,41 @@ ensFunc <- makeEnsembleFunction(calib.raw$target,rf2.probs,gbm2.probs,gbm4.probs
 
 # define equality constraints
 heq <- function(w) {
-    h <- rep(NA,1)
+    h <- rep(NA,9)
     
-    h[1] <- sum(w) - 1
-    
+    h[1] <- sum(w[c(1,10,19)]) - 1
+    h[2] <- sum(w[c(2,11,20)]) - 1
+    h[3] <- sum(w[c(3,12,21)]) - 1
+    h[4] <- sum(w[c(4,13,22)]) - 1
+    h[5] <- sum(w[c(5,14,23)]) - 1
+    h[6] <- sum(w[c(6,15,24)]) - 1
+    h[7] <- sum(w[c(7,16,25)]) - 1
+    h[8] <- sum(w[c(8,17,26)]) - 1
+    h[9] <- sum(w[c(9,18,27)]) - 1
     return(h)
 }
 
 heq.jac <- function(w){
-    j <- matrix(NA,1,length(w))
     
-    j[1,] <- c(1,1,1)
-    
-    return(j)
+    return(cbind(diag(1,9),diag(1,9),diag(1,9)))
 }
 
 # define inequality constraints
 hin <- function(w) {
-    h <- rep(NA,6)
     
-    for (i in 1:3) {
-        h[i] <- w[i]
-        h[i+3] <- 1 - w[i]
-    }
-    
-    return(h)
+    return(c(w,1-w))
     
 }
 
 hin.jac <- function(w) {
-    j <- matrix(NA,6,length(w))
     
-    j[1,] <- c(1,0,0)
-    j[2,] <- c(-1,0,0)
-    
-    j[3,] <- c(0,1,0)
-    j[4,] <- c(0,-1,0)
-    
-    j[5,] <- c(0,0,1)
-    j[6,] <- c(0,0,-1)
-    
-    return(j)
+    return(rbind(diag(1,27),diag(-1,27)))
 }
 
-system.time(opt.wts <- constrOptim.nl(c(1/3,1/3,1/3),fn=ensFunc,  #gr=grFunc,
+system.time(opt.wts <- constrOptim.nl(rep(1/3,27),fn=ensFunc,  #gr=grFunc,
                                       hin=hin, hin.jac=hin.jac,
                                       heq=heq, heq.jac=heq.jac,
+                                      control.outer=list(itmax=6),
                                       control.optim=list(trace=2)))
 
 score <- opt.wts$value
