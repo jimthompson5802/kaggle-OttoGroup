@@ -13,6 +13,6 @@ separate directory.
 
 ## Pre-requiste for Running the Code
 * Create a directory called **data** at the same level as the directories described
-and download the competition training and test
+above and download the competition training and test
 data sets into this directory.
 
