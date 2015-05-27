@@ -164,7 +164,7 @@ hin.jac <- function(w) {
 system.time(opt.wts <- constrOptim.nl(rep(1/3,27),fn=ensFunc,  #gr=grFunc,
                                       hin=hin, hin.jac=hin.jac,
                                       heq=heq, heq.jac=heq.jac,
-                                      control.outer=list(itmax=2),
+                                      control.outer=list(itmax=1),
                                       control.optim=list(trace=2)))
 
 score <- opt.wts$value
