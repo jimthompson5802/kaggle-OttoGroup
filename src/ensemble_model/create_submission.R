@@ -13,7 +13,7 @@ source("./src/CommonFunctions.R")
 WORK.DIR <- "./src/ensemble_model"
 
 # load optimal weighting factors
-load(paste0(WORK.DIR,"/opt_wts_2015-05-19_21_25_00.RData"))
+load(paste0(WORK.DIR,"/opt_wts_2015-05-26_21_15_00.RData"))
 
 # get near zero Vars to eliminate
 load(paste0(DATA.DIR,"/near_zero_vars.RData"))
