@@ -151,9 +151,9 @@ dev.off()
 # for Presentation
 png(filename="./model_results/score_overview.png", width=11, height=8.5, units="in", res=600)
 grid.newpage()
-pushViewport(viewport(layout=grid.layout(2,4)))
-print(p1, vp=viewport(layout.pos.row=1, layout.pos.col = 1:4))
-print(p2, vp=viewport(layout.pos.row=2, layout.pos.col = 2:3))
+pushViewport(viewport(layout=grid.layout(2,6)))
+print(p1, vp=viewport(layout.pos.row=1, layout.pos.col = 1:6))
+print(p2, vp=viewport(layout.pos.row=2, layout.pos.col = 2:5))
 dev.off()
 
 # for Presentation
