@@ -38,7 +38,7 @@ df$class.id <- do.call(rbind,strsplit(df$target,"_"))[,2]
 df2 <- select(df,starts_with("feat_"))
 
 png("./eda/feature_boxplot.png",height=17, width=11, units="in",res=300)
-qplot(class.id,value,data=df2,geom="boxplot") + 
+qplot(class.id,value,data=df,geom="boxplot") + 
     facet_wrap(~feature,ncol=8,scales="free_y") +
     xlab("Class")
 dev.off()
