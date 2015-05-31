@@ -30,6 +30,9 @@ lb.df$number.teams <- sapply(1:nrow(lb.df),function(pos,df){length(unique(df[1:p
 lb.df$leader.score <- sapply(1:nrow(lb.df),function(pos,df){min(df[1:pos,"Score"])},lb.df)
 lb.df$report.date <- as.Date(lb.df[,"SubmissionDate"])
 
+# get only data during the competition
+lb.df <- subset(lb.df,report.date < as.Date("2015-05-19"))
+
 # function to get team standings by day
 teamStandings <- function(this.date,lb.df) {
     df <- lb.df[lb.df$report.date <= this.date,]
@@ -83,7 +86,7 @@ p1 <- ggplot() +
     geom_point(data=lb.df[lb.df$TeamName != TEAM.NAME,], aes(x=SubmissionDate, y=Score),color="grey60") +
     # plot scores for selected team
     geom_point(data=lb.df[lb.df$TeamName == TEAM.NAME,],aes(x=SubmissionDate,y=Score),
-                                                          pch=18,color="orange",size=3) +
+                                                          pch=18,color="red",size=3) +
     # identify selected team
     geom_text(data=head(lb.df[lb.df$TeamName == TEAM.NAME,],1),aes(x=SubmissionDate, y=Score,
                                                                    vjust=-0.2, hjust=0.5, lineheight=0.8,
@@ -101,8 +104,8 @@ p2 <- ggplot(data=lb24.df) +
                                        vjust=1.0, hjust=-0.2, linegeight=0.8,
                                        label=Score)) +
     geom_text(data=tail(lb24.df,1), aes(x=SubmissionDate, y=Score,
-                                        vjust=1.5, hjust=1.0, linegeight=0.8,
-                                        angle=-45,
+                                        vjust=1.0, hjust=1.0, linegeight=0.8,
+                                        angle=0,
                                         label=leader.score)) +
     ylab("(Better)  Log Loss Error Function  (Worse)") +
     xlab("Submission Date") +
@@ -118,7 +121,7 @@ p3 <- ggplot(data=ranking.df) +
                                           vjust=-0.2, hjust=0, lineheight=0.8,
                                           label=paste("Leader"))) +
     # plot slected team score
-    geom_line(aes(x=report.date, y=team.score), color="orange",size=1.25) +
+    geom_line(aes(x=report.date, y=team.score), color="red",size=1.25) +
     # identify selected team
     geom_text(data=head(ranking.df[!is.na(ranking.df$team.score),],1),aes(x=report.date, y=team.score,
                                                                    vjust=2, hjust=-0.4, lineheight=0.8,
@@ -128,7 +131,7 @@ p3 <- ggplot(data=ranking.df) +
     ggtitle(paste("Comparision of\nLeader Score vs. Team:",TEAM.NAME))
 
 p4 <- ggplot(ranking.df) +
-    geom_bar(aes(x=report.date, y=team.percentile),color="orange", fill="orange",stat="identity") +
+    geom_bar(aes(x=report.date, y=team.percentile),color="red", fill="red",stat="identity") +
     scale_y_continuous(limits=c(0,100),minor_breaks = seq(0 , 100, 5), breaks = seq(0, 100, 10)) +
     xlim(min(ranking.df$report.date),max(ranking.df$report.date)) +
     xlab("SubmissionDate") +
