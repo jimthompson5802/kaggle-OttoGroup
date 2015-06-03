@@ -23,7 +23,7 @@ id <- new.df$id
 new.df <- prepModelData(new.df,only.predictors = TRUE)
 
 # retrive generated model-name created in training run
-load(paste0(WORK.DIR,"/model_rf_all_data_ntree_1000.RData"))
+load(paste0(WORK.DIR,"/model_rf_all_data_ntree_4000.RData"))
 
 # predict class probabilities
 
