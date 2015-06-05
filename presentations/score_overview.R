@@ -22,7 +22,7 @@ team.post.df <- data.frame(report.date=as.Date(post.date),score=team.post.score,
                            percentile=team.post.percentile)
 
 
-
+this.theme <- theme(axis.text=element_text(color="black"))
 
 p3.final <- p3 + geom_point(data=leader.final.df,aes(x=report.date,y=score), 
                     color="blue3", pch=4,cex=5) +
@@ -49,7 +49,7 @@ print(p4.final)
 
     
 # display 4 charts on one page
-png(filename="./presentations/leaderboard_analysis.png",width=11, height=8.5,units="in",res=600)
+png(filename="./presentations/leaderboard_analysis.png",width=11, height=8.5,units="in",res=300)
 grid.newpage()
 pushViewport(viewport(layout=grid.layout(2,6)))
 
@@ -61,7 +61,7 @@ dev.off()
 
 
 # for Presentation
-png(filename="./presentations/score_overview2.png", width=11, height=8.5, units="in", res=600)
+png(filename="./presentations/score_overview2.png", width=11, height=8.5, units="in", res=300)
 grid.newpage()
 pushViewport(viewport(layout=grid.layout(1,2)))
 print(p3.final, vp=viewport(layout.pos.row=1, layout.pos.col = 1))

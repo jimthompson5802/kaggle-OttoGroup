@@ -29,6 +29,8 @@ summary.df <- ddply(modPerf.df,.(model),summarize,
                     total.cpu.minutes=sum(user.cpu.time)/60,
                     total.elapsed.minutes=sum(elapsed.time)/60)
 
+this.theme <- theme(axis.text=element_text(color="black"))
+
 p1 <- ggplot(summary.df) +
         geom_bar(aes(x=reorder(model,-count),y=count), stat="identity",
                  fill="blue") + 
@@ -37,7 +39,8 @@ p1 <- ggplot(summary.df) +
                  color="white") +
     xlab("Model Algorithm") +
     ylab("Number of Training Runs") + 
-    ggtitle("Summary of Model Training Runs")
+    ggtitle("Summary of Model Training Runs") +
+    this.theme
 
 png("./presentations/model_runs_analysis.png",width=8,height=6, units="in",res=300)
 print(p1)
@@ -71,7 +74,8 @@ p2 <- ggplot(df3) +
     xlab("Model") +
     ylab("(Better) MLL Score (Worse)") + 
     ggtitle("Model Performance on test.raw Data Set") +
-    theme(axis.text.x=element_text(angle=90))
+    theme(axis.text.x=element_text(angle=90)) +
+    this.theme
 
 png("./presentations/model_score_analysis.png",width=8,height=6, units="in",res=300)
 print(p2)

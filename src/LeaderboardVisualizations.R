@@ -80,6 +80,8 @@ ranking.df <- do.call(rbind,ll)
 # determine submission date for last submission
 last.submission.date <- as.Date(tail(lb.df,1)$SubmissionDate)
 
+this.theme <- theme(axis.text=element_text(color="black"))
+
 # plot all scores and identify selected team
 p1 <- ggplot() + 
     # plot points for all teams except for selected team
@@ -94,7 +96,7 @@ p1 <- ggplot() +
     ylab("(Better)  Log Loss Error Function  (Worse)") +
     xlab("Submission Date") +
     ggtitle(paste("Kaggle: Otto Group Product Classification Challenge\nAll Participant Scores as of",last.submission.date)) +
-    theme()
+    this.theme
 
 # plot leader score for the first 24 hours of competition
 lb24.df <- lb.df[lb.df$SubmissionDate < (lb.df$SubmissionDate[1]+hms("24:00:00")),]
@@ -109,7 +111,8 @@ p2 <- ggplot(data=lb24.df) +
                                         label=leader.score)) +
     ylab("(Better)  Log Loss Error Function  (Worse)") +
     xlab("Submission Date") +
-    ggtitle("Leader Score During First 24 Hours of Competition")
+    ggtitle("Leader Score During First 24 Hours of Competition") +
+    this.theme
     
     
 # plot selected team vs leader score
@@ -128,7 +131,8 @@ p3 <- ggplot(data=ranking.df) +
                                                                    label=paste(TEAM.NAME))) +
     xlab("Submission Date") +
     ylab("(Better)  Log Loss Error Function  (Worse)") +
-    ggtitle(paste("Comparision of\nLeader Score vs. Team:",TEAM.NAME))
+    ggtitle(paste("Comparision of\nLeader Score vs. Team:",TEAM.NAME)) +
+    this.theme
 
 p4 <- ggplot(ranking.df) +
     geom_bar(aes(x=report.date, y=team.percentile),color="red", fill="red",stat="identity") +
@@ -137,7 +141,8 @@ p4 <- ggplot(ranking.df) +
     xlab("SubmissionDate") +
     ylab("(Lower)  Percentile  (Higher)") +
     ggtitle(paste("Team Standing for",TEAM.NAME)) +
-    theme(panel.grid.major.y=element_line(color="grey50", linetype="dashed")) 
+    theme(panel.grid.major.y=element_line(color="grey50", linetype="dashed")) +
+    this.theme
 
     
 # display 4 charts on one page

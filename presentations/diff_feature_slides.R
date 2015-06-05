@@ -36,17 +36,21 @@ df <- gather(df, feature, value, one_of(predictor.vars))
 df$feature.id <- do.call(rbind,strsplit(as.character(df$feature),"_"))[,2]
 df$class.id <- do.call(rbind,strsplit(df$target,"_"))[,2]
 
+this.theme <- theme(axis.text=element_text(color="black"))
+
 png("./presentations/diff_feature_boxplot.png",height=6, width=8, units="in",res=300)
 qplot(class.id,value,data=df,geom="boxplot") + 
     facet_wrap(~feature,ncol=3,scales="free_y") +
-    xlab("Class")
+    xlab("Class") +
+    this.theme
 dev.off()
 
 
 png("./presentations/diff_feature_density_1.png",height=6, width=8, units="in",res=300)
 ggplot(df) + 
     geom_density(aes(x=value, colour=target)) +
-    facet_wrap(~feature,ncol=4,scales="free") 
+    facet_wrap(~feature,ncol=4,scales="free") +
+    this.theme
 dev.off()
 
 

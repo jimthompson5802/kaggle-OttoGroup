@@ -21,12 +21,15 @@ df$var.imp <- 100*df$Overall/max(df$Overall)
 df <- head(df[order(-df$var.imp),],20)
 df$feature <- row.names(df)
 
+this.theme <- theme(axis.text=element_text(color="black"))
+
 p1 <- ggplot(df) +
     geom_bar(aes(x=reorder(feature,var.imp),y=var.imp), fill="blue", stat="identity") +
     coord_flip() +
     ylab("Relative Variable Importance") +
     xlab("Feature") +
-    theme(axis.text=element_text(size=15))
+    theme(axis.text=element_text(size=15)) +
+    this.theme
 png(filename="./presentations/varImp_rf2.png", width=11, height=8.5, units="in", res=600)
 print(p1)
 dev.off()
@@ -45,7 +48,8 @@ extractVarImp <- function(cls,mdls) {
         ylab("Relative Variable Importance") +
         xlab("Feature") +
         ggtitle(paste(cls)) +
-        theme(axis.text=element_text(size=15))
+        theme(axis.text=element_text(size=15)) + 
+        this.theme
     px
 }
 
@@ -53,7 +57,7 @@ extractVarImp <- function(cls,mdls) {
 load("./src/gbm2_model/model_gbm_one_vs_all_2015-05-08_22_59_43.RData")
 ll <- lapply(paste0("Class_",1:9), extractVarImp,gbm.mdls)
 
-png(filename="./presentations/varImp_gbm2.png", width=17*1.2, height=11*1.2, units="in", res=600)
+png(filename="./presentations/varImp_gbm2.png", width=17*1.2, height=11*1.2, units="in", res=300)
 grid.newpage()
 pushViewport(viewport(layout=grid.layout(2,5)))
 print(ll[[1]], vp=viewport(layout.pos.row=1, layout.pos.col = 1))
@@ -71,7 +75,7 @@ dev.off()
 load("./src/gbm4_model/model_gbm_one_vs_all_2015-05-14_12_00_38.RData")
 ll <- lapply(paste0("Class_",1:9), extractVarImp,gbm.mdls)
 
-png(filename="./presentations/varImp_gbm4.png", width=17*1.2, height=11*1.2, units="in", res=600)
+png(filename="./presentations/varImp_gbm4.png", width=17*1.2, height=11*1.2, units="in", res=300)
 grid.newpage()
 pushViewport(viewport(layout=grid.layout(2,5)))
 print(ll[[1]], vp=viewport(layout.pos.row=1, layout.pos.col = 1))
