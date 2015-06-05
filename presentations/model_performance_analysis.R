@@ -31,9 +31,10 @@ summary.df <- ddply(modPerf.df,.(model),summarize,
 
 p1 <- ggplot(summary.df) +
         geom_bar(aes(x=reorder(model,-count),y=count), stat="identity",
-                 fill="yellow") + 
+                 fill="blue") + 
         annotate("text",x=reorder(summary.df$model,-summary.df$count), y=summary.df$count-1,
-                 label=paste(round(summary.df$total.elapsed.minutes,0),"min")) +
+                 label=paste(round(summary.df$total.elapsed.minutes,0),"min"),
+                 color="white") +
     xlab("Model Algorithm") +
     ylab("Number of Training Runs") + 
     ggtitle("Summary of Model Training Runs")
