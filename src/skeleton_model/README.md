@@ -1,4 +1,4 @@
-ModelTraining Code Template
+Model Training Code Template
 ==================================================
 
 ## Overview
