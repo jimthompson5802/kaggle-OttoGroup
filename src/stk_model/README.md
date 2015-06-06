@@ -9,7 +9,7 @@ Folders named as follows: \[model\]\[model id\]\_\[stack level\]
 
 where 
 * \[model\] is a character string identifying the model, e.g., "rf"
-* \[model id\] is numeri digit 
+* \[model id\] is numeric digit 
 * \[stack level\] designates model stack level, valid values 1, 2 or 3
 
 
