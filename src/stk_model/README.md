@@ -5,7 +5,7 @@ Model Stacking
 This model was built post-competition to test out model stacking concept.
 
 ## Folder Naming convention
-Folders named as follows: <<model>><<model id>>_<<stack level>>
+Folders named as follows: \[model\]\[<model id\]\_\[stack level\]
 
 Example:  
 * rf1_1:  random forest model 1 at stack level 1
