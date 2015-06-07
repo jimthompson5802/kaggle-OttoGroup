@@ -33,7 +33,7 @@ CARET.TRAIN.CTRL <- trainControl(method="repeatedcv",
 CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
 #                                 maximize=FALSE,
                                 tuneGrid=CARET.TUNE.GRID,
-                                tuneLength=10,
+                                tuneLength=5,
                                 metric="ROC")
 
 MODEL.SPECIFIC.PARMS <- list(verbose=FALSE)
@@ -132,7 +132,7 @@ tail(modelPerf.df[,1:10],1)
 
 # if last score recorded is better than previous ones save model object
 last.idx <- length(modelPerf.df$score)
-if (last.idx == 1 || improved == "Yes") {
+if (last.idx == 1 || improved == "Yes" || TRUE) {  #force saving the model file
     cat("found improved model, saving...\n")
     flush.console()
     #yes we have improvement or first score, save generated model
