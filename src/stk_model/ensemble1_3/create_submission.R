@@ -11,10 +11,10 @@ WORK.DIR <- "./src/stk_model/ensemble1_3"
 # Common Functions and Global variables
 source("./src/CommonFunctions.R")
 source("./src/stk_model/StackCommonFunctions.R")
-source(paste0(WORK.DIR,"/ModelCommonFunctions.R"))
+# source(paste0(WORK.DIR,"/ModelCommonFunctions.R"))
 
 # get optimal ensemble weights
-load(paste0(WORK.DIR,"/opt_wts_2015-06-06_19_06_52.RData"))
+load(paste0(WORK.DIR,"/opt_wts_2015-06-06_22_25_21.RData"))
 
 # read kaggle test data set for submission
 new.df <- read.csv(unz(paste0(DATA.DIR,"/test.csv.zip"),"test.csv"),stringsAsFactors=FALSE)

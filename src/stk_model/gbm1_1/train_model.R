@@ -40,7 +40,7 @@ MODEL.SPECIFIC.PARMS <- list(verbose=FALSE)
 MODEL.COMMENT <- "gbm one vs all"
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 0.2
+FRACTION.TRAIN.DATA <- 0.5
 
 
 # load model performance data

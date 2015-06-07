@@ -33,7 +33,7 @@ CARET.TRAIN.CTRL <- trainControl(method="repeatedcv",
 CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
 #                                 maximize=FALSE,
                                 tuneGrid=CARET.TUNE.GRID,
-                                tuneLength=5,
+                                tuneLength=10,
                                 metric="ROC")
 
 MODEL.SPECIFIC.PARMS <- list(verbose=FALSE)
@@ -41,7 +41,7 @@ MODEL.SPECIFIC.PARMS <- list(verbose=FALSE)
 MODEL.COMMENT <- "gbm one vs all Level 2 Model"
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 0.2
+FRACTION.TRAIN.DATA <- 0.5
 
 
 # load model performance data

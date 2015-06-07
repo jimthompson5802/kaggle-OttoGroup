@@ -5,11 +5,15 @@
 rf1_2Predictions <- function(df) {
     library(randomForest)
     
+    model.file <- "./src/stk_model/rf1_2/model_rf_2015-06-06_20_50_09.RData"
+    cat("using rf1_2:",model.file,"\n")
+    flush.console()
+    
     # get model specific functions
     source("./src/stk_model/rf1_2/ModelCommonFunctions.R")
     
     # retrive Level 2 model
-    load("./src/stk_model/rf1_2/model_rf_2015-06-06_16_41_23.RData")
+    load(model.file)
     
     #save id vector
     id <- df$id
@@ -37,11 +41,15 @@ rf1_2Predictions <- function(df) {
 gbm1_2Predictions <- function(df) {
     library(gbm)
     
+    model.file <- "./src/stk_model/gbm1_2/model_gbm_one_vs_all_2015-06-06_22_19_36.RData"
+    cat("using gbm1_2:",model.file,"\n")
+    flush.console()
+    
     # get model specific functions
     source("./src/stk_model/gbm1_2/ModelCommonFunctions.R")
     
     # retrive Level 2 model
-    load("./src/stk_model/gbm1_2/model_gbm_one_vs_all_2015-06-06_16_58_43.RData")
+    load(model.file)
     
     #save id vector
     id <- df$id

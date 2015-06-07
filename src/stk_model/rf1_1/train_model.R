@@ -16,13 +16,13 @@ source(paste0(WORK.DIR,"/ModelCommonFunctions.R"))
 # set caret training parameters
 CARET.TRAIN.PARMS <- list(method="rf")   # Replace MODEL.METHOD with appropriate caret model
 
-CARET.TUNE.GRID <-  NULL  # NULL provides model specific default tuning parameters
+# CARET.TUNE.GRID <-  NULL  # NULL provides model specific default tuning parameters
 
 # user specified tuning parameters
-#CARET.TUNE.GRID <- expand.grid(nIter=c(100))
+CARET.TUNE.GRID <- expand.grid(mtry=c(48))
 
 # model specific training parameter
-CARET.TRAIN.CTRL <- trainControl(method="repeatedcv",
+CARET.TRAIN.CTRL <- trainControl(method="none",
                                  number=5,
                                  repeats=1,
                                  verboseIter=TRUE,
@@ -39,7 +39,7 @@ MODEL.SPECIFIC.PARMS <- list(ntree=1000) #NULL # Other model specific parameters
 MODEL.COMMENT <- ""
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 0.2
+FRACTION.TRAIN.DATA <- 0.5
 
 
 
