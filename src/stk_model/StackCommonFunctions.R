@@ -88,7 +88,7 @@ rf1_2Predictions <- function(df) {
 gbm1_2Predictions <- function(df) {
     library(gbm)
     
-    model.file <- "./src/stk_model/gbm1_2/model_gbm_one_vs_all_2015-06-06_22_19_36.RData"
+    model.file <- "./src/stk_model/gbm1_2/model_gbm_one_vs_all_2015-06-07_05_52_42.RData"
     cat("using gbm1_2:",model.file,"\n")
     flush.console()
     
