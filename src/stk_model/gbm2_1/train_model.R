@@ -40,7 +40,7 @@ MODEL.SPECIFIC.PARMS <- list(verbose=FALSE,n.minobsinnode=15)
 MODEL.COMMENT <- "gbm one vs all default n.minobsinnode=15"
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 0.5
+FRACTION.TRAIN.DATA <- 1.0
 
 
 # load model performance data

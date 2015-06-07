@@ -28,7 +28,7 @@ rf1_1Predictions <- function(train.df) {
     library(caret)
     library(randomForest)
     
-    model.file <- "./src/stk_model/rf1_1/model_rf_2015-06-06_20_24_58.RData"
+    model.file <- "./src/stk_model/rf1_1/model_rf_2015-06-07_17_00_56.RData"
     cat("using rf1_1:",model.file,"\n")
     flush.console()
     
@@ -48,7 +48,7 @@ gbm1_1Predictions <- function(train.df) {
     library(caret)
     library(gbm)
     
-    model.file <- "./src/stk_model/gbm1_1/model_gbm_one_vs_all_2015-06-06_20_41_10.RData"
+    model.file <- "./src/stk_model/gbm1_1/model_gbm_one_vs_all_2015-06-07_17_31_49.RData"
     cat("using gbm1_1:",model.file,"\n")
     flush.console()
     
@@ -71,7 +71,7 @@ gbm2_1Predictions <- function(train.df) {
     library(caret)
     library(gbm)
     
-    model.file <- "./src/stk_model/gbm2_1/model_gbm_one_vs_all_2015-06-07_13_30_51.RData"
+    model.file <- "./src/stk_model/gbm2_1/model_gbm_one_vs_all_2015-06-07_18_01_10.RData"
     cat("using gbm2_1:",model.file,"\n")
     flush.console()
     
@@ -97,7 +97,7 @@ gbm2_1Predictions <- function(train.df) {
 rf1_2Predictions <- function(df) {
     library(randomForest)
     
-    model.file <- "./src/stk_model/rf1_2/model_rf_2015-06-07_14_45_34.RData"
+    model.file <- "./src/stk_model/rf1_2/model_rf_2015-06-07_18_16_10.RData"
     cat("using rf1_2:",model.file,"\n")
     flush.console()
     
@@ -129,7 +129,7 @@ rf1_2Predictions <- function(df) {
 gbm1_2Predictions <- function(df) {
     library(gbm)
     
-    model.file <- "./src/stk_model/gbm1_2/model_gbm_one_vs_all_2015-06-07_15_02_40.RData"
+    model.file <- "./src/stk_model/gbm1_2/model_gbm_one_vs_all_2015-06-07_18_54_33.RData"
     cat("using gbm1_2:",model.file,"\n")
     flush.console()
     

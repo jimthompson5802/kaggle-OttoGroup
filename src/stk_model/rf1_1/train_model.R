@@ -39,7 +39,7 @@ MODEL.SPECIFIC.PARMS <- list(ntree=1000) #NULL # Other model specific parameters
 MODEL.COMMENT <- ""
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 0.5
+FRACTION.TRAIN.DATA <- 1.0
 
 
 
