@@ -20,7 +20,7 @@ CARET.TRAIN.PARMS <- list(method="rf")   # Replace MODEL.METHOD with appropriate
 # CARET.TUNE.GRID <-  NULL  # NULL provides model specific default tuning parameters
 
 # user specified tuning parameters
-CARET.TUNE.GRID <- expand.grid(mtry=57)
+CARET.TUNE.GRID <- expand.grid(mtry=61)
 
 # model specific training parameter
 CARET.TRAIN.CTRL <- trainControl(method="none",
@@ -59,15 +59,10 @@ train.df <- train2.raw[idx,]   # use level 2 training data
 train.data <- prepModelData(train.df)
 
 # get predictions from Level 1 models
-rf1_1.pred.probs <- rf1_1Predictions(train.df)
-names(rf1_1.pred.probs) <- paste0("rf1_1.",names(rf1_1.pred.probs))
-
-# gbm one vs all model from Level 1
-gbm1_1.pred.probs <- gbm1_1Predictions(train.df)
-names(gbm1_1.pred.probs) <- paste0("gbm1_1.",names(gbm1_1.pred.probs))
+level1.features <- runAllLevel1Models(train.df)
 
 # combine level 1 predictions with current training data
-train.data$predictors <- cbind(rf1_1.pred.probs,gbm1_1.pred.probs,train.data$predictors)
+train.data$predictors <- cbind(level1.features,train.data$predictors)
 
 
 library(doMC)
@@ -95,15 +90,11 @@ mdl.fit
 # prepare data for training
 test.data <- prepModelData(test.raw)
 
-# get level 1 predictions for the test data set
-rf1_1.pred.probs <- rf1_1Predictions(test.raw)
-names(rf1_1.pred.probs) <- paste0("rf1_1.",names(rf1_1.pred.probs))
-
-gbm1_1.pred.probs <- gbm1_1Predictions(test.raw)
-names(gbm1_1.pred.probs) <- paste0("gbm1_1.",names(gbm1_1.pred.probs))
+# get predictions from Level 1 models
+level1.features <- runAllLevel1Models(test.raw)
 
 # combine level 1 predictions with current training data
-test.data$predictors <- cbind(rf1_1.pred.probs,gbm1_1.pred.probs,test.data$predictors)
+test.data$predictors <- cbind(level1.features,test.data$predictors)
 
 # make predictions with test data set
 pred.probs <- predict(mdl.fit,newdata = test.data$predictors,type = "prob")

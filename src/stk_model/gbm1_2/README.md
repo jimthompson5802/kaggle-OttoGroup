@@ -1,4 +1,4 @@
-gbm one vs all modle - Level 2
+gbm one vs all model - Level 2
 ==================================================
 
 ## Overview
