@@ -17,7 +17,14 @@ runAllLevel1Models <- function(train.df) {
     gbm2_1.pred.probs <- gbm2_1Predictions(train.df)
     names(gbm2_1.pred.probs) <- paste0("gbm2_1.",names(gbm1_1.pred.probs))
     
-    new.features <- cbind(rf1_1.pred.probs,gbm1_1.pred.probs,gbm2_1.pred.probs)
+    # logitboost Level 1 - 
+    lgst2_1.pred.probs <- lgst2_1Predictions(train.df)
+    names(lgst2_1.pred.probs) <- paste0("lgst2_1.",names(lgst2_1.pred.probs))
+    
+    new.features <- cbind(rf1_1.pred.probs,
+                          gbm1_1.pred.probs,
+                          gbm2_1.pred.probs,
+                          lgst2_1.pred.probs)
     
     return(new.features)
 }
@@ -88,6 +95,25 @@ gbm2_1Predictions <- function(train.df) {
     names(ll) <- PRODUCT.CLASSES
     
     pred.probs <- data.frame(do.call(cbind,ll))
+}
+
+lgst2_1Predictions <- function(train.df) {
+    library(caret)
+    library(caTools)
+    
+    model.file <- "./src/stk_model/lgst2_1/model_LogitBoost_2015-06-07_23_03_18.RData"
+    cat("using lgst2_1:",model.file,"\n")
+    flush.console()
+    
+    # get model specific functions
+    source("./src/stk_model/lgst2_1/ModelCommonFunctions.R")
+    
+    # get level 1 model
+    load(model.file)
+    
+    train.data <- prepModelData(train.df)
+    
+    pred.probs <- predict(mdl.fit,newdata = train.data$predictors,type = "prob")
 }
 
 ###
