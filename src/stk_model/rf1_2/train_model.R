@@ -33,9 +33,10 @@ CARET.TRAIN.CTRL <- trainControl(method="none",
 CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
                             maximize=FALSE,
                            tuneGrid=CARET.TUNE.GRID,
+                           tuneLength=5,
                            metric="LogLoss")
 
-MODEL.SPECIFIC.PARMS <- list(ntree=1000) #NULL # Other model specific parameters
+MODEL.SPECIFIC.PARMS <- list(ntree=2000) #NULL # Other model specific parameters
 
 MODEL.COMMENT <- "Level 2 rf model for model stacking"
 

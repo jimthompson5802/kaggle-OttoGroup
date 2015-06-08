@@ -97,7 +97,7 @@ gbm2_1Predictions <- function(train.df) {
 rf1_2Predictions <- function(df) {
     library(randomForest)
     
-    model.file <- "./src/stk_model/rf1_2/model_rf_2015-06-07_18_16_10.RData"
+    model.file <- "./src/stk_model/rf1_2/model_rf_2015-06-07_21_28_23.RData"
     cat("using rf1_2:",model.file,"\n")
     flush.console()
     
