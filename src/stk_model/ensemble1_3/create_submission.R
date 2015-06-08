@@ -8,7 +8,7 @@ library(alabama)
 
 WORK.DIR <- "./src/stk_model/ensemble1_3"
 
-OPT.WTS <- "opt_wts_2015-06-07_18_58_15.RData"
+OPT.WTS <- "opt_wts_2015-06-07_21_38_32.RData"
 
 cat("Using wts:",OPT.WTS,"/n")
 
