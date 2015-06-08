@@ -35,12 +35,16 @@ rf1_1Predictions <- function(train.df) {
     library(caret)
     library(randomForest)
     
-    model.file <- "./src/stk_model/rf1_1/model_rf_2015-06-07_17_00_56.RData"
+    MODEL.DIR <- "./src/stk_model/rf1_1"
+    
+    # get model file
+    load(paste0(MODEL.DIR,"/use_this_model.RData"))
+    model.file <- paste0(MODEL.DIR,file.name)
     cat("using rf1_1:",model.file,"\n")
     flush.console()
     
     # get model specific functions
-    source("./src/stk_model/rf1_1/ModelCommonFunctions.R")
+    source(paste0(MODEL.DIR,"/ModelCommonFunctions.R"))
     
     # get level 1 model
     load(model.file)
@@ -55,12 +59,16 @@ gbm1_1Predictions <- function(train.df) {
     library(caret)
     library(gbm)
     
-    model.file <- "./src/stk_model/gbm1_1/model_gbm_one_vs_all_2015-06-07_17_31_49.RData"
+    MODEL.DIR <- "./src/stk_model/gbm1_1"
+    
+    # get model file
+    load(paste0(MODEL.DIR,"/use_this_model.RData"))
+    model.file <- paste0(MODEL.DIR,file.name)
     cat("using gbm1_1:",model.file,"\n")
     flush.console()
     
     # get model specific functions
-    source("./src/stk_model/gbm1_1/ModelCommonFunctions.R")
+    source(paste0(MODEL.DIR,"/ModelCommonFunctions.R"))
     
     # get level 1 model
     load(model.file)
@@ -78,12 +86,16 @@ gbm2_1Predictions <- function(train.df) {
     library(caret)
     library(gbm)
     
-    model.file <- "./src/stk_model/gbm2_1/model_gbm_one_vs_all_2015-06-07_18_01_10.RData"
+    MODEL.DIR <- "./src/stk_model/gbm2_1"
+    
+    # get model file
+    load(paste0(MODEL.DIR,"/use_this_model.RData"))
+    model.file <- paste0(MODEL.DIR,file.name)
     cat("using gbm2_1:",model.file,"\n")
     flush.console()
     
     # get model specific functions
-    source("./src/stk_model/gbm2_1/ModelCommonFunctions.R")
+    source(paste0(MODEL.DIR,"/ModelCommonFunctions.R"))
     
     # get level 1 model
     load(model.file)
@@ -101,12 +113,16 @@ lgst2_1Predictions <- function(train.df) {
     library(caret)
     library(caTools)
     
-    model.file <- "./src/stk_model/lgst2_1/model_LogitBoost_2015-06-07_23_03_18.RData"
+    MODEL.DIR <- "./src/stk_model/lgst2_1"
+    
+    # get model file
+    load(paste0(MODEL.DIR,"/use_this_model.RData"))
+    model.file <- paste0(MODEL.DIR,file.name)
     cat("using lgst2_1:",model.file,"\n")
     flush.console()
     
     # get model specific functions
-    source("./src/stk_model/lgst2_1/ModelCommonFunctions.R")
+    source(paste0(MODEL.DIR,"/ModelCommonFunctions.R"))
     
     # get level 1 model
     load(model.file)

@@ -24,9 +24,9 @@ prepModelData <- function(df,only.predictors=FALSE){
     predictors <- df[,setdiff(names(df),c("id","target"))]
     
     #calculate the number of non-zero count features
-    non.zero.count <- apply(predictors,1,function(x){sum(x>0)})
-    
-    predictors <- cbind(predictors,non.zero.count)
+#     non.zero.count <- apply(predictors,1,function(x){sum(x>0)})
+#     
+#     predictors <- cbind(predictors,non.zero.count)
    
     if (only.predictors) {
         # eliminate unwanted variables

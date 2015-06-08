@@ -16,13 +16,13 @@ source(paste0(WORK.DIR,"/ModelCommonFunctions.R"))
 # set caret training parameters
 CARET.TRAIN.PARMS <- list(method="rf")   # Replace MODEL.METHOD with appropriate caret model
 
-# CARET.TUNE.GRID <-  NULL  # NULL provides model specific default tuning parameters
+CARET.TUNE.GRID <-  NULL  # NULL provides model specific default tuning parameters
 
 # user specified tuning parameters
-CARET.TUNE.GRID <- expand.grid(mtry=c(48))
+# CARET.TUNE.GRID <- expand.grid(mtry=c(48))
 
 # model specific training parameter
-CARET.TRAIN.CTRL <- trainControl(method="none",
+CARET.TRAIN.CTRL <- trainControl(method="repeatedcv",
                                  number=5,
                                  repeats=1,
                                  verboseIter=TRUE,
@@ -32,6 +32,7 @@ CARET.TRAIN.CTRL <- trainControl(method="none",
 CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
                             maximize=FALSE,
                            tuneGrid=CARET.TUNE.GRID,
+                           tuneLength=5,
                            metric="LogLoss")
 
 MODEL.SPECIFIC.PARMS <- list(ntree=1000) #NULL # Other model specific parameters
@@ -39,7 +40,7 @@ MODEL.SPECIFIC.PARMS <- list(ntree=1000) #NULL # Other model specific parameters
 MODEL.COMMENT <- ""
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 1.0
+FRACTION.TRAIN.DATA <- 0.25
 
 
 
@@ -110,7 +111,7 @@ tail(modelPerf.df[,1:10],1)
 
 # if last score recorded is better than previous ones save model object
 last.idx <- length(modelPerf.df$score)
-if (last.idx == 1 || improved == "Yes") {
+if (last.idx == 1 || improved == "Yes" || TRUE) {  #force saving model file
     cat("found improved model, saving...\n")
     flush.console()
     #yes we have improvement or first score, save generated model
@@ -119,6 +120,7 @@ if (last.idx == 1 || improved == "Yes") {
     file.name <- gsub(":","_",file.name)
     
     save(mdl.fit,file=paste0(WORK.DIR,file.name))
+    save(file.name,file=paste0(WORK.DIR,"/use_this_model.RData"))
 } else {
     cat("no improvement!!!\n")
     flush.console()

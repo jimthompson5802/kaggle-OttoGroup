@@ -40,7 +40,7 @@ MODEL.SPECIFIC.PARMS <- list(verbose=FALSE,n.minobsinnode=15)
 MODEL.COMMENT <- "gbm one vs all default n.minobsinnode=15"
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 1.0
+FRACTION.TRAIN.DATA <- 0.25
 
 
 # load model performance data
@@ -110,7 +110,7 @@ tail(modelPerf.df[,1:10],1)
 
 # if last score recorded is better than previous ones save model object
 last.idx <- length(modelPerf.df$score)
-if (last.idx == 1 || improved == "Yes") {
+if (last.idx == 1 || improved == "Yes" || TRUE) { # force recording model file
     cat("found improved model, saving...\n")
     flush.console()
     #yes we have improvement or first score, save generated model
@@ -119,6 +119,7 @@ if (last.idx == 1 || improved == "Yes") {
     file.name <- gsub(":","_",file.name)
     
     save(gbm.mdls,file=paste0(WORK.DIR,file.name))
+    save(file.name,file=paste0(WORK.DIR,"/use_this_model.RData"))
 } else {
     cat("no improvement!!!\n")
     flush.console()

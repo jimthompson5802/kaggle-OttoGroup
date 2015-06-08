@@ -40,7 +40,7 @@ MODEL.SPECIFIC.PARMS <- NULL # Other model specific parameters
 MODEL.COMMENT <- "Initial test of new model building set"
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 1.0
+FRACTION.TRAIN.DATA <- 0.25
 
 # load model performance data
 load(paste0(WORK.DIR,"/modelPerf.RData"))
@@ -110,7 +110,7 @@ tail(modelPerf.df[,1:10],1)
 
 # if last score recorded is better than previous ones save model object
 last.idx <- length(modelPerf.df$score)
-if (last.idx == 1 || improved == "Yes") {
+if (last.idx == 1 || improved == "Yes" || TRUE) { # force recording file
     cat("found improved model, saving...\n")
     flush.console()
     #yes we have improvement or first score, save generated model
@@ -119,6 +119,7 @@ if (last.idx == 1 || improved == "Yes") {
     file.name <- gsub(":","_",file.name)
     
     save(mdl.fit,file=paste0(WORK.DIR,file.name))
+    save(file.name,file=paste0(WORK.DIR,"/use_this_model.RData"))
 } else {
     cat("no improvement!!!\n")
     flush.console()

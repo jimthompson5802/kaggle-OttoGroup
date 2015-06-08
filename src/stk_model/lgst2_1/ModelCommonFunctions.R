@@ -13,12 +13,12 @@ prepModelData <- function(df,only.predictors=FALSE){
     predictors <- df[,setdiff(names(df),c("id","target"))]
     
     #calculate the number of non-zero count features
-    non.zero.count <- apply(predictors,1,function(x){sum(x>0)})
+#     non.zero.count <- apply(predictors,1,function(x){sum(x>0)})
     
     #convert to log(1+feat_x)
     predictors <- log(1 + predictors)
     
-    predictors <- cbind(predictors,non.zero.count)
+#     predictors <- cbind(predictors,non.zero.count)
     
    
     if (only.predictors) {
