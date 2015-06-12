@@ -1,17 +1,17 @@
-###
+str###
 # Level 1 models
 ###
 
 # run all Level 1 models and aggregate the predictions to create feature set
 runAllLevel1Models <- function(train.df) {
     
-    # get predictions from Level 1 models
-    rf1_1.pred.probs <- rf1_1Predictions(train.df)
-    names(rf1_1.pred.probs) <- paste0("rf1_1.",names(rf1_1.pred.probs))
-    
     # gbm one vs all model from Level 1
     gbm1_1.pred.probs <- gbm1_1Predictions(train.df)
     names(gbm1_1.pred.probs) <- paste0("gbm1_1.",names(gbm1_1.pred.probs))
+    
+    # get predictions from Level 1 models
+    rf1_1.pred.probs <- rf1_1Predictions(train.df)
+    names(rf1_1.pred.probs) <- paste0("rf1_1.",names(rf1_1.pred.probs))
     
     # gbm one vs all model from Level 1 - tuned n.minobsinnode
     gbm2_1.pred.probs <- gbm2_1Predictions(train.df)
@@ -32,8 +32,8 @@ runAllLevel1Models <- function(train.df) {
 
 # rf1 model from Level 1
 rf1_1Predictions <- function(train.df) {
-    library(caret)
-    library(randomForest)
+    require(caret)
+    require(randomForest)
     
     MODEL.DIR <- "./src/stk_model/rf1_1"
     
@@ -44,7 +44,7 @@ rf1_1Predictions <- function(train.df) {
     flush.console()
     
     # get model specific functions
-    source(paste0(MODEL.DIR,"/ModelCommonFunctions.R"))
+    sys.source(paste0(MODEL.DIR,"/ModelCommonFunctions.R"))
     
     # get level 1 model
     load(model.file)
@@ -56,8 +56,8 @@ rf1_1Predictions <- function(train.df) {
 
 # gbm one vs all from Level 1
 gbm1_1Predictions <- function(train.df) {
-    library(caret)
-    library(gbm)
+    require(caret)
+    require(gbm)
     
     MODEL.DIR <- "./src/stk_model/gbm1_1"
     
@@ -68,7 +68,7 @@ gbm1_1Predictions <- function(train.df) {
     flush.console()
     
     # get model specific functions
-    source(paste0(MODEL.DIR,"/ModelCommonFunctions.R"))
+    sys.source(paste0(MODEL.DIR,"/ModelCommonFunctions.R"))
     
     # get level 1 model
     load(model.file)
@@ -77,14 +77,21 @@ gbm1_1Predictions <- function(train.df) {
     
     # for each classes predict probability of for that class
     ll <- lapply(PRODUCT.CLASSES,predictForOneClass,gbm.mdls,train.data$predictors)
-    names(ll) <- PRODUCT.CLASSES
+#     ll <- list
+#     i <- 0
+#     for (cls in paste0("Class_",1:9)) {
+#         i <- i + 1
+#         ll[[i]] <- predict(gbm.mdls[[cls]],train.data$predictors)
+#     }
+    
+names(ll) <- PRODUCT.CLASSES
     
     pred.probs <- data.frame(do.call(cbind,ll))
 }
 
 gbm2_1Predictions <- function(train.df) {
-    library(caret)
-    library(gbm)
+    require(caret)
+    require(gbm)
     
     MODEL.DIR <- "./src/stk_model/gbm2_1"
     
@@ -95,7 +102,7 @@ gbm2_1Predictions <- function(train.df) {
     flush.console()
     
     # get model specific functions
-    source(paste0(MODEL.DIR,"/ModelCommonFunctions.R"))
+    sys.source(paste0(MODEL.DIR,"/ModelCommonFunctions.R"))
     
     # get level 1 model
     load(model.file)
@@ -110,8 +117,8 @@ gbm2_1Predictions <- function(train.df) {
 }
 
 lgst2_1Predictions <- function(train.df) {
-    library(caret)
-    library(caTools)
+    require(caret)
+    require(caTools)
     
     MODEL.DIR <- "./src/stk_model/lgst2_1"
     
@@ -122,7 +129,7 @@ lgst2_1Predictions <- function(train.df) {
     flush.console()
     
     # get model specific functions
-    source(paste0(MODEL.DIR,"/ModelCommonFunctions.R"))
+    sys.source(paste0(MODEL.DIR,"/ModelCommonFunctions.R"))
     
     # get level 1 model
     load(model.file)
@@ -137,16 +144,21 @@ lgst2_1Predictions <- function(train.df) {
 ###
 
 rf1_2Predictions <- function(df) {
-    library(randomForest)
+    require(randomForest)
+    require(caret)
     
-    model.file <- "./src/stk_model/rf1_2/model_rf_2015-06-07_21_28_23.RData"
+    MODEL.DIR <- "./src/stk_model/rf1_2/"
+    
+    # get model file
+    load(paste0(MODEL.DIR,"/use_this_model.RData"))
+    model.file <- paste0(MODEL.DIR,file.name)
     cat("using rf1_2:",model.file,"\n")
     flush.console()
     
     # get model specific functions
-    source("./src/stk_model/rf1_2/ModelCommonFunctions.R")
+    sys.source(paste0(MODEL.DIR,"/ModelCommonFunctions.R"))
     
-    # retrive Level 2 model
+    # get level 2 model
     load(model.file)
     
     #save id vector
@@ -169,16 +181,21 @@ rf1_2Predictions <- function(df) {
 }
 
 gbm1_2Predictions <- function(df) {
-    library(gbm)
+    require(gbm)
+    require(caret)
     
-    model.file <- "./src/stk_model/gbm1_2/model_gbm_one_vs_all_2015-06-07_18_54_33.RData"
+    MODEL.DIR <- "./src/stk_model/gbm1_2/"
+    
+    # get model file
+    load(paste0(MODEL.DIR,"/use_this_model.RData"))
+    model.file <- paste0(MODEL.DIR,file.name)
     cat("using gbm1_2:",model.file,"\n")
     flush.console()
     
     # get model specific functions
-    source("./src/stk_model/gbm1_2/ModelCommonFunctions.R")
+    sys.source(paste0(MODEL.DIR,"/ModelCommonFunctions.R"))
     
-    # retrive Level 2 model
+    # get level 2 model
     load(model.file)
     
     #save id vector
