@@ -76,3 +76,20 @@ dev.off()
 
 
 
+df2 <- subset(df,feature %in% paste0("feat_",c(11,25,70,88)))
+p3 <- qplot(class.id,value,data=df2,geom="boxplot") + 
+    facet_wrap(~feature,ncol=4,scales="free_y") +
+    xlab("Class") +
+    this.theme
+
+p4 <- ggplot(df2) + 
+    geom_density(aes(x=value, colour=target)) +
+    facet_wrap(~feature,ncol=4,scales="free") +
+    this.theme
+
+png("./presentations/feature_combined_1.png",height=6, width=8, units="in",res=300)
+grid.newpage()
+pushViewport(viewport(layout=grid.layout(2,1)))
+print(p3, vp=viewport(layout.pos.row=1, layout.pos.col = 1))
+print(p4, vp=viewport(layout.pos.row=2, layout.pos.col = 1))
+dev.off()
