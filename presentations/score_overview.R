@@ -67,3 +67,12 @@ pushViewport(viewport(layout=grid.layout(1,2)))
 print(p3.final, vp=viewport(layout.pos.row=1, layout.pos.col = 1))
 print(p4.final, vp=viewport(layout.pos.row=1, layout.pos.col = 2))
 dev.off()
+
+
+png(filename="./presentations/leader_vs_jmt5802.png",width=11, height=8.5,units="in",res=300)
+print(p3.final)
+dev.off()
+
+png(filename="./presentations/jmt_team_standing.png",width=11, height=8.5,units="in",res=300)
+print(p4.final)
+dev.off()
