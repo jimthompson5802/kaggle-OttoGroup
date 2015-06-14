@@ -80,7 +80,9 @@ ranking.df <- do.call(rbind,ll)
 # determine submission date for last submission
 last.submission.date <- as.Date(tail(lb.df,1)$SubmissionDate)
 
-this.theme <- theme(axis.text=element_text(color="black"))
+this.theme <- theme(axis.text=element_text(color="black",size=15),
+                    axis.title=element_text(color="black",size=15),
+                    title=element_text(size=15))
 
 # plot all scores and identify selected team
 p1 <- ggplot() + 
@@ -93,7 +95,7 @@ p1 <- ggplot() +
     geom_text(data=head(lb.df[lb.df$TeamName == TEAM.NAME,],1),aes(x=SubmissionDate, y=Score,
                                                                    vjust=-0.2, hjust=0.5, lineheight=0.8,
                                                                    label=paste("Team:\n",TEAM.NAME))) +
-    ylab("(Better)  Log Loss Error Function  (Worse)") +
+    ylab("(Better) Log Loss Error (Worse)") +
     xlab("Submission Date") +
     ggtitle(paste("Kaggle: Otto Group Product Classification Challenge\nAll Participant Scores as of",last.submission.date)) +
     this.theme
@@ -109,7 +111,7 @@ p2 <- ggplot(data=lb24.df) +
                                         vjust=1.0, hjust=1.0, linegeight=0.8,
                                         angle=0,
                                         label=leader.score)) +
-    ylab("(Better)  Log Loss Error Function  (Worse)") +
+    ylab("(Better) Log Loss Error (Worse)") +
     xlab("Submission Date") +
     ggtitle("Leader Score During First 24 Hours of Competition") +
     this.theme
