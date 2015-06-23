@@ -1,9 +1,7 @@
-Model Training Code Template
+kNN Model
 ==================================================
 
-## Overview
-caret based code templates for training and testing models.  Includes function
-to capture training run-time statistics.
+
 
 
 
