@@ -95,7 +95,7 @@ p1 <- ggplot() +
     geom_text(data=head(lb.df[lb.df$TeamName == TEAM.NAME,],1),aes(x=SubmissionDate, y=Score,
                                                                    vjust=-0.2, hjust=0.5, lineheight=0.8,
                                                                    label=paste("Team:\n",TEAM.NAME))) +
-    ylab("(Better) Log Loss Error (Worse)") +
+    ylab("(Better) MLL (Worse)") +
     xlab("Submission Date") +
     ggtitle(paste("Kaggle: Otto Group Product Classification Challenge\nAll Participant Scores as of",last.submission.date)) +
     this.theme
@@ -104,14 +104,14 @@ p1 <- ggplot() +
 lb24.df <- lb.df[lb.df$SubmissionDate < (lb.df$SubmissionDate[1]+hms("24:00:00")),]
 p2 <- ggplot(data=lb24.df) +
     geom_line(aes(x=SubmissionDate,y=leader.score),color="blue", size=1.25) +
-    geom_text(data=head(lb24.df,1),aes(x=SubmissionDate, y=leader.score,
-                                       vjust=1.0, hjust=-0.2, linegeight=0.8,
-                                       label=Score)) +
-    geom_text(data=tail(lb24.df,1), aes(x=SubmissionDate, y=Score,
-                                        vjust=1.0, hjust=1.0, linegeight=0.8,
-                                        angle=0,
-                                        label=leader.score)) +
-    ylab("(Better) Log Loss Error (Worse)") +
+#     geom_text(data=head(lb24.df,1),aes(x=SubmissionDate, y=leader.score,
+#                                        vjust=1.0, hjust=-0.2, linegeight=0.8,
+#                                        label=Score)) +
+#     geom_text(data=tail(lb24.df,1), aes(x=SubmissionDate, y=Score,
+#                                         vjust=1.0, hjust=1.0, linegeight=0.8,
+#                                         angle=0,
+#                                         label=leader.score)) +
+    ylab("(Better) MLL (Worse)") +
     xlab("Submission Date") +
     ggtitle("Leader Score During First 24 Hours of Competition") +
     this.theme
@@ -132,7 +132,7 @@ p3 <- ggplot(data=ranking.df) +
                                                                    vjust=2, hjust=-0.4, lineheight=0.8,
                                                                    label=paste(TEAM.NAME))) +
     xlab("Submission Date") +
-    ylab("(Better)  Log Loss Error Function  (Worse)") +
+    ylab("(Better)  MLL  (Worse)") +
     ggtitle(paste("Comparision of\nLeader Score vs. Team:",TEAM.NAME)) +
     this.theme
 

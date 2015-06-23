@@ -78,7 +78,7 @@ p2 <- ggplot(df3) +
              fill="blue") + 
     scale_y_continuous(limits=c(0,2), breaks = seq(0, 2, 0.2)) +
     xlab("Model") +
-    ylab("(Better) MLL Score (Worse)") + 
+    ylab("(Better) MLL (Worse)") + 
     ggtitle("Model Performance on test.raw Data Set") +
     theme(axis.text.x=element_text(angle=90)) +
     this.theme
