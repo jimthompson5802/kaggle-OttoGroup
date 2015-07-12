@@ -173,3 +173,13 @@ pushViewport(viewport(layout=grid.layout(1,2)))
 print(p3, vp=viewport(layout.pos.row=1, layout.pos.col = 1))
 print(p4, vp=viewport(layout.pos.row=1, layout.pos.col = 2))
 dev.off()
+
+# for slides
+png(filename="./presentations/score_overview1.png",width=11,height=8.5, units="in",res=600)
+print(p1)
+dev.off()
+
+png(filename="./presentations/score_overview2.png",width=11,height=8.5, units="in",res=600)
+print(p2)
+dev.off()
+
