@@ -94,7 +94,8 @@ p1 <- ggplot() +
     # identify selected team
     geom_text(data=head(lb.df[lb.df$TeamName == TEAM.NAME,],1),aes(x=SubmissionDate, y=Score,
                                                                    vjust=-0.2, hjust=0.5, lineheight=0.8,
-                                                                   label=paste("Team:\n",TEAM.NAME))) +
+                                                                   label=paste("Team:\n",TEAM.NAME),
+                                                                   fontface="bold")) +
     ylab("(Better) MLL (Worse)") +
     xlab("Submission Date") +
     ggtitle(paste("Kaggle: Otto Group Product Classification Challenge\nAll Participant Scores as of",last.submission.date)) +
